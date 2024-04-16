@@ -1,2 +1,1 @@
-# DEMO
-Hej verden
+# Dette er en eksamensopgave
