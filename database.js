@@ -44,67 +44,47 @@ export default class Database {
     return result.rowsAffected[0];
   }
 
-  async create(data) {
+
+  async registerUser(data) {
     await this.connect();
     const request = this.poolconnection.request();
-
-    request.input('title', sql.Char(50), data.title);
-    request.input('priority', sql.Int, data.priority);
-    request.input('status', sql.Bit, data.status);
-
-    const result = await request.query(
-      `INSERT INTO todos.todo (title, priority, status) VALUES (@title, @priority, @status)`
-    );
+    request.input('username', sql.VarChar, data.username)
+    request.input('password', sql.VarChar, data.password)
+    request.input('gender', sql.VarChar, data.gender)
+    request.input('height', sql.Int, data.height)
+    request.input('weight', sql.Int, data.weight)
+    request.input('age', sql.Int, data.age)
+    request.input('bmr', sql.Int, data.bmr)
+    const result = await request.query(`INSERT INTO Nutri.[USER] (username, password, gender, height, weight, age, bmr) VALUES (@username, @password, @gender, @height, @weight, @age, @bmr)`);
 
     return result.rowsAffected[0];
   }
-
-  async readAll() {
+  async createMeal(data) {
     await this.connect();
     const request = this.poolconnection.request();
-    const result = await request.query(`SELECT * FROM todos.todo`);
+    request.input('mealname', sql.VarChar, data.mealname)
+    request.input('weight', sql.Int, data.weight)
+    request.input('totalnutrition', sql.Int, data.totalnutrition)
+    request.input('user_ID', sql.Int, data.user_ID)
 
-    return result.recordsets[0];
-  }
-
-  async read(id) {
-    await this.connect();
-
-    const request = this.poolconnection.request();
-    const result = await request
-      .input('id', sql.Int, +id)
-      .query(`SELECT * FROM todos.todo WHERE todo_id = @id`);
-
-    return result.recordset[0];
-  }
-
-  async update(id, data) {
-    await this.connect();
-
-    const request = this.poolconnection.request();
-
-    request.input('id', sql.Int, +id);
-    request.input('title', sql.Char(50), data.title);
-    request.input('priority', sql.Int, data.priority);
-    request.input('status', sql.Bit, data.status);
-
-    const result = await request.query(
-      `UPDATE todos.todo SET title=@title, priority=@priority, status=@status WHERE todo_id = @id`
-    );
+    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, totalnutrition, user_ID) VALUES (@mealname, @weight, @totalnutrition, @user_ID)`);
 
     return result.rowsAffected[0];
+
   }
 
-  async delete(id) {
+  async getAllActivities (data){
     await this.connect();
-
-    const idAsNumber = Number(id);
-
     const request = this.poolconnection.request();
-    const result = await request
-      .input('id', sql.Int, idAsNumber)
-      .query(`DELETE FROM todos.todo WHERE todo_id = @id`);
+    request.input('activity_ID', sql.Int, data.activity_ID)
+    request.input('activities', sql.VarChar, data.activities)
+    request.input('kcalburned', sql.Int, data.kcalBurned)
 
-    return result.rowsAffected[0];
+    const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
+
+    return result.rowsAffected[0]
   }
+
+
+
 }

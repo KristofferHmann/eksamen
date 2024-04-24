@@ -11,81 +11,92 @@ console.log(config);
 // Create database object
 const database = new Database(config);
 
-router.get('/', async (_, res) => {
+//Registrer en bruger
+router.post('/register', async (req, res) => {
   try {
-    // Return a list of items
-    const items = await database.readAll();
-    console.log(`items: ${JSON.stringify(items)}`);
-    res.status(200).json(items);
+      const user = req.body;
+      const rowsAffected = await database.registerUser(user);
+      res.status(201).json({ rowsAffected });
   } catch (err) {
-    res.status(500).json({ error: err?.message });
+      res.status(500).send('Server error');
   }
 });
 
-router.post('/', async (req, res) => {
+
+//Registrer et måltid
+router.post('/mealCreator', async (req, res) => {
   try {
-    // Create a todo
-    const item = req.body;
-    console.log(`item: ${JSON.stringify(item)}`);
-    const rowsAffected = await database.create(item);
-    res.status(201).json({ rowsAffected });
+      const meal = req.body;
+      const rowsAffected = await database.createMeal(meal);
+      res.status(201).json({ rowsAffected });
   } catch (err) {
-    res.status(500).json({ error: err?.message });
+      res.status(500).send('Server error');
   }
 });
 
-router.get('/:id', async (req, res) => {
+//Vælg aktiviteter
+router.get('/activities', async (req, res) => {
   try {
-    // Get the todo with the specified ID
-    const itemId = req.params.id;
-    console.log(`itemId: ${itemId}`);
-    if (itemId) {
-      const result = await database.read(itemId);
-      console.log(`items: ${JSON.stringify(result)}`);
-      res.status(200).json(result);
-    } else {
-      res.status(404);
-    }
+    
+  const activity = req.body;
+  const rowsAffected = await database.getAllActivities(activity);
+  res.status(200).json({ rowsAffected });
   } catch (err) {
-    res.status(500).json({ error: err?.message });
+    res.status(500).send('Server error');
+  }
+
+});
+
+
+
+// Login endpoint
+router.post('/login', async (req, res) => {
+  const { username, password } = req.body;
+
+  try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+          .input('username', sql.VarChar, username)
+          .input('password', sql.VarChar, password)
+          .query('SELECT user_id FROM Nutri.[USER] WHERE username = @username AND password = @password');
+
+      if (result.recordset.length > 0) {
+          res.send('Login successful');
+      } else {
+          res.status(401).send('Invalid credentials');
+      }
+  } catch (err) {
+      console.error(err.message);
+      res.status(500).send('Server error');
   }
 });
 
-router.put('/:id', async (req, res) => {
-  try {
-    // Update the todo with the specified ID
-    const itemId = req.params.id;
-    console.log(`itemId: ${itemId}`);
-    const item = req.body;
+// user id
+router.get('/users/:user_id', async (req, res) => {
+  const userId = req.params.user_id;
 
-    if (itemId && item) {
-      delete item.id;
-      console.log(`todo: ${JSON.stringify(item)}`);
-      const rowsAffected = await database.update(itemId, item);
-      res.status(200).json({ rowsAffected });
-    } else {
-      res.status(404);
-    }
+  try {
+      const pool = await sql.connect(config);
+      const result = await pool.request()
+          .input('userId', sql.Int, userId)
+          .query('SELECT user_id, username FROM Nutri.[USER] WHERE user_id = @userId');
+
+      if (result.recordset.length > 0) {
+          const user = result.recordset[0]; // Der blvier kun fundet 1 user
+
+          // Return user details as JSON response
+          res.json({
+              user_id: user.user_id,
+              username: user.username,
+          });
+      } else {
+          res.status(404).send('User not found');
+      }
   } catch (err) {
-    res.status(500).json({ error: err?.message });
+      console.error(err.message);
+      res.status(500).send('Server error');
   }
 });
 
-router.delete('/:id', async (req, res) => {
-  try {
-    // Delete the todo with the specified ID
-    const itemId = req.params.id;
-    console.log(`itemId: ${itemId}`);
-
-    if (!itemId) {
-      res.status(404);
-    } else {
-      const rowsAffected = await database.delete(itemId);
-      res.status(204).json({ rowsAffected });
-    }
-  } catch (err) {
-    res.status(500).json({ error: err?.message });
-  }
-});
 
 export default router;
