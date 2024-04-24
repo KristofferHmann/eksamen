@@ -1,0 +1,76 @@
+.activityApp {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 650px;
+    margin: 1rem auto;
+    padding: 10px;
+    gap: 20px;
+}
+
+.inputs {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 20px;
+    height: fit-content;
+}
+
+.inputs>div {
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+}
+
+input {
+    margin-top: 8px;
+    margin-bottom: 5px;
+    padding: 10px;
+    font-size: large;
+    border-color: #26734D;
+    border-radius: 5px;
+    width: 100%;
+}
+
+button {
+    display: block;
+    cursor: pointer;
+    border: none;
+}
+
+#submit {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 10px;
+    background-color: #26734D;
+    font-size: 1.3rem;
+    border-radius: 5px;
+    color: white;
+    font-weight: bold;
+}
+
+  
+table { 
+    width: 100%; 
+    border-collapse: collapse; 
+    position: relative; 
+    overflow: hidden; 
+} 
+  
+th, 
+td { 
+    text-align: center; 
+    padding: 10px; 
+    border: 0; 
+} 
+  
+  
+th { 
+    font-size: 0.9rem; 
+    background-color: #72b97b; 
+} 
+  
+
+  
