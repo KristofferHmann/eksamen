@@ -62,6 +62,7 @@ export default class Database {
 
     return result.rowsAffected[0];
   }
+  
   async createMeal(data) {
     await this.connect();
     const request = this.poolconnection.request();
@@ -75,7 +76,7 @@ export default class Database {
     return result.rowsAffected[0];
 
   }
-
+  //Alle vores aktiviteter
   async getAllActivities(data) {
     await this.connect();
     const request = this.poolconnection.request();
@@ -84,6 +85,15 @@ export default class Database {
     request.input('kcalburned', sql.Int, data.kcalBurned)
 
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
+
+    return result.rowsAffected[0]
+  }
+  //Tid for aktiviteten
+  async activityDuration(data) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('duration', sql.Time, data.duration)
+    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (duration) VALUES (@duration)');
 
     return result.rowsAffected[0]
   }

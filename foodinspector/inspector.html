@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Inspector</title>
+    <link rel="stylesheet" type="text/css" href="style.css">
+    <link rel="stylesheet" type="text/css" href="inspector.css">
+    <script src="inspector.js"></script>
+</head>
+
+<body>
+    
+    <header>
+        <nav>
+            <ul>
+                <img src="../public/nutritracker.png" alt="NutriTracker Icon">
+                <li><a href="../activitytracker/acitivitytracker.html">Activity Tracker</a></li>
+                <li><a href="../mealcreator/mealcreator.html">Meal Creator</a></li>
+                <li><a href="../mealtracker/mealtracker.html">Meal Tracker</a></li>
+                <li><a href="../dailynutri/dailynutri.html">Daily Nutrition</a></li>
+                <li><i class="fa-solid fa-user userlogin"></i></li>
+            </ul>
+        </nav>
+
+    </header>
+  
+    <h1>Food Inspector</h1>
+    <div class="oversigt">
+        <p><b>Ingredients:</b> <input type="text" id="searchFoodInput" placeholder="Search for the food name">
+            <select class="searchResults"></select>
+        </p>
+        <ul>
+            <li><b>Product ID:</b> <span id="productID"></span></li>
+        </ul>
+    </div>
+
+    <div id="ingredientInfo"></div>
+
+    <div class="foodcontainer">
+        <div class="foodInspector">
+            <h3><b>Nutrition</b></h3>
+            <div class="nutrition">
+                <p><b>Energy(kj):</b> <span id="energyKj"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Energy(kcal):</b> <span id="energyKcal"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Protein:</b> <span id="protein"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Fiber:</b> <span id="fiber"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Fat:</b> <span id="fat"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Carbohydrate:</b> <span id="carbohydrate"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Water:</b> <span id="vand"></span></p>
+            </div>
+            <div class="nutrition">
+                <p><b>Dry matter:</b> <span id="tørstof"></span></p>
+            </div>
+        </div>
+    </div>
+</body> 
+
+</html>

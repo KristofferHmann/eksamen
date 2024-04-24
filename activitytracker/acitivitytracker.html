@@ -26,7 +26,35 @@
 
     </header>
     <h1> Activity Tracker </h1>
-
+    <div class="activityApp">
+        <h3>Activity Tracker</h3>
+        <div class="inputs">
+            <div>
+                <label for="activityInput"> Activity </label>
+                <input id="activityInput" type="text" placeholder="Enter the activity">
+            </div>
+            <div>
+                <label for="kcalBurnedInput"> Time </label>
+                <input id="kcalBurnedInput" type="number" placeholder="Enter the duration (min.)">
+            </div>
+        </div>
+        <button id="submit">Submit</button>
+    </div>
+    <table>
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Activity made</th>
+                <th>Activity Duration <br> (in min)</th>
+                <th> Calories burned</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+        </tbody>
+    </table>
+    <script src="acitivitytracker.js"></script>
 </body>
 
 
