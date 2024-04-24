@@ -1,5 +1,4 @@
 import * as dotenv from 'dotenv';
-import sql from 'mssql';
 dotenv.config({ path: `.env`, debug: true });
 
 const server = process.env.AZURE_SQL_SERVER;
