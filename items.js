@@ -44,8 +44,21 @@ router.get('/activities', async (req, res) => {
   } catch (err) {
     res.status(500).send('Server error');
   }
-
 });
+
+//Vælg ingredienser
+router.get('/ingredients', async (req, res) => {
+    try {
+      
+    const ingredient = req.body;
+    const rowsAffected = await database.getIngredient(ingredient);
+    res.status(200).json({ rowsAffected });
+    } catch (err) {
+      res.status(500).send('Server error');
+    }
+  });
+
+
 
 
 
