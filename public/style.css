@@ -74,18 +74,18 @@ h1 {
 
 /*Fælles font for alle siderne*/
 /* Regular font */
-@font-face {
+/*@font-face {
     font-family: 'Nunito';
     src: url(Nunito/static/Nunito-Regular.ttf) format('truetype');
     font-weight: normal;
-}
+} */
 
 /* Bold font */
-@font-face {
+/*@font-face {
     font-family: 'Nunito';
     src: url(Nunito/static/Nunito-Bold.ttf) format('truetype');
     font-weight: bold;
-}
+} */
 
 h1,
 h2,

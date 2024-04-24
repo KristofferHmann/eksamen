@@ -7,6 +7,7 @@ const port = parseInt(process.env.AZURE_SQL_PORT);
 const user = process.env.AZURE_SQL_USER;
 const password = process.env.AZURE_SQL_PASSWORD;
 console.log(server);
+
 export const config = {
     server,
     port,
