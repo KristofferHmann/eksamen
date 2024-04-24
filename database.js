@@ -55,7 +55,10 @@ export default class Database {
     request.input('weight', sql.Int, data.weight)
     request.input('age', sql.Int, data.age)
     request.input('bmr', sql.Int, data.bmr)
-    const result = await request.query(`INSERT INTO Nutri.[USER] (username, password, gender, height, weight, age, bmr) VALUES (@username, @password, @gender, @height, @weight, @age, @bmr)`);
+    const result = await request.query(`
+    INSERT INTO Nutri.[USER] (username, password, gender, height, weight, age, bmr) 
+    VALUES (@username, @password, @gender, @height, @weight, @age, @bmr)`
+    );
 
     return result.rowsAffected[0];
   }
@@ -73,7 +76,7 @@ export default class Database {
 
   }
 
-  async getAllActivities (data){
+  async getAllActivities(data) {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('activity_ID', sql.Int, data.activity_ID)
@@ -85,6 +88,20 @@ export default class Database {
     return result.rowsAffected[0]
   }
 
+  async getIngredient(data) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('ingredient_ID', sql.Int, data.ingredient_ID)
+    request.input('ingredientname', sql.VarChar, data.ingredientname)
+    request.input('kcal', sql.Int, data.kcal)
+    request.input('protein', sql.Int, data.protein)
+    request.input('fat', sql.Int, data.fat)
+    request.input('fiber', sql.Int, data.fiber)
+    const result = await request.query('SELECT ingredient_ID, ingredientname, kcal, protein, fat, fiber FROM Nutri.Ingredients');
+
+    return result.rowsAffected[0]
+
+  }
 
 
 }
