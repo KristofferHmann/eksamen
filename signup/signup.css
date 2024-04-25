@@ -94,8 +94,12 @@
     -moz-osx-font-smoothing: grayscale;      
   }
 
+
+.dropdown{
+  padding-left: 988px;
+}
   /* Custom style for the radio buttons */
-input[type="radio"] {
+  input[type="radio"] {
     input[type="radio"] {
         opacity: 0;
         position: absolute;
@@ -153,6 +157,3 @@ input[type="radio"]:focus + label:before {
     vertical-align: middle; 
 }
 
-.dropdown{
-  padding-left: 988px;
-}
