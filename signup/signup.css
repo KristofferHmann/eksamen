@@ -152,3 +152,7 @@ input[type="radio"]:focus + label:before {
     margin-bottom: 10px; 
     vertical-align: middle; 
 }
+
+.dropdown{
+  padding-left: 988px;
+}

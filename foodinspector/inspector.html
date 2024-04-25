@@ -14,7 +14,7 @@
 </head>
 
 <body>
-    
+
     <header>
         <nav>
             <ul>
@@ -24,12 +24,20 @@
                 <li><a href="../mealtracker/mealtracker.html">Meal Tracker</a></li>
                 <li><a href="../dailynutri/dailynutri.html">Daily Nutrition</a></li>
                 <li><a href="../foodinspector/inspector.html">Food inspector</a></li>
-                <li><i class="fa-solid fa-user userlogin"></i></li>
+                <div class="dropdown">
+                    <button class="dropdownBtn">
+                      <li><i class="fa-solid fa-user userlogin"></i></li>
+                      <div class="dropdownList">
+                        <a href="../login/login.html">Login</a>
+                        <a href="../signup/signup.html">Sign up</a>
+                      </div>
+                    </button>
+                  </div>
             </ul>
         </nav>
 
     </header>
-  
+
     <h1>Food Inspector</h1>
     <div class="oversigt">
         <p><b>Ingredients:</b> <input type="text" id="searchFoodInput" placeholder="Search for the food name">
@@ -71,6 +79,6 @@
             </div>
         </div>
     </div>
-</body> 
+</body>
 
 </html>
