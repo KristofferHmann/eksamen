@@ -1,4 +1,6 @@
-
+// Håndtering af søgeinput
+const searchInput = document.getElementById('searchFoodInput');
+const searchResults = document.querySelector('.searchResults');
 
 // Funktion til at hente og vise ingredienser
 async function fetchAndShowIngredients() {
@@ -20,10 +22,6 @@ async function fetchAndShowIngredients() {
 }
 
 fetchAndShowIngredients();
-
-// Håndtering af søgeinput
-const searchInput = document.getElementById('searchFoodInput');
-const searchResults = document.querySelector('.searchResults');
 
 searchInput.addEventListener('input', async () => {
     const searchText = searchInput.value;
