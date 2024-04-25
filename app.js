@@ -13,7 +13,6 @@ const app = express();
 // Connect App routes
 //app.use('/api-docs', openapi);
 app.use('/items', items);
-
 //app.use('*', (_, res) => {
 //res.redirect('/api-docs');
 //});

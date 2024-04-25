@@ -62,7 +62,7 @@ export default class Database {
 
     return result.rowsAffected[0];
   }
-  
+
   async createMeal(data) {
     await this.connect();
     const request = this.poolconnection.request();
@@ -92,8 +92,10 @@ export default class Database {
   async activityDuration(data) {
     await this.connect();
     const request = this.poolconnection.request();
+    request.input('user_ID', sql.Time, data.user_ID)
+    request.input('activity_ID', sql.Time, data.activity_ID)
     request.input('duration', sql.Time, data.duration)
-    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (duration) VALUES (@duration)');
+    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration) VALUES (@user_ID, @activity_ID, @duration)');
 
     return result.rowsAffected[0]
   }
