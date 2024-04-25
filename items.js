@@ -39,7 +39,7 @@ router.get('/activities', async (req, res) => {
   try {
     
   const activity = req.body;
-  const getAllActivities = await database.getIngredient(activity);
+  const getAllActivities = await database.getAllActivities(activity);
     res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');
