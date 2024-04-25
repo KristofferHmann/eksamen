@@ -39,8 +39,8 @@ router.get('/activities', async (req, res) => {
   try {
     
   const activity = req.body;
-  const rowsAffected = await database.getAllActivities(activity);
-  res.status(200).json({ rowsAffected });
+  const getAllActivities = await database.getIngredient(activity);
+    res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');
   }
@@ -62,8 +62,8 @@ router.get('/ingredients', async (req, res) => {
     try {
       
     const ingredient = req.body;
-    const rowsAffected = await database.getIngredient(ingredient);
-    res.status(200).json({ rowsAffected });
+    const allIngredients = await database.getIngredient(ingredient);
+    res.status(200).json({ allIngredients });
     } catch (err) {
       res.status(500).send('Server error');
     }

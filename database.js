@@ -86,7 +86,7 @@ export default class Database {
 
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
 
-    return result.rowsAffected[0]
+    return result.recordsets[0];
   }
   //Tid for aktiviteten
   async activityDuration(data) {
@@ -111,7 +111,7 @@ export default class Database {
     request.input('fiber', sql.Int, data.fiber)
     const result = await request.query('SELECT ingredient_ID, ingredientname, kcal, protein, fat, fiber FROM Nutri.Ingredients');
 
-    return result.rowsAffected[0]
+    return result.recordsets[0];
 
   }
 
