@@ -50,6 +50,8 @@ button {
     color: white;
     font-weight: bold;
 }
+
+  
 table { 
     width: 100%; 
     border-collapse: collapse; 
@@ -69,3 +71,6 @@ th {
     font-size: 0.9rem; 
     background-color: #72b97b; 
 } 
+  
+
+  
