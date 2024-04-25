@@ -8,6 +8,10 @@ header {
     width: 100%;
 }
 
+body {
+    overflow: hidden;
+}
+
 .userlogin {
     color: white;
     display: inline-block;
@@ -16,10 +20,7 @@ header {
     padding: 10px;
     justify-content: center;
     margin-top: -10px;
-    margin-left: 100px;
 }
-
-
 
 nav {
     display: flex;
@@ -36,11 +37,12 @@ nav ul {
     list-style-type: none;
     display: flex;
     justify-content: center;
+    margin-left: auto;
 }
 
 nav li {
     margin-top: 10px;
-    margin-right: 100px;
+    margin-right: 90px;
 }
 
 nav a {
@@ -55,10 +57,6 @@ nav a:hover {
     color: #26734D;
 }
 
-nav ul {
-    margin-left: auto;
-}
-
 body {
     font-family: 'Nunito', sans-serif;
     margin: 0;
@@ -68,21 +66,6 @@ body {
 h1 {
     margin-top: 20px;
 }
-
-/*Fælles font for alle siderne*/
-/* Regular font */
-/*@font-face {
-    font-family: 'Nunito';
-    src: url(Nunito/static/Nunito-Regular.ttf) format('truetype');
-    font-weight: normal;
-} */
-
-/* Bold font */
-/*@font-face {
-    font-family: 'Nunito';
-    src: url(Nunito/static/Nunito-Bold.ttf) format('truetype');
-    font-weight: bold;
-} */
 
 h1,
 h2,
