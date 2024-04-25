@@ -46,22 +46,61 @@ export default class Database {
 
 
   async registerUser(data) {
-    await this.connect();
-    const request = this.poolconnection.request();
-    request.input('username', sql.VarChar, data.username)
-    request.input('password', sql.VarChar, data.password)
-    request.input('gender', sql.VarChar, data.gender)
-    request.input('height', sql.Int, data.height)
-    request.input('weight', sql.Int, data.weight)
-    request.input('age', sql.Int, data.age)
-    request.input('bmr', sql.Int, data.bmr)
-    const result = await request.query(`
+    try {
+      await this.connect();
+      const request = this.poolconnection.request();
+      request.input('username', sql.VarChar, data.username)
+      request.input('password', sql.VarChar, data.password)
+      request.input('gender', sql.VarChar, data.gender)
+      request.input('height', sql.Int, data.height)
+      request.input('weight', sql.Int, data.weight)
+      request.input('age', sql.Int, data.age)
+      request.input('bmr', sql.Int, data.bmr)
+      const result = await request.query(`
     INSERT INTO Nutri.[USER] (username, password, gender, height, weight, age, bmr) 
     VALUES (@username, @password, @gender, @height, @weight, @age, @bmr)`
-    );
+      );
 
-    return result.rowsAffected[0];
+      return result.rowsAffected[0];
+    } catch (error) {
+      console.error('Error registering user:', error.message);
+      throw error;
+    }
   }
+
+  async getUserByUsernameAndPassword(username, password) {
+    try {
+      await this.connect();
+      const request = this.pool.request();
+      request.input('username', sql.VarChar, username);
+      request.input('password', sql.VarChar, password);
+      const result = await request.query(`
+        SELECT user_id FROM Nutri.[USER]
+        WHERE username = @username AND password = @password
+      `);
+      return result.recordset.length > 0;
+    } catch (error) {
+      console.error('Error fetching user by username and password:', error.message);
+      throw error;
+    }
+  }
+
+  async getUserById(userId) {
+    try {
+      await this.connect();
+      const request = this.pool.request();
+      request.input('userId', sql.Int, userId);
+      const result = await request.query(`
+        SELECT user_id, username FROM Nutri.[USER]
+        WHERE user_id = @userId
+      `);
+      return result.recordset[0];
+    } catch (error) {
+      console.error('Error fetching user by ID:', error.message);
+      throw error;
+    }
+  }
+
 
   async createMeal(data) {
     await this.connect();
