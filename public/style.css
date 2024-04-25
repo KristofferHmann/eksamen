@@ -79,11 +79,26 @@ p {
     font-weight: normal;
 }
 
+.outBtn{
+    margin-left: 20px;
+    color: white;
+    display: inline-block;
+    border-radius: 50%;
+    background-color: #C00000;
+    padding: 10px;
+    justify-content: center;
+    border-color: transparent;
+    height: 34px;
+    width: 34px;
+    display: flex;
+    align-items: center;
+}
+
 /* dropdown */
 .dropdownBtn {
     border: none;
     background-color: transparent;
-    width: 50px;
+    width: 40px;
 }
 
 .dropdown {
