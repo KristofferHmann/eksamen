@@ -2,11 +2,16 @@
 const searchInput = document.getElementById('searchFoodInput');
 const searchResults = document.querySelector('.searchResults');
 
+
 // Funktion til at hente og vise ingredienser
 async function fetchAndShowIngredients() {
+    console.log(searchInput.value);
     try {
-        const response = await fetch('http://localhost:3000/items/ingredients');
+        const response = await fetch('http://localhost:3000/items/ingredients/'+searchInput.value);
+        
         const ingredients = await response.json();
+        console.log("ingredients:");
+        console.log(ingredients);
 
         const ingredientsElement = document.getElementById('ingredients');
 
@@ -21,17 +26,20 @@ async function fetchAndShowIngredients() {
     }
 }
 
-fetchAndShowIngredients();
-
 searchInput.addEventListener('input', async () => {
-    const searchText = searchInput.value;
-
-    const response = await fetch(`../ingredients?search=${encodeURIComponent(searchText)}`);
-    const ingredients = await response.json();
-
-    let resultsHtml = '';
-    for (const ingredient of ingredients) {
-        resultsHtml += `<option value="${ingredient.ingredientname}">${ingredient.ingredientname}</option>`;
-    }
-    searchResults.innerHTML = resultsHtml;
+    console.log("Nyt input");
+    fetchAndShowIngredients();
 });
+
+// searchInput.addEventListener('input', async () => {
+//     const searchText = searchInput.value;
+
+//     const response = await fetch(`../ingredients?search=${encodeURIComponent(searchText)}`);
+//     const ingredients = await response.json();
+
+//     let resultsHtml = '';
+//     for (const ingredient of ingredients) {
+//         resultsHtml += `<option value="${ingredient.ingredientname}">${ingredient.ingredientname}</option>`;
+//     }
+//     searchResults.innerHTML = resultsHtml;
+// });
