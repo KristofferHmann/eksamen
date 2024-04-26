@@ -139,16 +139,18 @@ export default class Database {
     return result.rowsAffected[0]
   }
 
-  async getIngredient(data) {
+  async getIngredient(searchWord) {
+    console.log("getingredient searched for");
+    console.log(searchWord);
     await this.connect();
     const request = this.poolconnection.request();
-    request.input('ingredient_ID', sql.Int, data.ingredient_ID)
-    request.input('ingredientname', sql.VarChar, data.ingredientname)
-    request.input('kcal', sql.Int, data.kcal)
-    request.input('protein', sql.Int, data.protein)
-    request.input('fat', sql.Int, data.fat)
-    request.input('fiber', sql.Int, data.fiber)
-    const result = await request.query('SELECT ingredient_ID, ingredientname, kcal, protein, fat, fiber FROM Nutri.Ingredients');
+    request.input('ingredient_Name', sql.Int, searchWord)
+    // request.input('ingredientname', sql.VarChar, data.ingredientname)
+    // request.input('kcal', sql.Int, data.kcal)
+    // request.input('protein', sql.Int, data.protein)
+    // request.input('fat', sql.Int, data.fat)
+    // request.input('fiber', sql.Int, data.fiber)
+    const result = await request.query('SELECT ingredient_ID, ingredientname, kcal, protein, fat, fiber FROM Nutri.Ingredients WHERE ingredientName = @ingredient_Name');
 
     return result.recordsets[0];
 

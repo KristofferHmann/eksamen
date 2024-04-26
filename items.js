@@ -49,17 +49,16 @@ router.post('/duration', async (req, res) => {
 
 
 //Vælg ingredienser
-router.get('/ingredients', async (req, res) => {
+router.get('/ingredients/:searchWord', async (req, res) => {
     try {
-      
-    const ingredient = req.body;
+    console.log(req.params.searchWord);    
+    const ingredient = req.params.searchWord;
     const allIngredients = await database.getIngredient(ingredient);
     res.status(200).json({ allIngredients });
     } catch (err) {
       res.status(500).send('Server error');
     }
   });
-
 
 //Registrer en bruger
 router.post('/register', async (req, res) => {
@@ -71,9 +70,6 @@ router.post('/register', async (req, res) => {
       res.status(500).send('Server error');
   }
 });
-
-
-
 
 // Login endpoint
 router.post('/login', async (req, res) => {
