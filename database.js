@@ -47,18 +47,53 @@ export default class Database {
 
   async registerUser(data) {
     try {
+      //Udregner BMR baseret på alder, køn, vægt og højde
+      let bmr;
+      if (data.gender === 'female') {
+        if (data.age < 3) {
+          bmr = 0.244 * data.weight - 0.13;
+        } else if (data.age >= 4 && data.age <= 10) {
+          bmr = 0.085 * data.weight + 2.03;
+        } else if (data.age >= 11 && data.age <= 18) {
+          bmr = 0.056 * data.weight + 2.90;
+        } else if (data.age >= 19 && data.age <= 30) {
+          bmr = 0.0615 * data.weight + 2.08;
+        } else if (data.age >= 31 && data.age <= 60) {
+          bmr = 0.0364 * data.weight + 3.47;
+        } else if (data.age >= 61 && data.age <= 75) {
+          bmr = 0.0386 * data.weight + 2.88;
+        } else if (data.age > 75) {
+          bmr = 0.0410 * data.weight + 2.61;
+        }
+      } else if (data.gender === 'male') {
+        if (data.age < 3) {
+          bmr = 0.249 * data.weight - 0.13;
+        } else if (data.age >= 4 && data.age <= 10) {
+          bmr = 0.095 * data.weight + 2.11;
+        } else if (data.age >= 11 && data.age <= 18) {
+          bmr = 0.074 * data.weight + 2.75 * 0.068;
+        } else if (data.age >= 19 && data.age <= 30) {
+          bmr = 0.064 * data.weight + 2.84;
+        } else if (data.age >= 31 && data.age <= 60) {
+          bmr = 0.0485 * data.weight + 3.67;
+        } else if (data.age >= 61 && data.age <= 75) {
+          bmr = 0.0499 * data.weight + 2.93;
+        } else if (data.age > 75) {
+          bmr = 0.035 * data.weight + 3.43;
+        }
+      }
+
       await this.connect();
       const request = this.poolconnection.request();
       request.input('username', sql.VarChar, data.username)
       request.input('password', sql.VarChar, data.password)
       request.input('gender', sql.VarChar, data.gender)
-      request.input('height', sql.Int, data.height)
       request.input('weight', sql.Int, data.weight)
       request.input('age', sql.Int, data.age)
-      request.input('bmr', sql.Int, data.bmr)
+      request.input('bmr', sql.Decimal(18,2), bmr.toFixed(2))
       const result = await request.query(`
-    INSERT INTO Nutri.[USER] (username, password, gender, height, weight, age, bmr) 
-    VALUES (@username, @password, @gender, @height, @weight, @age, @bmr)`
+    INSERT INTO Nutri.[USER] (username, password, gender, weight, age, bmr) 
+    VALUES (@username, @password, @gender, @weight, @age, @bmr)`
       );
 
       return result.rowsAffected[0];

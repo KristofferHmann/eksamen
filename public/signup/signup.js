@@ -10,7 +10,6 @@ document.addEventListener('DOMContentLoaded', () => {
             const username = document.getElementById('username');
             const password = document.getElementById('password');
             const weight = document.getElementById('weight');
-            const height = document.getElementById('height');
             const age = document.getElementById('age');
             const gender = document.querySelector('input[name ="gender"]:checked');
 
@@ -18,7 +17,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 username: username.value,
                 password: password.value,
                 weight: weight.value,
-                height: height.value,
                 age: age.value,
                 gender: gender.value
             };
@@ -41,7 +39,5 @@ document.addEventListener('DOMContentLoaded', () => {
                 throw new Error('Error fetching data:', error);
             }
         });
-    } else {
-        console.error('Register form element not found');
-    }
+    } 
 });
