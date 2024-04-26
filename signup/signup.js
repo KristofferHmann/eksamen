@@ -9,15 +9,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
             const formData = new FormData(registerForm);
             const userData = {
-                brugernavn: formData.get('brugernavn'),
-                adgangskode: formData.get('adgangskode'),
+                brugernavn: formData.get('username'),
+                adgangskode: formData.get('password'),
                 weight: formData.get('weight'),
                 height: formData.get('height'),
+                age: formData.get('age'),
                 gender: formData.get('gender')
             };
 
             try {
-                const response = await fetch('http://localhost:3000/items/register', {
+                const response = await fetch('http://127.0.0.1/items/register', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json'
