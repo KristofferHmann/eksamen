@@ -50,8 +50,8 @@ router.post('/duration', async (req, res) => {
 
 //Vælg ingredienser
 router.get('/ingredients/:searchWord', async (req, res) => {
-    try {
-    console.log(req.params.searchWord);    
+  try {
+    console.log(req.params.searchWord);
     const ingredient = req.params.searchWord;
     const allIngredients = await database.getIngredient(ingredient);
     res.status(200).json({ allIngredients });
@@ -64,7 +64,7 @@ router.get('/ingredients/:searchWord', async (req, res) => {
 router.post('/register', async (req, res) => {
   try {
     const user = req.body;
-    console.log(req.body);
+    console.log('body', req.body);
     const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
     res.status(201).json({ rowsAffected });
   } catch (err) {
