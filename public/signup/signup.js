@@ -30,14 +30,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     body: JSON.stringify(userData)
                 });
                 if (response.ok) {
-                    // Process response data if needed
-                    console.log('Response status:', response.status);
+                    // Redirect to the login page after successful registration
+                    window.location.href = '../login/login.html';
                 } else {
-                    throw new Error('Failed to fetch data');
+                    throw new Error('Failed to register user');
                 }
             } catch (error) {
                 throw new Error('Error fetching data:', error);
             }
         });
-    } 
+    }
 });
