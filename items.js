@@ -91,7 +91,7 @@ router.post('/login', async (req, res) => {
 });
 
 // Hent bruger efter bruger-id
-router.get('/users/:user_id', async (req, res) => {
+router.get('/users/:user_ID', async (req, res) => {
   const userId = req.params.user_id;
 
   try {
