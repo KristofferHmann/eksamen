@@ -17,20 +17,20 @@ const database = new Database(config);
 //Registrer et måltid
 router.post('/mealCreator', async (req, res) => {
   try {
-      const meal = req.body;
-      const rowsAffected = await database.createMeal(meal);
-      res.status(201).json({ rowsAffected });
+    const meal = req.body;
+    const rowsAffected = await database.createMeal(meal);
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-      res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
 //Vælg aktiviteter
 router.get('/activities', async (req, res) => {
   try {
-    
-  const activity = req.body;
-  const getAllActivities = await database.getAllActivities(activity);
+
+    const activity = req.body;
+    const getAllActivities = await database.getAllActivities(activity);
     res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');
@@ -39,36 +39,36 @@ router.get('/activities', async (req, res) => {
 
 router.post('/duration', async (req, res) => {
   try {
-      const duration = req.body;
-      const rowsAffected = await database.activityDuration(duration);
-      res.status(201).json({ rowsAffected });
+    const duration = req.body;
+    const rowsAffected = await database.activityDuration(duration);
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-      res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
 
 //Vælg ingredienser
 router.get('/ingredients', async (req, res) => {
-    try {
-      
+  try {
     const ingredient = req.body;
     const allIngredients = await database.getIngredient(ingredient);
     res.status(200).json({ allIngredients });
-    } catch (err) {
-      res.status(500).send('Server error');
-    }
-  });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
 
 
 //Registrer en bruger
 router.post('/register', async (req, res) => {
   try {
-      const user = req.body;
-      const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
-      res.status(201).json({ rowsAffected });
+    const user = req.body;
+    console.log(req.body);
+    const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-      res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
