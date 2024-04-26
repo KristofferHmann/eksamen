@@ -1,8 +1,18 @@
-import express from 'express';
-import Database from './database.js';
-import { config } from './config.js';
+document.querySelector('.loginSite').addEventListener('submit', function(e) {
+  e.preventDefault();
 
-/*$('.message a').click(function(){
-  $('form').animate({height: "toggle", opacity: "toggle"}, "slow");
-});*/
+  const formData = new FormData(this);
 
+  fetch('http://localhost:3000/items/login', {
+      method: 'POST',
+      body: formData
+  })
+  .then(response => {
+      if (response.ok) {
+        window.location.href = '../mealcreator/mealcreator.html'
+      } else {
+      throw new Error('Login failed');
+  }})
+  .then(data => alert(data))
+  .catch(error => alert(error.message));
+});
