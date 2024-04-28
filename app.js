@@ -16,7 +16,6 @@ app.use('/public', express.static('public'))
 // Connect App routes
 //app.use('/api-docs', openapi);
 app.use('/items', items);
-app.use('/activitytracker', express.static("activitytracker"));
 
 //app.use('*', (_, res) => {
 //res.redirect('/api-docs');

@@ -8,8 +8,7 @@
     <link rel="stylesheet" href="actitivtytracker.css">
     <link rel="stylesheet" href="../style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <script src="acitivitytracker.js"></script>
-    <script src="app.js"></script>
+
 
 </head>
 
@@ -47,8 +46,8 @@
                 <input id="activityInput" type="text" placeholder="Enter the activity">
             </div>
             <div>
-                <label for="kcalBurnedInput"> Time </label>
-                <input id="kcalBurnedInput" type="number" placeholder="Enter the duration (min.)">
+                <label for="durationInput"> Time </label>
+                <input id="durationInput" type="number" placeholder="Enter the duration (min.)">
             </div>
         </div>
         <button id="submit">Submit</button>
@@ -56,18 +55,16 @@
     <table class="activityTable">
         <thead>
             <tr>
-                <th>Date</th>
-                <th>Activity made</th>
-                <th>Activity Duration <br> (in min)</th>
+                <th>Activity</th>
+                <th>Activity Duration <br> (min.)</th>
                 <th> Calories burned</th>
-                <th>Edit</th>
-                <th>Delete</th>
             </tr>
         </thead>
         <tbody class="activityBody">
         </tbody>
     </table>
-
+    <ul id="autocompleteResults"></ul>
+    <script src="acitivitytracker.js"></script>
 </body>
 
 

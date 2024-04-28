@@ -47,7 +47,7 @@ export default class Database {
 
   async registerUser(data) {
     try {
-      //Udregner BMR baseret på alder, køn, vægt og højde
+      //Udregner BMR baseret på alder, køn og vægt
       let bmr;
       if (data.gender === 'female') {
         if (data.age < 3) {
@@ -90,7 +90,7 @@ export default class Database {
       request.input('gender', sql.VarChar, data.gender)
       request.input('weight', sql.Int, data.weight)
       request.input('age', sql.Int, data.age)
-      request.input('bmr', sql.Decimal(18,2), bmr.toFixed(2))
+      request.input('bmr', sql.Decimal(18, 2), bmr.toFixed(2)) //Decimal er sql hvor 18 er hvor mange decimaler der er og 2 er hvor mange der vises.
       const result = await request.query(`
     INSERT INTO Nutri.[USER] (username, password, gender, weight, age, bmr) 
     VALUES (@username, @password, @gender, @weight, @age, @bmr)`
@@ -150,13 +150,16 @@ export default class Database {
     return result.rowsAffected[0];
 
   }
+
+
+
   //Alle vores aktiviteter
   async getAllActivities(data) {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('activity_ID', sql.Int, data.activity_ID)
     request.input('activities', sql.VarChar, data.activities)
-    request.input('kcalburned', sql.Int, data.kcalBurned)
+    request.input('kcalburned', sql.Int, data.kcalBurned / 60)
 
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
 
@@ -166,12 +169,17 @@ export default class Database {
   async activityDuration(data) {
     await this.connect();
     const request = this.poolconnection.request();
-    request.input('user_ID', sql.Time, data.user_ID)
-    request.input('activity_ID', sql.Time, data.activity_ID)
+    request.input('user_ID', sql.Int, data.user_ID)
+    request.input('activity_ID', sql.Int, data.activity_ID)
     request.input('duration', sql.Time, data.duration)
-    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration) VALUES (@user_ID, @activity_ID, @duration)');
+    // Calculate total kilocalories burned for the activity
+    const totalKcalBurned = data.kcalBurned / 60 * data.duration;
 
-    return result.rowsAffected[0]
+    request.input('total_kcal_burned', sql.Float, totalKcalBurned); // Adjusted input data type
+
+    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, total_kcal_burned) VALUES (@user_ID, @activity_ID, @duration_in_minutes, @total_kcal_burned)');
+
+    return result.rowsAffected[0];
   }
 
   async getIngredient(data) {
