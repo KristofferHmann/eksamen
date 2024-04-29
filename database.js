@@ -202,23 +202,6 @@ console.log(result);
     return result.recordsets[0];
   };
 
-  //Tid for aktiviteten
-  async activityDuration(data) {
-    await this.connect();
-    const request = this.poolconnection.request();
-    request.input('user_ID', sql.Int, data.user_ID)
-    request.input('activity_ID', sql.Int, data.activity_ID)
-    request.input('duration', sql.Time, data.duration)
-    // Calculate total kilocalories burned for the activity
-    const totalKcalBurned = data.kcalBurned / 60 * data.duration;
-
-    request.input('total_kcal_burned', sql.Float, totalKcalBurned); // Adjusted input data type
-
-    const result = await request.query('INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, total_kcal_burned) VALUES (@user_ID, @activity_ID, @duration_in_minutes, @total_kcal_burned)');
-
-    return result.rowsAffected[0];
-  };
-
   async getIngredient(data) {
     await this.connect();
     const request = this.poolconnection.request();
