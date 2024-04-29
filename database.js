@@ -8,7 +8,7 @@ export default class Database {
   constructor(config) {
     this.config = config;
     console.log(`Database: config: ${JSON.stringify(config)}`);
-  }
+  };
 
   async connect() {
     try {
@@ -25,7 +25,7 @@ export default class Database {
       console.error(`Error connecting to database: ${JSON.stringify(error)}`);
       console.log(error)
     }
-  }
+  };
 
   async disconnect() {
     try {
@@ -34,7 +34,7 @@ export default class Database {
     } catch (error) {
       console.error(`Error closing database connection: ${error}`);
     }
-  }
+  };
 
   async executeQuery(query) {
     await this.connect();
@@ -42,7 +42,7 @@ export default class Database {
     const result = await request.query(query);
 
     return result.rowsAffected[0];
-  }
+  };
 
 
   async registerUser(data) {
@@ -101,7 +101,7 @@ export default class Database {
       console.error('Error registering user:', error.message);
       throw error;
     }
-  }
+  };
 
   async getUserByUsernameAndPassword(username, password) {
     try {
@@ -110,7 +110,7 @@ export default class Database {
       request.input('username', sql.VarChar, username);
       request.input('password', sql.VarChar, password);
       const result = await request.query(`
-        SELECT user_id FROM Nutri.[USER]
+        SELECT user_ID FROM Nutri.[USER]
         WHERE username = @username AND password = @password
       `);
       return result.recordset.length > 0;
@@ -118,7 +118,7 @@ export default class Database {
       console.error('Error fetching user by username and password:', error.message);
       throw error;
     }
-  }
+  };
 
   async getUserById(userId) {
     try {
@@ -134,7 +134,7 @@ export default class Database {
       console.error('Error fetching user by ID:', error.message);
       throw error;
     }
-  }
+  };
 
 
   async createMeal(data) {
@@ -149,9 +149,7 @@ export default class Database {
 
     return result.rowsAffected[0];
 
-  }
-
-
+  };
 
   //Alle vores aktiviteter
   async getAllActivities(data) {
@@ -164,7 +162,8 @@ export default class Database {
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
 
     return result.recordsets[0];
-  }
+  };
+
   //Tid for aktiviteten
   async activityDuration(data) {
     await this.connect();
@@ -180,7 +179,7 @@ export default class Database {
     const result = await request.query('INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, total_kcal_burned) VALUES (@user_ID, @activity_ID, @duration_in_minutes, @total_kcal_burned)');
 
     return result.rowsAffected[0];
-  }
+  };
 
   async getIngredient(data) {
     await this.connect();
@@ -195,7 +194,7 @@ export default class Database {
 
     return result.recordsets[0];
 
-  }
+  };
 
 
-}
+};

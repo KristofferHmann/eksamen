@@ -64,6 +64,14 @@ async function foodFetch() {
         } else {
             throw new Error('Failed to fetch data');
         }
+        const data = await response.json();
+        const ressult = document.getElementById('searchResults');
+        ressult.innerHTML = '';
+        data.forEach((ingredient) => {
+            const option = document.createElement('option');
+            option.value = data.ingredientname;
+            ressult.appendChild(option);
+        });
     } catch (error) {
         throw new Error('Error fetching data:', error);
     }

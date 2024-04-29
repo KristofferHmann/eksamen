@@ -1,4 +1,5 @@
 import express from 'express';
+import session from 'express-session';
 import { config } from './config.js';
 import Database from './database.js';
 
@@ -11,7 +12,11 @@ console.log(config);
 // Create database object
 const database = new Database(config);
 
-
+router.use(session({
+  secret: 'secret', 
+  resave: false,
+  saveUninitialized: false
+}));
 
 
 //Registrer et måltid
@@ -80,6 +85,8 @@ router.post('/login', async (req, res) => {
     const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
 
     if (loginSuccessful) {
+      req.session.user_ID = loginSuccessful.user_ID
+      
       res.send('Login successful');
     } else {
       res.status(401).send('Invalid credentials');
@@ -88,6 +95,17 @@ router.post('/login', async (req, res) => {
     console.error(err.message);
     res.status(500).send('Server error');
   }
+});
+
+//log ud endpoint
+router.get('/logout', (req, res) => {
+  req.session.destroy(err => {
+      if (err) {
+          return res.status(500).send('Failed to log out');
+      }
+
+      res.send('Logout successful');
+  });
 });
 
 // Hent bruger efter bruger-id
