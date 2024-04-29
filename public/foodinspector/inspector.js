@@ -8,7 +8,7 @@
 //     console.log(searchInput.value);
 //     try {
 //         const response = await fetch('http://localhost:3000/items/ingredients/'+searchInput.value);
-        
+
 //         const ingredients = await response.json();
 //         console.log("ingredients:");
 //         console.log(ingredients);
@@ -47,7 +47,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchFoodInput');
     searchInput.addEventListener('input', async () => {
-        try{
+        try {
             await foodFetch();
             console.log('Fetch request successful');
         } catch (error) {
@@ -59,7 +59,6 @@ async function foodFetch() {
     try {
         const response = await fetch('http://localhost:3000/items/ingredients');
         if (response.ok) {
-            // Process response data if needed
             console.log('Response status:', response.status);
         } else {
             throw new Error('Failed to fetch data');
@@ -67,12 +66,29 @@ async function foodFetch() {
         const data = await response.json();
         const ressult = document.getElementById('searchResults');
         ressult.innerHTML = '';
-        data.forEach((ingredient) => {
-            const option = document.createElement('option');
-            option.value = data.ingredientname;
-            ressult.appendChild(option);
+        const searchFoodInput = document.getElementById('searchFoodInput');
+        data.allIngredients
+            .filter(ingredient => ingredient.ingredientname.toLowerCase().includes(searchFoodInput.value.toLowerCase()))
+            .forEach((ingredient) => {
+                const option = document.createElement('option');
+                option.value = ingredient.ingredientname;
+                option.textContent = ingredient.ingredientname;
+                ressult.appendChild(option);
+            });
+
+        ressult.addEventListener('change', function () {
+            const selectedIngredient = data.allIngredients.find(ingredient => ingredient.ingredientname === this.value);
+
+            if (selectedIngredient) {
+                document.getElementById('productID').textContent = 'ID: ' + selectedIngredient.ingredient_ID;
+                document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal;
+                document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein;
+                document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;
+                document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber;
+            }
         });
     } catch (error) {
-        throw new Error('Error fetching data:', error);
+        throw new Error('Error fetching data:' + error.toString());
     }
-}
+};
+
