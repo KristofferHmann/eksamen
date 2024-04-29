@@ -37,15 +37,6 @@ router.get('/activities', async (req, res) => {
   }
 });
 
-router.post('/duration', async (req, res) => {
-  try {
-      const duration = req.body;
-      const rowsAffected = await database.activityDuration(duration);
-      res.status(201).json({ rowsAffected });
-  } catch (err) {
-      res.status(500).send('Server error');
-  }
-});
 
 
 //Vælg ingredienser

@@ -42,6 +42,8 @@
       <button id="btn-addMeal" onclick="openMealCreator()">+</button>
     </div>
 
+    <a href="http://localhost:3000/public/foodinspector/inspector.html">Inspicer ingredienser</a>
+
     <table>
       <thead>
         <tr>
@@ -64,7 +66,7 @@
 
   </div>
 
-  <div id="overlay"></div>
+  <div id="modal"></div>
   <div id="mealCreatorModal">
     <div class="Modal-MealCreator">
       <div class="Modal-1"><input type="text" class="mealNameInput" placeholder="Your meal name" name="text"
@@ -74,9 +76,9 @@
     </div>
     <div id="searchIngredientdrop"></div>
 
-    <button class="submitOverlay" id="SubmitButtonID" onclick="submitAction()">Submit</button>
+    <button class="submit" id="SubmitButtonID" onclick="submitAction()">Submit</button>
 
-    <button class="closeOverlay" id="closebutton" onclick="closeMealCreator()">Close</button>
+    <button class="close" id="closebutton" onclick="closeMealCreator()">Close</button>
     <div id="chosenFoodDivID"></div>
 
 

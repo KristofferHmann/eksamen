@@ -24,15 +24,25 @@
     flex-direction: column;
 }
 
-input {
+input,
+select {
     margin-top: 8px;
     margin-bottom: 5px;
     padding: 10px;
     font-size: large;
-    border-color: #26734D;
+    border-color: darkgreen;
     border-radius: 5px;
     width: 100%;
+    border-width: 3px;
 }
+
+select {
+    cursor: pointer;
+    border-left-color: black;
+    border-top-color: black;
+}
+
+
 
 button {
     display: block;
@@ -51,26 +61,27 @@ button {
     font-weight: bold;
 }
 
-  
-table { 
-    width: 100%; 
-    border-collapse: collapse; 
-    position: relative; 
-    overflow: hidden; 
-} 
-  
-th, 
-td { 
-    text-align: center; 
-    padding: 10px; 
-    border: 0; 
-} 
-  
-  
-th { 
-    font-size: 0.9rem; 
-    background-color: #72b97b; 
-} 
-  
 
-  
+table {
+    width: 100%;
+    border-collapse: collapse;
+    position: relative;
+    overflow: hidden;
+}
+
+th,
+td {
+    text-align: center;
+    padding: 10px;
+    border: 0;
+}
+
+
+th {
+    font-size: 0.9rem;
+    background-color: #72b97b;
+}
+
+td{
+    background-color: #DEF6D8;
+}

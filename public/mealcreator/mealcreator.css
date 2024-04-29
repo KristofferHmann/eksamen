@@ -94,8 +94,8 @@ th {
 }
 
 
-.closeOverlay {
-    transform: translate(640%, 2200%);
+.close {
+    transform: translate(729%, 2670%);
     background-color: #FFAB40;
     border-radius: 50px;
     color: #252525;
@@ -103,15 +103,15 @@ th {
 }
 
 
-.submitOverlay {
-    transform: translate(640%, 2000%);
+.submit {
+    transform: translate(734%, 2530%);
     border-radius: 50px;
     color: #252525;
     background-color: #91c789;
     border-color: #def6d8;
 }
 
-#overlay {
+#modal {
     display: none;
     position: fixed;
     top: 0;
@@ -120,6 +120,7 @@ th {
     height: 100%;
     z-index: 999;
 }
+
 
 
 .Modal-MealCreator {
@@ -148,4 +149,12 @@ th {
     background-color: #f2fff5;
     border-radius: 10px;
     border-color: #99D9DE;
+}
+
+/*Link til foodInspector-side*/
+a {
+    font-size: 12px;
+    color: #075d6e;
+    margin-left: 15px;
+    font-weight: bold;
 }
