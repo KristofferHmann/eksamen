@@ -6,6 +6,7 @@ const database = process.env.AZURE_SQL_DATABASE;
 const port = parseInt(process.env.AZURE_SQL_PORT);
 const user = process.env.AZURE_SQL_USER;
 const password = process.env.AZURE_SQL_PASSWORD;
+const jwtSecret = process.env.JWT_SECRET;
 console.log(server);
 
 export const config = {
@@ -14,6 +15,7 @@ export const config = {
     database,
     user,
     password,
+    jwtSecret,
     options: {
         encrypt: true
     }

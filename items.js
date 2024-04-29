@@ -1,6 +1,8 @@
 import express from 'express';
 import { config } from './config.js';
 import Database from './database.js';
+import jwt from 'jsonwebtoken'
+import { authMiddleware } from './authmiddleware.js';
 
 const router = express.Router();
 router.use(express.json());
@@ -64,28 +66,46 @@ router.post('/register', async (req, res) => {
 });
 
 // Login endpoint
+// router.post('/login', async (req, res) => {
+//   console.log("Received login request", req.body);
+//   const { username, password } = req.body;
+
+//   try {
+//     const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
+
+//     if (loginSuccessful) {
+//       req.session.user_ID = loginSuccessful.user_ID
+      
+//       res.send('Login successful');
+//     } else {
+//       res.status(401).send('Invalid credentials');
+//     }
+//   } catch (err) {
+//     console.error(err.message);
+//     res.status(500).send('Server error');
+//   }
+// });
+
+
 router.post('/login', async (req, res) => {
-  console.log("Received login request", req.body);
-  const { username, password } = req.body;
+const {username, password} = req.body;
+if (typeof username === 'undefined' || typeof password === 'undefined') {
+  return res.status(403).send('Username or password is missing');
+}
+  const jwtSecret = config.jwtSecret;
 
   try {
-    const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
-
-    if (loginSuccessful) {
-      req.session.user_ID = loginSuccessful.user_ID
-      
-      res.send('Login successful');
-    } else {
-      res.status(401).send('Invalid credentials');
-    }
-  } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+      const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
+  }catch (err){
+   return res.send(err.message)
   }
+ const apiToken = jwt.sign({email: 'email@'}, jwtSecret)
+
+ return res.send(apiToken);
 });
 
 //log ud endpoint
-router.get('/logout', (req, res) => {
+router.get('/logout', authMiddleware, (req, res) => {
   req.session.destroy(err => {
       if (err) {
           return res.status(500).send('Failed to log out');
@@ -94,6 +114,7 @@ router.get('/logout', (req, res) => {
       res.send('Logout successful');
   });
 });
+
 
 // Edit user endpoint
 router.put('/users/:user_ID', async (req, res) => {

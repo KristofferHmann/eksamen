@@ -7,19 +7,13 @@ export default class Database {
 
   constructor(config) {
     this.config = config;
-    console.log(`Database: config: ${JSON.stringify(config)}`);
   };
 
   async connect() {
     try {
-      console.log(`Database connecting...${this.connected}`);
-      console.log(this.config)
       if (this.connected === false) {
         this.poolconnection = await sql.connect(this.config);
         this.connected = true;
-        console.log('Database connection successful');
-      } else {
-        console.log('Database already connected');
       }
     } catch (error) {
       console.error(`Error connecting to database: ${JSON.stringify(error)}`);
@@ -30,7 +24,6 @@ export default class Database {
   async disconnect() {
     try {
       this.poolconnection.close();
-      console.log('Database connection closed');
     } catch (error) {
       console.error(`Error closing database connection: ${error}`);
     }
@@ -107,39 +100,42 @@ export default class Database {
     try {
       console.log("Connecting to the database...");
       await this.connect();
-      //console.log("Connection successful, creating request...");
-      const request = this.pool.request();
-      //console.log(`Looking up user: ${username}`);
+      console.log("Connection successful, creating request...");
+      console.log("testing", this.poolconnection);
+      const request = this.poolconnection.request();
+      console.log({ request })
+      console.log(`Looking up user: ${username}`);
       request.input('username', sql.VarChar, username);
       request.input('password', sql.VarChar, password);
       const result = await request.query(`
-        SELECT user_ID FROM Nutri.[USER]
+        SELECT * FROM Nutri.[USER]
         WHERE username = @username AND password = @password
       `);
 
-      
+      console.log(result);
+
       return result.recordset.length > 0;
     } catch (error) {
       console.error('Error fetching user by username and password:', error.message);
       throw error;
     }
   };
-  
-//deleting a user
+
+  //deleting a user
   async deleteUser(userId) {
     try {
-    await this.connect();
-const request = this.poolconnection.request();
-const result = await request.query('DELETE FROM Nutri.[USER] WHERE user_ID = @userId')
+      await this.connect();
+      const request = this.poolconnection.request();
+      const result = await request.query('DELETE FROM Nutri.[USER] WHERE user_ID = @userId')
 
-console.log(result);
+      console.log(result);
 
-        return result.rowsAffected; // Return the number of rows affected (should be 1 if successful)
+      return result.rowsAffected; // Return the number of rows affected (should be 1 if successful)
     } catch (error) {
-        console.error('Error deleting user:', error.message);
-        throw error;
+      console.error('Error deleting user:', error.message);
+      throw error;
+    }
   }
-}
 
   async editUser(userId, updatedUserData) {
     try {
