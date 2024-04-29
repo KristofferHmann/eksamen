@@ -1,5 +1,4 @@
 import express from 'express';
-import session from 'express-session';
 import { config } from './config.js';
 import Database from './database.js';
 
@@ -12,11 +11,7 @@ console.log(config);
 // Create database object
 const database = new Database(config);
 
-router.use(session({
-  secret: 'secret', 
-  resave: false,
-  saveUninitialized: false
-}));
+
 
 
 //Registrer et måltid
@@ -79,6 +74,7 @@ router.post('/register', async (req, res) => {
 
 // Login endpoint
 router.post('/login', async (req, res) => {
+  console.log("Received login request", req.body);
   const { username, password } = req.body;
 
   try {
@@ -108,18 +104,17 @@ router.get('/logout', (req, res) => {
   });
 });
 
-// Hent bruger efter bruger-id
-router.get('/users/:user_ID', async (req, res) => {
-  const userId = req.params.user_id;
+// Edit user endpoint
+router.put('/users/:user_ID', async (req, res) => {
+  const userId = req.params.user_ID;
+  const updatedUserData = req.body;
 
   try {
-    const user = await database.getUserById(userId);
+    // Update user information in the database
+    const rowsAffected = await database.editUser(userId, updatedUserData);
 
-    if (user) {
-      res.json({
-        user_id: user.user_id,
-        username: user.username,
-      });
+    if (rowsAffected > 0) {
+      res.status(200).json({ message: 'User updated successfully' });
     } else {
       res.status(404).send('User not found');
     }
@@ -128,6 +123,23 @@ router.get('/users/:user_ID', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+// //Delete user endpoint
+// router.delete('//delete-user/:userId'), async (req, res) => {
+//   const { userId } = req.params;
+// }
+// try {
+//   const result = await db.query('DELETE FROM Users WHERE user_ID = $1', [userId]);
+//   if (result.rowCount > 0) {
+//       res.send({ success: true, message: "User deleted successfully" });
+//   } else {
+//       res.status(404).send({ success: false, message: "User not found" });
+//   }
+// } catch (error) {
+//   console.error('Failed to delete user:', error);
+//   res.status(500).send({ success: false, message: "Internal server error" });
+// };
+
 
 
 export default router;

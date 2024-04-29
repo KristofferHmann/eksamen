@@ -105,36 +105,74 @@ export default class Database {
 
   async getUserByUsernameAndPassword(username, password) {
     try {
+      console.log("Connecting to the database...");
       await this.connect();
+      //console.log("Connection successful, creating request...");
       const request = this.pool.request();
+      //console.log(`Looking up user: ${username}`);
       request.input('username', sql.VarChar, username);
       request.input('password', sql.VarChar, password);
       const result = await request.query(`
         SELECT user_ID FROM Nutri.[USER]
         WHERE username = @username AND password = @password
       `);
+
+      
       return result.recordset.length > 0;
     } catch (error) {
       console.error('Error fetching user by username and password:', error.message);
       throw error;
     }
   };
+  
+//deleting a user
+  async deleteUser(userId) {
+    try {
+    await this.connect();
+const request = this.poolconnection.request();
+const result = await request.query('DELETE FROM Nutri.[USER] WHERE user_ID = @userId')
 
-  async getUserById(userId) {
+console.log(result);
+
+        return result.rowsAffected; // Return the number of rows affected (should be 1 if successful)
+    } catch (error) {
+        console.error('Error deleting user:', error.message);
+        throw error;
+  }
+}
+
+  async editUser(userId, updatedUserData) {
     try {
       await this.connect();
-      const request = this.pool.request();
+
+      const request = this.poolconnection.request();
+
+      // Extract updated user data
+      const { username, password, gender, weight, age } = updatedUserData;
+
+      // Construct the SQL query to update user information
+      const query = `
+        UPDATE Nutri.[USER]
+        SET username = @username, password = @password, gender = @gender, weight = @weight, age = @age
+        WHERE user_ID = @userId
+      `;
+
+      // Define input parameters
       request.input('userId', sql.Int, userId);
-      const result = await request.query(`
-        SELECT user_id, username FROM Nutri.[USER]
-        WHERE user_id = @userId
-      `);
-      return result.recordset[0];
+      request.input('username', sql.VarChar, username);
+      request.input('password', sql.VarChar, password);
+      request.input('gender', sql.VarChar, gender);
+      request.input('weight', sql.Int, weight);
+      request.input('age', sql.Int, age);
+      const result = await request.query(query);
+
+      // Return the number of rows affected by the update operation
+      return result.rowsAffected[0];
     } catch (error) {
-      console.error('Error fetching user by ID:', error.message);
+      console.error('Error updating user:', error.message);
       throw error;
     }
-  };
+  }
 
 
   async createMeal(data) {

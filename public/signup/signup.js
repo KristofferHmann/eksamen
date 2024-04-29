@@ -31,6 +31,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
                 if (response.ok) {
                     // Redirect to the login page after successful registration
+                    alert('Profil oprettet')
                     window.location.href = '../login/login.html';
                 } else {
                     throw new Error('Failed to register user');

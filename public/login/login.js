@@ -1,18 +1,31 @@
-document.querySelector('.loginSite').addEventListener('submit', function (e) {
+document.querySelector('.loginForm').addEventListener('submit', function (e) {
   e.preventDefault();
+
+  const userData = {
+    username: document.getElementById('username').value,
+    password: document.getElementById('password').value
+
+  };
 
   fetch('http://localhost:3000/items/login', {
     method: 'POST',
-    body: JSON.stringify(userData.username && userData)
+    headers: {
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify(userData)
   })
     .then(response => {
       if (response.ok) {
         window.location.href = '../mealcreator/mealcreator.html'
       } else {
-        throw new Error('Login failed');
+        return response.json(); // Parse response body as JSON
       }
     })
-    .then(data => alert(data))
+    .then(data => {
+      // Display error message returned by the server
+      if (data && data.error) {
+        throw new Error(data.error);
+      }
+    })
     .catch(error => alert(error.message));
 });
-

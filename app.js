@@ -1,6 +1,5 @@
 import express from 'express';
-import { config } from './config.js';
-import Database from './database.js';
+import session from 'express-session';
 
 import morgan from 'morgan';
 
@@ -11,15 +10,21 @@ const port = 3000;
 const app = express();
 
 app.use(morgan())
+app.use(session({
+    name: 'mySessionId',
+    secret: 'secret',
+    resave: true,
+    saveUninitialized: true
+}));
+app.use(express.json());
+
+
 
 app.use('/public', express.static('public'))
-// Connect App routes
-//app.use('/api-docs', openapi);
+
 app.use('/items', items);
 
-//app.use('*', (_, res) => {
-//res.redirect('/api-docs');
-//});
+
 
 // Start the server
 app.listen(port, () => {

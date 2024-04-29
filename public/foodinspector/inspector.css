@@ -3,7 +3,8 @@
     box-sizing: border-box;
     padding-left: 22px;
     width: 90%;
-    margin: 20px auto; /* Centrer boksen vandret */
+    margin: 20px auto;
+    /* Centrer boksen vandret */
     background-color: #F2FFF5;
     border: 1px solid #91c789;
     border-radius: 10px;
@@ -11,3 +12,16 @@
     flex-direction: column;
 }
 
+#searchFoodInput {
+    width: 500px;
+    border-radius: 5px;
+    border: 1px solid #91c789;
+    box-sizing: border-box;
+}
+
+.searchResults {
+    width: 500px;
+    border-radius: 5px;
+    border: 1px solid #91c789;
+    box-sizing: border-box;
+}

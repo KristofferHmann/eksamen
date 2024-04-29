@@ -38,9 +38,10 @@
 
   </header>
   <div class="mealCreator">
-    <div class="meal">
-      <h1>Meal Creator</h1>
+    <div class="header1">Meal Creator
+      <button id="btn-addMeal" onclick="openMealCreator()">+</button>
     </div>
+
     <table>
       <thead>
         <tr>
@@ -55,10 +56,33 @@
           <th></th>
         </tr>
       </thead>
+
       <tbody>
       </tbody>
+
     </table>
+
   </div>
+
+  <div id="overlay"></div>
+  <div id="mealCreatorModal">
+    <div class="Modal-MealCreator">
+      <div class="Modal-1"><input type="text" class="mealNameInput" placeholder="Your meal name" name="text"
+          id="mealNameID"></div>
+      <div class="Modal-1"><input type="text" class="searchIngredientInput" placeholder="Search for Ingredients"
+          name="text" onkeydown="searchButton_MC(event)" id="mcFoodSearch"></div>
+    </div>
+    <div id="searchIngredientdrop"></div>
+
+    <button class="submitOverlay" id="SubmitButtonID" onclick="submitAction()">Submit</button>
+
+    <button class="closeOverlay" id="closebutton" onclick="closeMealCreator()">Close</button>
+    <div id="chosenFoodDivID"></div>
+
+
+  </div>
+
+  <script src="mealcreator.js"></script>
 </body>
 
 
