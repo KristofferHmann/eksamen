@@ -28,7 +28,7 @@ router.post('/mealCreator',authMiddleware, async (req, res) => {
 });
 
 //Vælg aktiviteter
-router.get('/activities', authMiddleware, async (req, res) => {
+router.get('/activities', async (req, res) => {
   try {
     
   const activity = req.body;
@@ -38,8 +38,6 @@ router.get('/activities', authMiddleware, async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-
 
 //Vælg ingredienser
 router.get('/ingredients', async (req, res) => {
