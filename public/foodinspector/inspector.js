@@ -80,7 +80,7 @@ async function foodFetch() {
             const selectedIngredient = data.allIngredients.find(ingredient => ingredient.ingredientname === this.value);
 
             if (selectedIngredient) {
-                document.getElementById('productID').textContent = 'ID: ' + selectedIngredient.ingredient_ID;
+                document.getElementById('productID').textContent = '' + selectedIngredient.ingredient_ID;
                 document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal;
                 document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein;
                 document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;

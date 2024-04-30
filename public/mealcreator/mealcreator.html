@@ -37,12 +37,12 @@
     </nav>
 
   </header>
+
   <div class="mealCreator">
     <div id="overskrift">Meal Creator
       <button id="btn-addMeal" onclick="openMealCreator()">+</button>
     </div>
-
-    <a href="http://localhost:3000/public/foodinspector/inspector.html">Inspicer ingredienser</a>
+    <a id="link" href="http://localhost:3000/public/foodinspector/inspector.html">Inspect ingredients</a>
 
     <table>
       <thead>
@@ -73,7 +73,10 @@
           id="mealNameID"></div>
       <div class="Modal-1"><input type="text" class="searchIngredientInput" placeholder="Search for Ingredients"
           name="text" onkeydown="searchButton_MC(event)" id="mcFoodSearch"></div>
+      <select id="searchResults"></select>
+      <input type="number" id="mealWeight" placeholder="Weight">
     </div>
+
     <div id="searchIngredientdrop"></div>
 
     <button class="submit" id="SubmitButtonID" onclick="submitAction()">Submit</button>

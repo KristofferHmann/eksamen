@@ -31,22 +31,7 @@ router.post('/mealCreator', authMiddleware, async (req, res) => {
 });
 
 //Vælg aktiviteter
-router.get('/userActivities', async (req, res) => {
-  try {
-    const token = req.headers.authorization.split(' ')[1]
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey)
-    const userID = tokenDecoded.user_ID
-    
-    const getAllActivities = await database.getUserActivities(userID);
-    console.log("udfhguerhguhreugh");
-    res.status(200).json({ getAllActivities });
-  } catch (err) {
-    res.status(500).send('Server error');
-  }
-});
-
-router.get('/allActivities', async (req, res) => {
+router.get('/activities', authMiddleware, async (req, res) => {
   try {
     
   const activity = req.body;
@@ -56,27 +41,6 @@ router.get('/allActivities', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-//Registrer et måltid
-router.post('/addActivity', async (req, res) => {
-  try {
-    const activity = req.body;
-    console.log("data2", activity);
-
-    const token = req.headers.authorization.split(' ')[1]
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey)
-    const userID = tokenDecoded.user_ID
-    console.log("1111111111");
-    const rowsAffected = await database.addActivity(activity, userID);
-    console.log("22222222");
-    res.status(201).json({ rowsAffected });
-  } catch (err) {
-    res.status(500).send('Server error');
-  }
-});
-
-
 
 
 
