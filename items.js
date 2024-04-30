@@ -17,7 +17,7 @@ const database = new Database(config);
 
 
 //Registrer et måltid
-router.post('/mealCreator', async (req, res) => {
+router.post('/mealCreator',authMiddleware, async (req, res) => {
   try {
       const meal = req.body;
       const rowsAffected = await database.createMeal(meal);
@@ -28,7 +28,7 @@ router.post('/mealCreator', async (req, res) => {
 });
 
 //Vælg aktiviteter
-router.get('/activities', async (req, res) => {
+router.get('/activities', authMiddleware, async (req, res) => {
   try {
     
   const activity = req.body;
@@ -95,15 +95,27 @@ if (typeof username === 'undefined' || typeof password === 'undefined') {
   const jwtSecret = config.jwtSecret;
 
   try {
-      const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
-  }catch (err){
+      const user = await database.getUserByUsernameAndPassword(username, password);
+  if (user) {
+    const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID}, jwtSecret);
+    return res.send(apiToken); 
+} else {
+    return res.status(401).send('Invalid username or password');
+}
+} catch (err) {
+return res.status(500).send(err.message);
+}
+});
+  
+  
+  /*catch (err){
    return res.send(err.message)
   }
- const apiToken = jwt.sign({email: 'email@'}, jwtSecret)
+ const apiToken = jwt.sign({username: 'username', password: 'password'}, jwtSecret)
 
  return res.send(apiToken);
 });
-
+*/
 //log ud endpoint
 router.get('/logout', authMiddleware, (req, res) => {
   req.session.destroy(err => {

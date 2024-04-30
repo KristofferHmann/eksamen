@@ -1,12 +1,11 @@
-document.querySelector('.loginForm').addEventListener('submit', function (e) {
-  e.preventDefault();
-
+let loginBtn = document.getElementById('loginBtn')
+loginBtn.addEventListener('click', () => {
   const userData = {
     username: document.getElementById('username').value,
     password: document.getElementById('password').value
 
   };
-
+  
   fetch('http://localhost:3000/items/login', {
     method: 'POST',
     headers: {
@@ -16,9 +15,10 @@ document.querySelector('.loginForm').addEventListener('submit', function (e) {
   })
     .then(response => {
       if (response.ok) {
+        console.log('respsonse', response);
         window.location.href = '../mealcreator/mealcreator.html'
       } else {
-        return response.json(); // Parse response body as JSON
+        return response.json();
       }
     })
     .then(data => {
