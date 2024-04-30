@@ -1,3 +1,4 @@
+
 .mealCreator {
     width: 80%;
     height: 80%;
@@ -6,7 +7,7 @@
     padding: 10px;
     margin: 10px;
     top: 50%;
-    left: 50%;
+    left:50%;
     transform: translate(-50%, -43%);
     border-radius: 10px;
     overflow: auto;
@@ -17,7 +18,7 @@
     color: #000000;
     font-size: 32px;
     font-weight: bold;
-    padding-bottom: 5px;
+    padding-bottom: 2px;
     margin-left: 15px;
 }
 
@@ -38,7 +39,7 @@
     cursor: pointer;
     box-shadow: 0 0 5px rgba(0, 0, 0, 0.2);
     float: right;
-
+  
 }
 
 /*Tabel for tilføjet måltider*/
@@ -64,7 +65,7 @@ th {
 }
 
 
-.mealCreatorMeals {
+.mealCreatorMeals{
     display: flex;
     padding-left: 0%;
     font-size: 14px;
@@ -72,7 +73,7 @@ th {
     margin-top: 10px;
     /*box-sizing: border-box;*/
     align-items: center;
-
+    
 }
 
 #mealCreatorModal {
@@ -86,7 +87,7 @@ th {
     z-index: 1000;
     width: 58%;
     height: 80%;
-
+    
     background-color: #def6d8;
     border-radius: 10px;
     border-color: #99D9DE;
@@ -94,19 +95,19 @@ th {
 }
 
 
-.close {
+.close{
     transform: translate(729%, 2670%);
     background-color: #FFAB40;
     border-radius: 50px;
-    color: #252525;
+    color:#252525;
     border-color: #F29A8A;
 }
 
 
-.submit {
+.submit{
     transform: translate(734%, 2530%);
     border-radius: 50px;
-    color: #252525;
+    color:#252525;
     background-color: #91c789;
     border-color: #def6d8;
 }
@@ -120,7 +121,6 @@ th {
     height: 100%;
     z-index: 999;
 }
-
 
 
 .Modal-MealCreator {
@@ -139,16 +139,47 @@ th {
 #searchIngredientdrop {
     position: absolute;
     width: 78%;
-    max-height: 200px;
-    border-top: none;
+    max-height: 200px; 
+    border-top: none; 
     transform: translate(62%, 30%);
-}
-
+  }
+  
 #foodDropdownMC {
     width: 50%;
     background-color: #f2fff5;
     border-radius: 10px;
     border-color: #99D9DE;
+  }
+
+
+/*
+Dette gør så når der trykkes på en fødevarer at det bliver en flexbox med to elementer på hver række.
+*/
+#chosenFoodDivID {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: left;
+}
+
+.selectedFoodDiv {
+    width: 50%;
+    box-sizing: border-box;
+
+}
+
+.searchIngredientInput{
+    transform: translate(180%);
+    background-color: #f2fff5;
+    border-radius: 10px;
+    border-color: #99D9DE;
+    padding: 5px;
+}
+.mealNameInput{
+    transform: translate(75%);
+    background-color: #f2fff5;
+    border-radius: 10px;
+    border-color: #99D9DE;
+    padding: 5px;
 }
 
 /*Link til foodInspector-side*/
@@ -158,3 +189,4 @@ a {
     margin-left: 15px;
     font-weight: bold;
 }
+
