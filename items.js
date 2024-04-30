@@ -3,10 +3,13 @@ import { config } from './config.js';
 import Database from './database.js';
 import jwt from 'jsonwebtoken'
 import { authMiddleware } from './authmiddleware.js';
+import * as dotenv from 'dotenv';
+dotenv.config({ path: `.env`, debug: true });
+//import cookieParser from 'cookie-parser';
 
 const router = express.Router();
 router.use(express.json());
-
+//router.use(cookieParser());
 // Development only - don't do in production
 console.log(config);
 
@@ -17,18 +20,33 @@ const database = new Database(config);
 
 
 //Registrer et måltid
-router.post('/mealCreator',authMiddleware, async (req, res) => {
+router.post('/mealCreator', authMiddleware, async (req, res) => {
   try {
-      const meal = req.body;
-      const rowsAffected = await database.createMeal(meal);
-      res.status(201).json({ rowsAffected });
+    const meal = req.body;
+    const rowsAffected = await database.createMeal(meal);
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-      res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
 //Vælg aktiviteter
-router.get('/activities', authMiddleware, async (req, res) => {
+router.get('/userActivities', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    
+    const getAllActivities = await database.getUserActivities(userID);
+    console.log("udfhguerhguhreugh");
+    res.status(200).json({ getAllActivities });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+router.get('/allActivities', async (req, res) => {
   try {
     
   const activity = req.body;
@@ -39,29 +57,50 @@ router.get('/activities', authMiddleware, async (req, res) => {
   }
 });
 
+//Registrer et måltid
+router.post('/addActivity', async (req, res) => {
+  try {
+    const activity = req.body;
+    console.log("data2", activity);
+
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    console.log("1111111111");
+    const rowsAffected = await database.addActivity(activity, userID);
+    console.log("22222222");
+    res.status(201).json({ rowsAffected });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+
+
 
 
 //Vælg ingredienser
 router.get('/ingredients', async (req, res) => {
-    try {
-      
+  try {
+
     const ingredient = req.body;
     const allIngredients = await database.getIngredient(ingredient);
     res.status(200).json({ allIngredients });
-    } catch (err) {
-      res.status(500).send('Server error');
-    }
-  });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
 
 
 //Registrer en bruger
 router.post('/register', async (req, res) => {
   try {
-      const user = req.body;
-      const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
-      res.status(201).json({ rowsAffected });
+    const user = req.body;
+    const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-      res.status(500).send('Server error');
+    res.status(500).send('Server error');
   }
 });
 
@@ -75,7 +114,7 @@ router.post('/register', async (req, res) => {
 
 //     if (loginSuccessful) {
 //       req.session.user_ID = loginSuccessful.user_ID
-      
+
 //       res.send('Login successful');
 //     } else {
 //       res.status(401).send('Invalid credentials');
@@ -88,42 +127,43 @@ router.post('/register', async (req, res) => {
 
 
 router.post('/login', async (req, res) => {
-const {username, password} = req.body;
-if (typeof username === 'undefined' || typeof password === 'undefined') {
-  return res.status(403).send('Username or password is missing');
-}
+  const { username, password } = req.body;
+  if (typeof username === 'undefined' || typeof password === 'undefined') {
+    return res.status(403).send('Username or password is missing');
+  }
   const jwtSecret = config.jwtSecret;
 
   try {
-      const user = await database.getUserByUsernameAndPassword(username, password);
-  if (user) {
-    const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID}, jwtSecret, {expiresIn: '2d'});
-    return res.send(apiToken); 
-} else {
-    return res.status(401).send('Invalid username or password');
-}
-} catch (err) {
-return res.status(500).send(err.message);
-}
-});
-  
-  
-  /*catch (err){
-   return res.send(err.message)
+    const user = await database.getUserByUsernameAndPassword(username, password);
+    if (user) {
+      const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID }, jwtSecret, { expiresIn: '2d' });
+      console.log("token", apiToken);
+      return res.status(200).json(apiToken);
+    } else {
+      return res.status(401).json(false);
+    }
+  } catch (err) {
+    return res.status(500).json(err.message);
   }
- const apiToken = jwt.sign({username: 'username', password: 'password'}, jwtSecret)
+});
 
- return res.send(apiToken);
+
+/*catch (err){
+ return res.send(err.message)
+}
+const apiToken = jwt.sign({username: 'username', password: 'password'}, jwtSecret)
+
+return res.send(apiToken);
 });
 */
 //log ud endpoint
 router.get('/logout', authMiddleware, (req, res) => {
   req.session.destroy(err => {
-      if (err) {
-          return res.status(500).send('Failed to log out');
-      }
+    if (err) {
+      return res.status(500).send('Failed to log out');
+    }
 
-      res.send('Logout successful');
+    res.send('Logout successful');
   });
 });
 

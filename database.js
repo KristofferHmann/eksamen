@@ -111,7 +111,7 @@ export default class Database {
 
       console.log(result);
 
-      return result.recordset.length > 0;
+      return result.recordset[0];
     } catch (error) {
       console.error('Error fetching user by username and password:', error.message);
       throw error;
@@ -183,16 +183,37 @@ export default class Database {
   };
 
   //Alle vores aktiviteter
-  async getAllActivities(data) {
+  async getAllActivities() {
     await this.connect();
     const request = this.poolconnection.request();
-    request.input('activity_ID', sql.Int, data.activity_ID)
-    request.input('activities', sql.VarChar, data.activities)
-    request.input('kcalburned', sql.Int, data.kcalBurned / 60)
-
+  
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
 
     return result.recordsets[0];
+  };
+  //get user activities
+  async getUserActivities(userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    
+    request.input('user_ID', sql.Int, userID)
+
+    const result = await request.query('SELECT Activities.activity_ID, activities, durationkcal, duration FROM Nutri.Activities JOIN Nutri.ActivitiesUser on Activities.activity_ID = ActivitiesUser.activity_ID WHERE user_ID = @user_ID');
+
+    return result.recordsets[0];
+  };
+  async addActivity(data, userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('activity_ID', sql.Int, data.activity_ID)
+    request.input('duration', sql.Int, data.duration)
+    request.input('durationkcal', sql.Int, data.durationkcal)
+    request.input('user_ID', sql.Int, userID)
+    console.log("data", data);
+    const result = await request.query(`INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, durationkcal) VALUES (@user_ID, @activity_ID, @duration, @durationkcal)`);
+
+    return result.rowsAffected[0];
+
   };
 
   async getIngredient(data) {
