@@ -1,0 +1,35 @@
+.tracker {
+    width: 80%;
+    height: 80%;
+    position: fixed;
+    border: 1.5px solid #99D9DE;
+    padding: 10px;
+    margin: 10px;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -43%);
+    border-radius: 10px;
+    overflow: auto;
+}
+
+/*Tabel for tilføjet måltider*/
+table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0 10px;
+
+}
+
+td {
+    background-color: #DEF6D8;
+    padding: 5px;
+    text-align: center;
+
+}
+
+th {
+    font-size: small;
+    color: #BDBDBD;
+    padding-left: 15px;
+    padding-right: 15px;
+}

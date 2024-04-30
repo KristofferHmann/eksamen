@@ -4,11 +4,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MealCreator</title>
-  <link rel="stylesheet" href="mealcreator.css">
+  <title>DailyNutri</title>
+  <link rel="stylesheet" href="dailynutri.css">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
 
 </head>
 
@@ -37,54 +36,25 @@
     </nav>
 
   </header>
-  <div class="mealCreator">
-    <div id="overskrift">Meal Creator
-      <button id="btn-addMeal" onclick="openMealCreator()">+</button>
-    </div>
-
-    <a href="http://localhost:3000/public/foodinspector/inspector.html">Inspicer ingredienser</a>
-
+  <div class="daily">
+    <h1 id="overskrift"> Daily Nutri </h1>
+    <button id="btn-hours" onclick="window.location.href='dailynutri.html'">hours</button> <!-- onclick func til at sende til den anden side-->
+    <button id="btn-days" onclick="window.location.href='days.html'">Days</button>
     <table>
       <thead>
         <tr>
-          <th></th>
-          <th>Meal Name</th>
-          <th>Total Kcal pr. 100g</th>
-          <th>Added on</th>
-          <th># Ingredients</th>
-          <th>Times Eaten</th>
-          <th></th>
-          <th></th>
-          <th></th>
+          <th>Days</th>
+          <th>Meal Consumed</th>
+          <th>Water Consumed</th>
+          <th>Calories Consumed</th>
+          <th>Calories Burned</th>
+          <th>Calories Surplus or Deficit</th>
         </tr>
       </thead>
-
       <tbody>
       </tbody>
-
     </table>
-
   </div>
-
-  <div id="modal"></div>
-  <div id="mealCreatorModal">
-    <div class="Modal-MealCreator">
-      <div class="Modal-1"><input type="text" class="mealNameInput" placeholder="Your meal name" name="text"
-          id="mealNameID"></div>
-      <div class="Modal-1"><input type="text" class="searchIngredientInput" placeholder="Search for Ingredients"
-          name="text" onkeydown="searchButton_MC(event)" id="mcFoodSearch"></div>
-    </div>
-    <div id="searchIngredientdrop"></div>
-
-    <button class="submit" id="SubmitButtonID" onclick="submitAction()">Submit</button>
-
-    <button class="close" id="closebutton" onclick="closeMealCreator()">Close</button>
-    <div id="chosenFoodDivID"></div>
-
-
-  </div>
-
-  <script src="mealcreator.js"></script>
 </body>
 
 

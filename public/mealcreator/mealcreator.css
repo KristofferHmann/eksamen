@@ -12,15 +12,6 @@
     overflow: auto;
 }
 
-/*Meal Creator overskrift*/
-.header1 {
-    color: #000000;
-    font-size: 32px;
-    font-weight: bold;
-    padding-bottom: 5px;
-    margin-left: 15px;
-}
-
 /*Tilføj måltid knap*/
 #btn-addMeal {
     margin-top: 12px;
@@ -121,8 +112,6 @@ th {
     z-index: 999;
 }
 
-
-
 .Modal-MealCreator {
     padding-top: 4%;
     display: flex;
@@ -135,20 +124,12 @@ th {
     padding: 1.3%;
 }
 
-
 #searchIngredientdrop {
     position: absolute;
     width: 78%;
     max-height: 200px;
     border-top: none;
     transform: translate(62%, 30%);
-}
-
-#foodDropdownMC {
-    width: 50%;
-    background-color: #f2fff5;
-    border-radius: 10px;
-    border-color: #99D9DE;
 }
 
 /*Link til foodInspector-side*/
