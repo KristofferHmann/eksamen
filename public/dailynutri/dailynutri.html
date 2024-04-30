@@ -2,42 +2,59 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DailyNutri</title>
-    <link rel="stylesheet" href="dailynutri.css">
-    <link rel="stylesheet" href="../style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>DailyNutri</title>
+  <link rel="stylesheet" href="dailynutri.css">
+  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 
 </head>
 
 <body>
-    <header>
-        <nav>
-            <ul>
-                <img src="../nutritracker.png" alt="NutriTracker Icon">
-                <li><a href="../activitytracker/acitivitytracker.html">Activity Tracker</a></li>
-                <li><a href="../mealcreator/mealcreator.html">Meal Creator</a></li>
-                <li><a href="../mealtracker/mealtracker.html">Meal Tracker</a></li>
-                <li><a href="../dailynutri/dailynutri.html">Daily Nutrition</a></li>
-                <li><a href="../foodinspector/inspector.html">Food inspector</a></li>
-                <div class="dropdown">
-                    <button class="dropdownBtn">
-                      <li><i class="fa-solid fa-user userlogin"></i></li>
-                      <div class="dropdownList">
-                        <a href="../login/login.html">Login</a>
-                        <a href="../signup/signup.html">Sign up</a>
-                        <a href="../editUser/editUser.html">Edit profile</a>
-                      </div>
-                    </button>
-                  </div>
-                  <button class="outBtn"><i class="fa fa-sign-out"></i></button>
-            </ul>
-        </nav>
+  <header>
+    <nav>
+      <ul>
+        <img src="../nutritracker.png" alt="NutriTracker Icon">
+        <li><a href="../activitytracker/acitivitytracker.html">Activity Tracker</a></li>
+        <li><a href="../mealcreator/mealcreator.html">Meal Creator</a></li>
+        <li><a href="../mealtracker/mealtracker.html">Meal Tracker</a></li>
+        <li><a href="../dailynutri/dailynutri.html">Daily Nutrition</a></li>
+        <li><a href="../foodinspector/inspector.html">Food inspector</a></li>
+        <div class="dropdown">
+          <button class="dropdownBtn">
+            <li><i class="fa-solid fa-user userlogin"></i></li>
+            <div class="dropdownList">
+              <a href="../login/login.html">Login</a>
+              <a href="../signup/signup.html">Sign up</a>
+              <a href="../editUser/editUser.html">Edit profile</a>
+            </div>
+          </button>
+        </div>
+        <button class="outBtn"><i class="fa fa-sign-out"></i></button>
+      </ul>
+    </nav>
 
-    </header>
-        <h1> Daily Nutri </h1>
-
+  </header>
+  <div class="daily">
+    <h1 id="overskrift"> Daily Nutri </h1>
+    <button id="btn-hours" onclick="window.location.href='dailynutri.html'">hours</button> <!-- onclick func til at sende til den anden side-->
+    <button id="btn-days" onclick="window.location.href='days.html'">Days</button> 
+    <table>
+      <thead>
+        <tr>
+          <th>Hours</th>
+          <th>Meal Name</th>
+          <th>Water Consumed</th>
+          <th>Calories Consumed</th>
+          <th>Calories Burned</th>
+          <th>Calories Surplus or Deficit</th>
+        </tr>
+      </thead>
+      <tbody>
+      </tbody>
+    </table>
+  </div>
 </body>
 
 

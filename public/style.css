@@ -75,6 +75,15 @@ h3 {
     font-weight: normal;
 }
 
+/* overskrift*/
+#overskrift {
+    color: #000000;
+    font-size: 32px;
+    font-weight: bold;
+    padding-bottom: 5px;
+    margin-left: 15px;
+}
+
 p {
     font-family: 'Nunito', sans-serif;
     font-weight: normal;

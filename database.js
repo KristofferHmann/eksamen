@@ -98,13 +98,10 @@ export default class Database {
 
   async getUserByUsernameAndPassword(username, password) {
     try {
-      console.log("Connecting to the database...");
       await this.connect();
-      console.log("Connection successful, creating request...");
-      console.log("testing", this.poolconnection);
+
       const request = this.poolconnection.request();
-      console.log({ request })
-      console.log(`Looking up user: ${username}`);
+
       request.input('username', sql.VarChar, username);
       request.input('password', sql.VarChar, password);
       const result = await request.query(`
