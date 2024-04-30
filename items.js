@@ -97,7 +97,7 @@ if (typeof username === 'undefined' || typeof password === 'undefined') {
   try {
       const user = await database.getUserByUsernameAndPassword(username, password);
   if (user) {
-    const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID}, jwtSecret);
+    const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID}, jwtSecret, {expiresIn: '2d'});
     return res.send(apiToken); 
 } else {
     return res.status(401).send('Invalid username or password');
