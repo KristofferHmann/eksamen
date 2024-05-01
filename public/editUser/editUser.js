@@ -1,28 +1,3 @@
-// // Assuming you have the user's ID stored in a variable named userId
-
-
-// // Make an HTTP GET request to fetch user data
-// fetch(`/items/users/${user_ID}`)
-//     .then(response => {
-//         if (!response.ok) {
-//             throw new Error('Failed to fetch user data');
-//         }
-//         return response.json();
-//     })
-//     .then(userData => {
-//         // Handle the fetched user data
-//         console.log(userData); // Log the user data to the console (you can do further processing here)
-//         // Example: Populate form fields with fetched user data for editing
-//         document.getElementById('username').value = userData.username;
-//         document.getElementById('password').value = userData.password;
-//         document.getElementById('gender').value = userData.gender;
-//         document.getElementById('weight').value = userData.weight;
-//         document.getElementById('age').value = userData.age;
-//     })
-//     .catch(error => {
-//         console.error('Error fetching user data:', error.message);
-//         // Handle error (e.g., display an error message to the user)
-//     });
 
 // Function to handle user editing
 async function updateUser(updatedUserData) {

@@ -124,8 +124,6 @@ router.post('/login', async (req, res) => {
 //log ud endpoint
 router.get('/logout', async (req, res) => {
   try {
-    // Clear the token from the client-side localStorage
-    localStorage.removeItem('token');
   
     res.send('Logout successful');
   } catch (error) {
