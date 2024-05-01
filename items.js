@@ -48,9 +48,9 @@ router.get('/userActivities', async (req, res) => {
 //Vælg aktiviteter
 router.get('/allActivities', async (req, res) => {
   try {
-    
-  const activity = req.body;
-  const getAllActivities = await database.getAllActivities(activity);
+
+    const activity = req.body;
+    const getAllActivities = await database.getAllActivities(activity);
     res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');
@@ -67,9 +67,7 @@ router.post('/addActivity', async (req, res) => {
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
-    console.log("1111111111");
     const rowsAffected = await database.addActivity(activity, userID);
-    console.log("22222222");
     res.status(201).json({ rowsAffected });
   } catch (err) {
     res.status(500).send('Server error');
@@ -100,27 +98,6 @@ router.post('/register', async (req, res) => {
   }
 });
 
-// Login endpoint
-// router.post('/login', async (req, res) => {
-//   console.log("Received login request", req.body);
-//   const { username, password } = req.body;
-
-//   try {
-//     const loginSuccessful = await database.getUserByUsernameAndPassword(username, password);
-
-//     if (loginSuccessful) {
-//       req.session.user_ID = loginSuccessful.user_ID
-
-//       res.send('Login successful');
-//     } else {
-//       res.status(401).send('Invalid credentials');
-//     }
-//   } catch (err) {
-//     console.error(err.message);
-//     res.status(500).send('Server error');
-//   }
-// });
-
 
 router.post('/login', async (req, res) => {
   const { username, password } = req.body;
@@ -144,61 +121,69 @@ router.post('/login', async (req, res) => {
 });
 
 
-/*catch (err){
- return res.send(err.message)
-}
-const apiToken = jwt.sign({username: 'username', password: 'password'}, jwtSecret)
-
-return res.send(apiToken);
-});
-*/
 //log ud endpoint
-router.get('/logout', authMiddleware, (req, res) => {
-  req.session.destroy(err => {
-    if (err) {
-      return res.status(500).send('Failed to log out');
-    }
-
+router.get('/logout', async (req, res) => {
+  try {
+    // Clear the token from the client-side localStorage
+    localStorage.removeItem('token');
+  
     res.send('Logout successful');
-  });
+  } catch (error) {
+    // Handle any errors (though there shouldn't be any for logout)
+    console.error(error);
+    res.status(500).send('Failed to log out');
+  }
+});
+
+
+
+router.get('/delete', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    // Verify the token and extract user ID
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+    const rowsAffected = await database.deleteUser(userID);
+    if (rowsAffected > 0) {
+      console.log('User deleted successfully');
+      return res.status(200).send('User deleted');
+    }
+  } catch (error) {
+    return res.status(500).send('Error deleting user');
+  }
 });
 
 
 // Edit user endpoint
-router.put('/users/:user_ID', async (req, res) => {
-  const userId = req.params.user_ID;
-  const updatedUserData = req.body;
-
+// Edit user endpoint
+router.put('/edit', async (req, res) => {
   try {
-    // Update user information in the database
-    const rowsAffected = await database.editUser(userId, updatedUserData);
+      // Extract user ID from the JWT token
+      const token = req.headers.authorization.split(' ')[1];
+      const secretKey = process.env.JWT_SECRET;
+      const tokenDecoded = jwt.verify(token, secretKey);
+      const userId = tokenDecoded.user_ID;
 
-    if (rowsAffected > 0) {
-      res.status(200).json({ message: 'User updated successfully' });
-    } else {
-      res.status(404).send('User not found');
-    }
+      // Extract updated user data from the request body
+      const updatedUserData = req.body;
+
+      // Update user information in the database
+      const rowsAffected = await database.editUser(userId, updatedUserData);
+
+      if (rowsAffected > 0) {
+          res.status(200).json({ message: 'User updated successfully' });
+      } else {
+          res.status(404).send('User not found');
+      }
   } catch (err) {
-    console.error(err.message);
-    res.status(500).send('Server error');
+      console.error(err.message);
+      res.status(500).send('Server error');
   }
 });
 
-// //Delete user endpoint
-// router.delete('//delete-user/:userId'), async (req, res) => {
-//   const { userId } = req.params;
-// }
-// try {
-//   const result = await db.query('DELETE FROM Users WHERE user_ID = $1', [userId]);
-//   if (result.rowCount > 0) {
-//       res.send({ success: true, message: "User deleted successfully" });
-//   } else {
-//       res.status(404).send({ success: false, message: "User not found" });
-//   }
-// } catch (error) {
-//   console.error('Failed to delete user:', error);
-//   res.status(500).send({ success: false, message: "Internal server error" });
-// };
+
+
 
 
 

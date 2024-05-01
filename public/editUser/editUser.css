@@ -29,7 +29,7 @@
     font-size: 14px;
 }
 
-.form button {
+#updateButton {
     font-family: sans-serif;
     text-transform: uppercase;
     outline: 0;
@@ -44,9 +44,9 @@
     cursor: pointer;
 }
 
-.form button:hover,
-.form button:active,
-.form button:focus {
+#updateButton:hover,
+#updateButton:active,
+#updateButton:focus {
     background: #43A047;
 }
 
@@ -183,20 +183,3 @@ input[type="radio"]:focus+label:before {
     width: 200px; /* Adjust width as needed */
 }
 
-
-.delete-section button,
-.logout-section button {
-    background-color: #ff4d4d;
-    border: none;
-    border-radius: 4px;
-    color: #fff;
-    cursor: pointer;
-    padding: 10px 20px;
-    transition: background-color 0.3s ease;
-    width: 100%; /* Button width to fill container */
-}
-
-.delete-section button:hover,
-.logout-section button:hover {
-    background-color: #e63946;
-}

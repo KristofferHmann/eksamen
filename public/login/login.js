@@ -15,7 +15,7 @@ loginBtn.addEventListener('click', async () => {
   })
   const token = await data.json()
   if (!token) {
-    return alert("noget gik galt!!!!!!")
+    return alert("Wrong username or password")
   } else {
     
     window.location.href = '../mealcreator/mealcreator.html'

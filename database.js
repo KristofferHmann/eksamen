@@ -123,9 +123,10 @@ export default class Database {
     try {
       await this.connect();
       const request = this.poolconnection.request();
-      const result = await request.query('DELETE FROM Nutri.[USER] WHERE user_ID = @userId')
-
-      console.log(result);
+      request.input('user_ID', sql.Int, userId)
+      await request.query('DELETE FROM Nutri.Meals WHERE user_ID = @user_ID')
+      await request.query('DELETE FROM Nutri.ActivitiesUser WHERE user_ID = @user_ID')
+      const result = await request.query('DELETE FROM Nutri.[USER] WHERE user_ID = @user_ID');
 
       return result.rowsAffected; // Return the number of rows affected (should be 1 if successful)
     } catch (error) {
@@ -134,6 +135,7 @@ export default class Database {
     }
   }
 
+
   async editUser(userId, updatedUserData) {
     try {
       await this.connect();
@@ -141,19 +143,17 @@ export default class Database {
       const request = this.poolconnection.request();
 
       // Extract updated user data
-      const { username, password, gender, weight, age } = updatedUserData;
+      const {gender, weight, age } = updatedUserData;
 
       // Construct the SQL query to update user information
       const query = `
         UPDATE Nutri.[USER]
-        SET username = @username, password = @password, gender = @gender, weight = @weight, age = @age
+        SET gender = @gender, weight = @weight, age = @age
         WHERE user_ID = @userId
       `;
 
       // Define input parameters
       request.input('userId', sql.Int, userId);
-      request.input('username', sql.VarChar, username);
-      request.input('password', sql.VarChar, password);
       request.input('gender', sql.VarChar, gender);
       request.input('weight', sql.Int, weight);
       request.input('age', sql.Int, age);
@@ -168,6 +168,8 @@ export default class Database {
   }
 
 
+
+  
   async createMeal(data) {
     await this.connect();
     const request = this.poolconnection.request();
@@ -186,7 +188,7 @@ export default class Database {
   async getAllActivities() {
     await this.connect();
     const request = this.poolconnection.request();
-  
+
     const result = await request.query('SELECT activity_ID, activities, kcalburned FROM Nutri.Activities');
 
     return result.recordsets[0];
@@ -195,7 +197,7 @@ export default class Database {
   async getUserActivities(userID) {
     await this.connect();
     const request = this.poolconnection.request();
-    
+
     request.input('user_ID', sql.Int, userID)
 
     const result = await request.query('SELECT Activities.activity_ID, activities, durationkcal, duration FROM Nutri.Activities JOIN Nutri.ActivitiesUser on Activities.activity_ID = ActivitiesUser.activity_ID WHERE user_ID = @user_ID');

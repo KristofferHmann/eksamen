@@ -94,14 +94,3 @@ async function updateActivityList() {
     }
    
 }
-/*
-const token = localStorage.getItem("token");
-        const response = await fetch('http://localhost:3000/items/activities', {
-            method: "GET",
-            headers: {
-                "Authorization": "Bearer " + token,
-            }
-        });
-        if (!response.ok) {
-            throw new Error('Failed to fetch activities');
-        }*/

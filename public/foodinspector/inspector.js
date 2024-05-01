@@ -81,10 +81,10 @@ async function foodFetch() {
 
             if (selectedIngredient) {
                 document.getElementById('productID').textContent = '' + selectedIngredient.ingredient_ID;
-                document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal;
-                document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein;
-                document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;
-                document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber;
+                document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal + ' kcal/100g';
+                document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein + ' g/100g';
+                document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat + ' g/100g';
+                document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber + ' g/100g';
             }
         });
     } catch (error) {
