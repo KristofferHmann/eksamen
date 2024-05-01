@@ -47,6 +47,8 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
         table.appendChild(row);
+        // Close the modal
+        modal.style.display = "none";
     });
 
     async function fetchNutrition(ingredientName) {
