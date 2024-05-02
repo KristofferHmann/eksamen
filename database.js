@@ -246,7 +246,6 @@ export default class Database {
     request.input('duration', sql.Int, data.duration)
     request.input('durationkcal', sql.Int, data.durationkcal)
     request.input('user_ID', sql.Int, userID)
-    console.log("data", data);
     const result = await request.query(`INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, durationkcal) VALUES (@user_ID, @activity_ID, @duration, @durationkcal)`);
 
     return result.rowsAffected[0];
