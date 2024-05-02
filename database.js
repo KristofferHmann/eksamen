@@ -83,7 +83,7 @@ export default class Database {
       request.input('gender', sql.VarChar, data.gender)
       request.input('weight', sql.Int, data.weight)
       request.input('age', sql.Int, data.age)
-      request.input('bmr', sql.Decimal(18, 2), bmr.toFixed(2)) //Decimal er sql hvor 18 er hvor mange decimaler der er og 2 er hvor mange der vises.
+      request.input('bmr', sql.Decimal(18, 2), (bmr * 239).toFixed(2)) //Decimal er sql hvor 18 er hvor mange decimaler der er og 2 er hvor mange der vises.
       const result = await request.query(`
     INSERT INTO Nutri.[USER] (username, password, gender, weight, age, bmr) 
     VALUES (@username, @password, @gender, @weight, @age, @bmr)`
@@ -143,7 +143,7 @@ export default class Database {
       const request = this.poolconnection.request();
 
       // Extract updated user data
-      const {gender, weight, age } = updatedUserData;
+      const { gender, weight, age } = updatedUserData;
 
       // Construct the SQL query to update user information
       const query = `
@@ -169,16 +169,19 @@ export default class Database {
 
 
 
-  
+
   async createMeal(data) {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('mealname', sql.VarChar, data.mealname)
     request.input('weight', sql.Int, data.weight)
-    request.input('totalnutrition', sql.Int, data.totalnutrition)
+    request.input('totalKcal', sql.Int, data.totalKcal)
+    request.input('totalProtein', sql.Int, data.totalProtein)
+    request.input('totalFat', sql.Int, data.totalFat)
+    request.input('totalFiber', sql.Int, data.totalFiber)
     request.input('user_ID', sql.Int, data.user_ID)
 
-    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, totalnutrition, user_ID) VALUES (@mealname, @weight, @totalnutrition, @user_ID)`);
+    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, totalKcal, totalProtein, totalFat, totalFiber, user_ID) VALUES (@mealname, @weight, @totalKcal, @totalProtein, @totalFat, @totalFiber , @user_ID)`);
 
     return result.rowsAffected[0];
 

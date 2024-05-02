@@ -19,6 +19,8 @@ async function updateUser(updatedUserData) {
 
     const data = await response.json();
     console.log(data.message); // Log the response from the server
+
+    
 }
 
 // Function to handle form submission

@@ -20,8 +20,12 @@ const database = new Database(config);
 
 
 //Registrer et måltid
-router.post('/mealCreator', authMiddleware, async (req, res) => {
+router.post('/mealCreator', async (req, res) => {
   try {
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
     const meal = req.body;
     const rowsAffected = await database.createMeal(meal);
     res.status(201).json({ rowsAffected });
@@ -124,7 +128,7 @@ router.post('/login', async (req, res) => {
 //log ud endpoint
 router.get('/logout', async (req, res) => {
   try {
-  
+
     res.send('Logout successful');
   } catch (error) {
     // Handle any errors (though there shouldn't be any for logout)
@@ -157,26 +161,26 @@ router.get('/delete', async (req, res) => {
 // Edit user endpoint
 router.put('/edit', async (req, res) => {
   try {
-      // Extract user ID from the JWT token
-      const token = req.headers.authorization.split(' ')[1];
-      const secretKey = process.env.JWT_SECRET;
-      const tokenDecoded = jwt.verify(token, secretKey);
-      const userId = tokenDecoded.user_ID;
+    // Extract user ID from the JWT token
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userId = tokenDecoded.user_ID;
 
-      // Extract updated user data from the request body
-      const updatedUserData = req.body;
+    // Extract updated user data from the request body
+    const updatedUserData = req.body;
 
-      // Update user information in the database
-      const rowsAffected = await database.editUser(userId, updatedUserData);
+    // Update user information in the database
+    const rowsAffected = await database.editUser(userId, updatedUserData);
 
-      if (rowsAffected > 0) {
-          res.status(200).json({ message: 'User updated successfully' });
-      } else {
-          res.status(404).send('User not found');
-      }
+    if (rowsAffected > 0) {
+      res.status(200).json({ message: 'User updated successfully' });
+    } else {
+      res.status(404).send('User not found');
+    }
   } catch (err) {
-      console.error(err.message);
-      res.status(500).send('Server error');
+    console.error(err.message);
+    res.status(500).send('Server error');
   }
 });
 
