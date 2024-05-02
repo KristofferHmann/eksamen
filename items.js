@@ -27,9 +27,11 @@ router.post('/mealCreator', async (req, res) => {
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
     const meal = req.body;
-    const rowsAffected = await database.createMeal(meal);
-    res.status(201).json({ rowsAffected });
+
+    const rowsAffected = await database.createMeal(meal, userID);
+    res.status(201).json({ message: 'Meals created successfully', rowsAffected });
   } catch (err) {
+    console.error('Error cathing meal', err);
     res.status(500).send('Server error');
   }
 });
@@ -42,7 +44,6 @@ router.get('/userActivities', async (req, res) => {
     const userID = tokenDecoded.user_ID
 
     const getAllActivities = await database.getUserActivities(userID);
-    console.log("udfhguerhguhreugh");
     res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');

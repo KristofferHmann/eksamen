@@ -27,7 +27,23 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 });
-
+async function fetchNutrition(ingredientName) {
+    const response = await fetch('http://localhost:3000/items/ingredients');
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+    const ingredient = data.allIngredients.find(ingredient => ingredient.ingredientname === ingredientName);
+    if (!ingredient) {
+        throw new Error('Ingredient not found');
+    }
+    return {
+        kcal: ingredient.kcal,
+        protein: ingredient.protein,
+        fat: ingredient.fat,
+        fiber: ingredient.fiber,
+    };
+};
 async function foodFetch() {
     try {
         const response = await fetch('http://localhost:3000/items/ingredients');
@@ -49,17 +65,17 @@ async function foodFetch() {
                 ressult.appendChild(option);
             });
 
-        ressult.addEventListener('change', function () {
-            const selectedIngredient = data.allIngredients.find(ingredient => ingredient.ingredientname === this.value);
+        // ressult.addEventListener('change', function () {
+        //     const selectedIngredient = data.allIngredients.find(ingredient => ingredient.ingredientname === this.value);
 
-            if (selectedIngredient) {
-                document.getElementById('productID').textContent = '' + selectedIngredient.ingredient_ID;
-                document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal;
-                document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein;
-                document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;
-                document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber;
-            }
-        }); 
+        //     if (selectedIngredient) {
+        //         document.getElementById('productID').textContent = '' + selectedIngredient.ingredient_ID;
+        //         document.getElementById('energyKcal').textContent = 'Kcal: ' + selectedIngredient.kcal;
+        //         document.getElementById('protein').textContent = 'Protein: ' + selectedIngredient.protein;
+        //         document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;
+        //         document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber;
+        //     }
+        // }); 
     } catch (error) {
         throw new Error('Error fetching data:' + error.toString());
     }
@@ -84,7 +100,16 @@ async function addIngredientToMeal() {
 
     // Find tabellen inde i ingredientsBox
     let ingredientsTable = document.querySelector("#ingredientsBox table tbody");
+ // Fetch nutrition information
+ const nutrition = await fetchNutrition(selectedIngredient);
 
+ // Calculate nutrition values based on weight
+ const weightInGrams = parseFloat(weight);
+ const kcal = (nutrition.kcal * weightInGrams) / 100;
+ const protein = (nutrition.protein * weightInGrams) / 100;
+ const fat = (nutrition.fat * weightInGrams) / 100;
+ const fiber = (nutrition.fiber * weightInGrams) / 100;
+ 
     // Opret en ny række og tilføj den til tabellen
     let row = ingredientsTable.insertRow();
     row.insertCell().textContent = ingredientsTable.rows.length; // # kolonne
@@ -130,10 +155,10 @@ const response = await fetch('http://localhost:3000/items/mealCreator', {
     body: JSON.stringify(mealData)
   })
  if (!response.ok) {
-    console.Error('Failed to update meals')
+    console.Error('Failed to create meals')
     return;
  }
  const data = await response.json();
- console.log(data.message);
-}
+ console.log(data.rowsAffected);
+} 
 

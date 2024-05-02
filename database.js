@@ -206,18 +206,14 @@ export default class Database {
 
 
 
-  async createMeal(data) {
+  async createMeal(mealData, userID) {
     await this.connect();
     const request = this.poolconnection.request();
-    request.input('mealname', sql.VarChar, data.mealname)
-    request.input('weight', sql.Int, data.weight)
-    request.input('totalKcal', sql.Int, data.totalKcal)
-    request.input('totalProtein', sql.Int, data.totalProtein)
-    request.input('totalFat', sql.Int, data.totalFat)
-    request.input('totalFiber', sql.Int, data.totalFiber)
-    request.input('user_ID', sql.Int, data.user_ID)
+    request.input('mealname', sql.VarChar, mealData.mealname)
+    request.input('weight', sql.Int, mealData.weight)
+    request.input('user_ID', sql.Int, userID)
 
-    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, totalKcal, totalProtein, totalFat, totalFiber, user_ID) VALUES (@mealname, @weight, @totalKcal, @totalProtein, @totalFat, @totalFiber , @user_ID)`);
+    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, user_ID) VALUES (@mealname, @weight, @user_ID)`);
 
     return result.rowsAffected[0];
 
