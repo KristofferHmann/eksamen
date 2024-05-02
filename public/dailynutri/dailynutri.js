@@ -34,7 +34,4 @@ function updateHour() {
     var div = document.createElement("div");
     div.innerHTML = "Calories Surplus or Deficit";
     newCell6.appendChild(div);
-
-    // let newCell2 = newRow.insertCell(0);
 }
-//"window.location.href='dailynutri.html'
