@@ -1,7 +1,12 @@
+
+
 let totalKcal = 0;
 let totalProtein = 0;
 let totalFat = 0;
 let totalFiber = 0;
+let numIngredients = 0;
+let meals = []; // List of meals, each meal is a list of ingredients
+let currentMeal = []; // List of ingredients for the current meal
 
 //Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
 function openMealCreator() {
@@ -55,7 +60,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const addIngredientButton = document.getElementById('addIngredient');
     if (addIngredientButton) {
         addIngredientButton.addEventListener('click', addIngredientToMeal);
-    }else {
+    } else {
         console.log('Button is not found');
     }
 });
@@ -98,12 +103,19 @@ async function addIngredientToMeal() {
     const fat = (nutrition.fat * weightInGrams) / 100;
     const fiber = (nutrition.fiber * weightInGrams) / 100;
 
+    // Add the ingredient to the current meal
+    currentMeal.push({
+        name: selectedFoodItem,
+        weight: weight,
+        nutrition: { kcal, protein, fat, fiber }
+    });
+
     // Define ingredientsTable
     let ingredientsTable = document.getElementById('ingredientsTable'); // Replace 'your-table-id' with the actual ID of your ingredients table
 
     // Opret en ny række og tilføj den til tabellen
     let row = ingredientsTable.insertRow();
-    row.insertCell().textContent = ingredientsTable.rows.length; // # column
+    row.insertCell().textContent = ingredientsTable.rows.length - 1; // # column
     row.insertCell().textContent = selectedFoodItem; // Ingredient Name column
     row.insertCell().textContent = weight; // Weight column
     row.insertCell().textContent = `${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber`; // Nutrition column
@@ -113,6 +125,9 @@ async function addIngredientToMeal() {
     totalProtein += protein;
     totalFat += fat;
     totalFiber += fiber;
+
+    // Update numIngredients after a new row is added
+    numIngredients += 1;
 };
 
 document.getElementById("SubmitButtonID").addEventListener("click", addMealToTable);
@@ -124,14 +139,11 @@ function addMealToTable() {
     // Hent måltidsnavnet fra input feltet
     let mealName = document.getElementById("mealNameID").value;
 
-    // Hent antallet af ingredienser fra ingredientsBox
-    let numIngredients = document.querySelector("#ingredientsBox table tbody").rows.length;
-    closeMealCreator();
     // Opret en ny række og tilføj den til tabellen
     let row = mealTable.insertRow();
     row.insertCell().textContent = mealTable.rows.length; // # kolonne
     row.insertCell().textContent = mealName; // Meal Name kolonne (opdater denne værdi som nødvendigt)
-    row.insertCell().textContent = numIngredients; // # Ingredients kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = numIngredients;
     row.insertCell().textContent = `${totalKcal.toFixed(2)} kcal, ${totalProtein.toFixed(2)} protein, ${totalFat.toFixed(2)} fat, ${totalFiber.toFixed(2)} fiber`;
     row.insertCell().textContent = 'Added on'; // Added on kolonne (opdater denne værdi som nødvendigt)
 
@@ -140,6 +152,40 @@ function addMealToTable() {
     totalProtein = 0;
     totalFat = 0;
     totalFiber = 0;
+
+    // Reset numIngredients for the next meal
+    numIngredients = 0;
+
+    // Add the current meal to the list of meals
+    meals.push(currentMeal);
+    // Reset the current meal for the next meal
+    currentMeal = [];
+
+    // Add a new cell for the button
+    let buttonCell = row.insertCell();
+    // Create a button element
+    let button = document.createElement('button');
+    // Set the button text
+    button.textContent = 'Show Ingredients';
+    // Store the index of the meal in the button's dataset
+    button.dataset.mealIndex = meals.length - 1;
+    // Add an event listener to the button
+    button.addEventListener('click', (event) => {
+        // Get the index of the meal from the button's dataset
+        let mealIndex = event.target.dataset.mealIndex;
+        // Get the ingredients of the meal
+        let ingredients = meals[mealIndex];
+        // Create a string with the ingredients
+        let ingredientsStr = ingredients.map(ingredient =>
+            `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
+        ).join('\n');
+        // Display the ingredients
+        alert('Ingredients:\n' + ingredientsStr);
+    });
+    // Add the button to the cell
+    buttonCell.appendChild(button);
+
+    closeMealCreator();
 };
 
 async function createMeal(mealData) {
