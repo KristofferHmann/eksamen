@@ -63,6 +63,10 @@ document.addEventListener("DOMContentLoaded", function () {
     }
     });
 
+    function openView() {
+        document.getElementById('openView').style.display = 'block';
+    }
+
 //funktion der henter den specifikke addresse med brug af nominatin.
     async function getAddressFromCoordinates(latitude, longitude) {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
