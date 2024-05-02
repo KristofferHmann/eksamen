@@ -25,26 +25,26 @@ document.addEventListener("DOMContentLoaded", function () {
         const row = document.createElement('tr');
         const date = new Date(); // dato og tidspunkt ved jeg ikke helt hvad man skal gøre med databasen
         const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-        
+
         if (navigator.geolocation) {
-           
+
             navigator.geolocation.getCurrentPosition(async position => {
                 const { latitude, longitude } = position.coords;
                 const address = await getAddressFromCoordinates(latitude, longitude);
 
                 const geolocation = address || `Latitude: ${latitude}, Longitude: ${longitude}`
 
-        // Fetch nutrition information
-        const nutrition = await fetchNutrition(selectedIngredient);
+                // Fetch nutrition information
+                const nutrition = await fetchNutrition(selectedIngredient);
 
-        // Calculate nutrition values based on weight
-        const weightInGrams = parseFloat(weight);
-        const kcal = (nutrition.kcal * weightInGrams) / 100;
-        const protein = (nutrition.protein * weightInGrams) / 100;
-        const fat = (nutrition.fat * weightInGrams) / 100;
-        const fiber = (nutrition.fiber * weightInGrams) / 100;
+                // Calculate nutrition values based on weight
+                const weightInGrams = parseFloat(weight);
+                const kcal = (nutrition.kcal * weightInGrams) / 100;
+                const protein = (nutrition.protein * weightInGrams) / 100;
+                const fat = (nutrition.fat * weightInGrams) / 100;
+                const fiber = (nutrition.fiber * weightInGrams) / 100;
 
-        row.innerHTML = `
+                row.innerHTML = `
             <td>${table.childElementCount + 1}</td>
             <td>${selectedIngredient}</td>
             <td>${dateString}</td>
@@ -56,26 +56,26 @@ document.addEventListener("DOMContentLoaded", function () {
             <i class="fa fa-trash" onclick="delete(${table.childElementCount})"></i></td></td>
         `;
 
-        table.appendChild(row);
-        // Close the modal
-        modal.style.display = "none";
-    });
-    }
+                table.appendChild(row);
+                // Close the modal
+                modal.style.display = "none";
+            });
+        }
     });
 
     function openView() {
         document.getElementById('openView').style.display = 'block';
     }
 
-//funktion der henter den specifikke addresse med brug af nominatin.
+    //funktion der henter den specifikke addresse med brug af nominatin.
     async function getAddressFromCoordinates(latitude, longitude) {
         const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
         const data = await response.json();
         //if (data.display_name) {
-            //return data.display_name;
-            if (data.address) {
-                const { amenity, town, postcode, country } = data.address;
-                return `${amenity}, ${town}, ${postcode}, ${country}`;
+        //return data.display_name;
+        if (data.address) {
+            const { amenity, town, postcode, country } = data.address;
+            return `${amenity}, ${town}, ${postcode}, ${country}`;
         } else {
             return null;
         }

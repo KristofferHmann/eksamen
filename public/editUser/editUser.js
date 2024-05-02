@@ -51,15 +51,6 @@ const updateButton = document.getElementById('updateButton');
 updateButton.addEventListener('click', handleSubmit);
 
 
-
-
-
-
-
-
-
-
-
 // Delete function
 async function deleteUser() {
     const token = localStorage.getItem('token');

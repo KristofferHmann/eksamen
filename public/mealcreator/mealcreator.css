@@ -142,7 +142,7 @@ th {
     flex-grow: 1;
 }
 
-.mealNameInput{
+#mealNameID{
     /* transform: translate(75%); */
     background-color: #f2fff5;
     border-radius: 10px;

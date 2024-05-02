@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 
 function updateHour() {
     let tbodyRef = document.getElementById('overview');
@@ -35,3 +36,15 @@ function updateHour() {
     div.innerHTML = "Calories Surplus or Deficit";
     newCell6.appendChild(div);
 }
+=======
+let ybodyRef = document.getElementById('overviewOfIntake');
+
+//Ny række til tabellen
+let newRow = tbodyRef.insertRow();
+
+//Insætter celle til slutningen af række
+let newCell = newRow.insertCell();
+
+let newText = document.createTextNode('new row');
+newCell.appenChild(newText);
+>>>>>>> d7fa143d70dcb2d01d33dac808f4076bbaf1a9f9
