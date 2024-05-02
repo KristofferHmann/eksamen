@@ -2,7 +2,7 @@ let totalKcal = 0;
 let totalProtein = 0;
 let totalFat = 0;
 let totalFiber = 0;
- 
+
 //Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
 function openMealCreator() {
     document.getElementById("modal").style.display = "block";
@@ -51,11 +51,14 @@ async function fetchNutrition(ingredientName) {
     };
 };
 
-const addIngredientButton = document.getElementById('addIngredient');
-if (addIngredientButton) {
-    addIngredientButton.addEventListener('click', addIngredientToMeal);
-}
-
+document.addEventListener('DOMContentLoaded', () => {
+    const addIngredientButton = document.getElementById('addIngredient');
+    if (addIngredientButton) {
+        addIngredientButton.addEventListener('click', addIngredientToMeal);
+    }else {
+        console.log('Button is not found');
+    }
+});
 async function foodFetch() {
     try {
         const response = await fetch('http://localhost:3000/items/ingredients');
@@ -95,17 +98,8 @@ async function addIngredientToMeal() {
     const fat = (nutrition.fat * weightInGrams) / 100;
     const fiber = (nutrition.fiber * weightInGrams) / 100;
 
-    // Find the table inside ingredientsBox
-    let ingredientsTable = document.querySelector("#ingredientsBox table tbody");
-    // Fetch nutrition information
-    const nutrition = await fetchNutrition(selectedIngredient);
-
-    // Calculate nutrition values based on weight
-    const weightInGrams = parseFloat(weight);
-    const kcal = (nutrition.kcal * weightInGrams) / 100;
-    const protein = (nutrition.protein * weightInGrams) / 100;
-    const fat = (nutrition.fat * weightInGrams) / 100;
-    const fiber = (nutrition.fiber * weightInGrams) / 100;
+    // Define ingredientsTable
+    let ingredientsTable = document.getElementById('ingredientsTable'); // Replace 'your-table-id' with the actual ID of your ingredients table
 
     // Opret en ny række og tilføj den til tabellen
     let row = ingredientsTable.insertRow();
@@ -141,14 +135,12 @@ function addMealToTable() {
     row.insertCell().textContent = `${totalKcal.toFixed(2)} kcal, ${totalProtein.toFixed(2)} protein, ${totalFat.toFixed(2)} fat, ${totalFiber.toFixed(2)} fiber`;
     row.insertCell().textContent = 'Added on'; // Added on kolonne (opdater denne værdi som nødvendigt)
 
-     // Nulstil de globale totaler for det næste måltid
-     totalKcal = 0;
-     totalProtein = 0;
-     totalFat = 0;
-     totalFiber = 0;
+    // Nulstil de globale totaler for det næste måltid
+    totalKcal = 0;
+    totalProtein = 0;
+    totalFat = 0;
+    totalFiber = 0;
 };
-
-
 
 async function createMeal(mealData) {
     const token = localStorage.getItem('token');
@@ -173,4 +165,3 @@ async function createMeal(mealData) {
     const data = await response.json();
     console.log(data.rowsAffected);
 }
-
