@@ -93,7 +93,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return {
             kcal: ingredient.kcal,
-     ;
+            protein: ingredient.protein,
             fat: ingredient.fat,
             fiber: ingredient.fiber,
         };
