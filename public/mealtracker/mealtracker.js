@@ -47,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
         `;
 
         table.appendChild(row);
+        
         // Close the modal
         modal.style.display = "none";
     });
@@ -68,7 +69,7 @@ document.addEventListener("DOMContentLoaded", function () {
             fiber: ingredient.fiber,
         };
     }
-});
+);
 
 document.addEventListener('DOMContentLoaded', () => {
     const searchInput = document.getElementById('searchFoodInput');
