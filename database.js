@@ -145,18 +145,54 @@ export default class Database {
       // Extract updated user data
       const { gender, weight, age } = updatedUserData;
 
+      let bmr;
+      if (gender === 'female') {
+        if (age < 3) {
+          bmr = 0.244 * weight - 0.13;
+        } else if (age >= 4 & age <= 10) {
+          bmr = 0.085 * weight + 2.03;
+        } else if (age >= 11 && age <= 18) {
+          bmr = 0.056 * weight + 2.90;
+        } else if (age >= 19 && age <= 30) {
+          bmr = 0.0615 * weight + 2.08;
+        } else if (age >= 31 && age <= 60) {
+          bmr = 0.0364 * weight + 3.47;
+        } else if (age >= 61 && age <= 75) {
+          bmr = 0.0386 * weight + 2.88;
+        } else if (age > 75) {
+          bmr = 0.0410 * weight + 2.61;
+        }
+      } else if (gender === 'male') {
+        if (age < 3) {
+          bmr = 0.249 * weight - 0.13;
+        } else if (age >= 4 && age <= 10) {
+          bmr = 0.095 * weight + 2.11;
+        } else if (age >= 11 && age <= 18) {
+          bmr = 0.074 * weight + 2.75 * 0.068;
+        } else if (age >= 19 && age <= 30) {
+          bmr = 0.064 * weight + 2.84;
+        } else if (age >= 31 && age <= 60) {
+          bmr = 0.0485 * weight + 3.67;
+        } else if (age >= 61 && age <= 75) {
+          bmr = 0.0499 * weight + 2.93;
+        } else if (age > 75) {
+          bmr = 0.035 * weight + 3.43;
+        }
+      }
       // Construct the SQL query to update user information
-      const query = `
-        UPDATE Nutri.[USER]
-        SET gender = @gender, weight = @weight, age = @age
-        WHERE user_ID = @userId
-      `;
-
       // Define input parameters
       request.input('userId', sql.Int, userId);
       request.input('gender', sql.VarChar, gender);
       request.input('weight', sql.Int, weight);
       request.input('age', sql.Int, age);
+      request.input('bmr', sql.Decimal(18, 2), (bmr * 239).toFixed(2));
+      const query = `
+        UPDATE Nutri.[USER]
+        SET gender = @gender, weight = @weight, age = @age, bmr = @bmr
+        WHERE user_ID = @userId
+      `;
+
+
       const result = await request.query(query);
 
       // Return the number of rows affected by the update operation
