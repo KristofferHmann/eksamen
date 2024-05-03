@@ -155,13 +155,36 @@ function addMealToTable() {
     // Hent måltidsnavnet fra input feltet
     let mealName = document.getElementById("mealNameID").value;
 
+    const date = new Date();
+    const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     // Opret en ny række og tilføj den til tabellen
     let row = mealTable.insertRow();
     row.insertCell().textContent = mealTable.rows.length; // # kolonne
     row.insertCell().textContent = mealName; // Meal Name kolonne (opdater denne værdi som nødvendigt)
     row.insertCell().textContent = numIngredients;
     row.insertCell().textContent = `${totalKcal.toFixed(2)} kcal, ${totalProtein.toFixed(2)} protein, ${totalFat.toFixed(2)} fat, ${totalFiber.toFixed(2)} fiber`;
-    row.insertCell().textContent = 'Added on'; // Added on kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = dateString; // Opdaterer denne værdi med datoen
+
+    // Add the current meal to the list of meals
+    meals.push(currentMeal);
+
+    // Save the meal data in local storage
+    const mealData = {
+        name: mealName,
+        numIngredients: numIngredients,
+        ingredients: currentMeal,
+        nutrition: {
+            kcal: totalKcal,
+            protein: totalProtein,
+            fat: totalFat,
+            fiber: totalFiber,
+        },
+        addedOn: dateString,
+    };
+    localStorage.setItem(mealName, JSON.stringify(mealData));
+
+    // Reset numIngredients for the next meal
+    numIngredients = 0;
 
     // Nulstil de globale totaler for det næste måltid
     totalKcal = 0;
@@ -169,11 +192,6 @@ function addMealToTable() {
     totalFat = 0;
     totalFiber = 0;
 
-    // Reset numIngredients for the next meal
-    numIngredients = 0;
-
-    // Add the current meal to the list of meals
-    meals.push(currentMeal);
     // Reset the current meal for the next meal
     currentMeal = [];
 
@@ -203,6 +221,49 @@ function addMealToTable() {
 
     closeMealCreator();
 };
+
+function displayMealsFromLocalStorage() {
+    // Get all keys from local storage
+    const keys = Object.keys(localStorage);
+
+    // Find the table in the mealCreator div
+    let mealTable = document.querySelector(".mealCreator table tbody");
+
+    // For each key in local storage
+    keys.forEach(key => {
+        // Get the meal data from local storage
+        const mealData = JSON.parse(localStorage.getItem(key));
+
+        // Create a new row and add it to the table
+        let row = mealTable.insertRow();
+        row.insertCell().textContent = mealTable.rows.length; // # column
+        row.insertCell().textContent = mealData.name; // Meal Name column
+        row.insertCell().textContent = mealData.numIngredients;
+        row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
+        row.insertCell().textContent = mealData.addedOn; // Date column
+
+        // Add a new cell for the button
+        let buttonCell = row.insertCell();
+        // Create a button element
+        let button = document.createElement('button');
+        // Set the button text
+        button.textContent = 'Show Ingredients';
+        // Add an event listener to the button
+        button.addEventListener('click', () => {
+            // Create a string with the ingredients
+            let ingredientsStr = mealData.ingredients.map(ingredient =>
+                `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
+            ).join('\n');
+            // Display the ingredients
+            alert('Ingredients:\n' + ingredientsStr);
+        });
+        // Add the button to the cell
+        buttonCell.appendChild(button);
+    });
+}
+
+// Call the function when the document is loaded
+document.addEventListener('DOMContentLoaded', displayMealsFromLocalStorage);
 
 
 async function createMeal(mealData) {
