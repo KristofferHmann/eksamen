@@ -25,7 +25,14 @@ document.addEventListener("DOMContentLoaded", function () {
         const row = document.createElement('tr');
         const date = new Date(); // dato og tidspunkt ved jeg ikke helt hvad man skal gøre med databasen
         const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-        const geolocation = 'N/A vitten'; // Replace with actual geolocation if available vitten kan lave det 
+        
+        if (navigator.geolocation) {
+           
+            navigator.geolocation.getCurrentPosition(async position => {
+                const { latitude, longitude } = position.coords;
+                const address = await getAddressFromCoordinates(latitude, longitude);
+
+                const geolocation = address || `Latitude: ${latitude}, Longitude: ${longitude}`
 
         // Fetch nutrition information
         const nutrition = await fetchNutrition(selectedIngredient);
@@ -41,13 +48,26 @@ document.addEventListener("DOMContentLoaded", function () {
             <td>${table.childElementCount + 1}</td>
             <td>${selectedIngredient}</td>
             <td>${dateString}</td>
-            <td>${geolocation}</td>
+            <td>${address}</td>
             <td>${weight}</td>
-            <td>${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber</td>
-        `;
+            <td>${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber</td>`;
 
         table.appendChild(row);
     });
+}
+});
+
+    async function getAddressFromCoordinates(latitude, longitude) {
+        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+        const data = await response.json();
+        
+            if (data.address) {
+                const { amenity, town, postcode, country } = data.address;
+                return `${amenity}, ${town}, ${postcode}, ${country}`;
+        } else {
+            return null;
+        }
+    }
 
     async function fetchNutrition(ingredientName) {
         const response = await fetch('http://localhost:3000/items/ingredients');
