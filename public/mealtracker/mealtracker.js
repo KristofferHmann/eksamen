@@ -30,10 +30,8 @@ document.addEventListener("DOMContentLoaded", function () {
            
             navigator.geolocation.getCurrentPosition(async position => {
                 const { latitude, longitude } = position.coords;
-                const address = await getAddressFromCoordinates(latitude, longitude);
-
-                const geolocation = address || `Latitude: ${latitude}, Longitude: ${longitude}`
-
+                const address = await getAddressFromCoordinates(latitude, longitude) 
+                
         // Fetch nutrition information
         const nutrition = await fetchNutrition(selectedIngredient);
 
@@ -43,6 +41,22 @@ document.addEventListener("DOMContentLoaded", function () {
         const protein = (nutrition.protein * weightInGrams) / 100;
         const fat = (nutrition.fat * weightInGrams) / 100;
         const fiber = (nutrition.fiber * weightInGrams) / 100;
+        
+        const ingredientData = {
+            name: selectedIngredient,
+            date: dateString,
+            address: address,
+            weight: weight,
+            nutrition: {
+                kcal: kcal.toFixed(2),
+                protein: protein.toFixed(2),
+                fat: fat.toFixed(2),
+                fiber: fiber.toFixed(2),
+            },
+        };
+        const ingredientDataJson = JSON.stringify(ingredientData);
+        
+        localStorage.setItem('ingredientdata', ingredientDataJson)
 
         row.innerHTML = `
             <td>${table.childElementCount + 1}</td>
@@ -50,24 +64,34 @@ document.addEventListener("DOMContentLoaded", function () {
             <td>${dateString}</td>
             <td>${address}</td>
             <td>${weight}</td>
-            <td>${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber</td>`;
+            <td>${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber</td>
+            <td><i class="fa fa-pencil" onclick="editMeal(${table.childElementCount})"></i>
+            <i class="fa fa-trash" onclick="deleteMeal(${table.childElementCount})"></i> </td>`;
 
         table.appendChild(row);
     });
 }
-});
+    });
+    
 
-    async function getAddressFromCoordinates(latitude, longitude) {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-        const data = await response.json();
-        
-            if (data.address) {
-                const { amenity, town, postcode, country } = data.address;
-                return `${amenity}, ${town}, ${postcode}, ${country}`;
-        } else {
-            return null;
-        }
+
+
+//funktion der sletter et tracked måltid fra tabellen.
+/*function deleteMeals() {
+    const mealIndex = meals.findIndex(meal => meal.id === mealId);
+}*/
+
+async function getAddressFromCoordinates(latitude, longitude) {
+    const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+    const data = await response.json();
+    
+        if (data.address) {
+            const { amenity, town, postcode, country } = data.address;
+            return `${amenity}, ${town}, ${postcode}, ${country}`;
+    } else {
+        return null;
     }
+}
 
     async function fetchNutrition(ingredientName) {
         const response = await fetch('http://localhost:3000/items/ingredients');
@@ -80,12 +104,14 @@ document.addEventListener("DOMContentLoaded", function () {
             throw new Error('Ingredient not found');
         }
         return {
+            id: ingredient.ingredient_ID,
             kcal: ingredient.kcal,
             protein: ingredient.protein,
             fat: ingredient.fat,
             fiber: ingredient.fiber,
         };
     }
+    
 });
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -125,3 +151,47 @@ async function foodFetch() {
     }
 };
 
+
+
+async function getMealsFromMealCreator(mealname, meal_ID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+
+    request.input('mealname', sql.varchar, mealname)
+    request.input('meal_ID', sql.Int, meal_ID)
+
+    const result = await request.query('SELECT Meals.meal_ID, mealname FROM Nutri.Meals');
+
+    return result.recordsets[0];
+  }; 
+
+
+async function getWeightAndTotalNutritionFromMealTracker(weight, totalKcal, totalFat, totalFiber, totalProtein) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('Token missing');
+        return;
+    }
+    const nutritionData = {
+        weight: weight,
+        totalKcal: totalKcal,
+        totalFat: totalFat,
+        totalFiber: totalFiber,
+        totalProtein: totalProtein
+    };
+    const response = await fetch('http://localhost:3000/items/mealTracker', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
+
+        },
+        body: JSON.stringify(nutritionData)
+    })
+    if (!response.ok) {
+        console.Error('Failed to create meals')
+        return;
+    }
+    const data = await response.json();
+    console.log(data.rowsAffected);
+};

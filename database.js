@@ -234,6 +234,34 @@ export default class Database {
     return result.rowsAffected[0];
   }
 
+  //route der henter måltider fra mealCreatoren til mealtracker
+async getMealsFromMealCreator(user_ID, mealname, meal_ID) {
+  const token = localStorage.getItem('token');
+  if (!token) {
+      console.error('Token missing');
+      return;
+  }
+  const url = new URL('http://localhost:3000/items/mealCreator');
+  url.search = new URLSearchParams({ user_ID, mealname, meal_ID });
+
+  const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+          'Content-Type': 'application/json',
+          "Authorization": "Bearer " + token,
+
+      },
+      //body: JSON.stringify(user_ID, mealname, meal_ID)
+  });
+  //console.log(mealname, meal_ID);
+  if (!response.ok) {
+      console.Error('Failed to fetch meals')
+      return;
+  }
+  const data = await response.json();
+  console.log(data.trackedMeals);
+};
+
   //Alle vores aktiviteter
   async getAllActivities() {
     await this.connect();
@@ -254,6 +282,7 @@ export default class Database {
 
     return result.recordsets[0];
   };
+
   async addActivity(data, userID) {
     await this.connect();
     const request = this.poolconnection.request();

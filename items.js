@@ -34,6 +34,30 @@ router.post('/mealCreator', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+router.get('/mealCreator', async (req, res) => {
+  try {
+    const { mealname, meal_ID } = req.query;
+    if (!req.headers.authorization) {
+      return res.status(401).send('No authorization token provided');
+    }
+    const token = req.headers.authorization.split(' ')[1]
+    if (!token) {
+      return res.status(401).send('Invalid token format');
+    }
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+
+    const trackedMeals = await database.getMealsFromMealCreator(userID, mealname, meal_ID);
+    res.status(200).json({ trackedMeals })
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error')
+  }
+});
+
+
 router.post('/mealIngredients', async (req, res) => {
   try {
     const ingredientData = req.body;
