@@ -65,8 +65,8 @@ router.post('/mealIngredients', async (req, res) => {
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
-    console.log(userID);
-    const rowsAffected = await database.createMealIngredients(ingredientData, userID);
+    
+    const rowsAffected = await database.createMealIngredients(ingredientData);
     res.status(201).json({ message: 'Meal ingredients created successfully', rowsAffected });
   } catch (err) {
     console.error('Error catching meal ingredients', err);
