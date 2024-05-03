@@ -192,6 +192,7 @@ function addMealToTable() {
 
 
 async function createMeal(mealData) {
+
     const token = localStorage.getItem('token');
     if (!token) {
         console.error('Token missing');
@@ -214,3 +215,13 @@ async function createMeal(mealData) {
     const data = await response.json();
     console.log(data.rowsAffected);
 }
+
+const addMealBtn = document.getElementById("SubmitButtonID");
+addMealBtn.addEventListener("click", async () => {
+    const mealNameInput = document.getElementById('mealNameID').value;
+    console.log(mealNameInput);
+    const mealData = { mealname: mealNameInput }; // Assuming mealData should contain the meal name
+
+    await createMeal(mealData);
+});
+

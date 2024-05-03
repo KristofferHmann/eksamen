@@ -26,11 +26,26 @@ router.post('/mealCreator', async (req, res) => {
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
-
+    console.log(userID);
     const rowsAffected = await database.createMeal(meal, userID);
     res.status(201).json({ message: 'Meals created successfully', rowsAffected });
   } catch (err) {
     console.error('Error cathing meal', err);
+    res.status(500).send('Server error');
+  }
+});
+router.post('/mealIngredients', async (req, res) => {
+  try {
+    const ingredientData = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    console.log(userID);
+    const rowsAffected = await database.createMealIngredients(ingredientData, userID);
+    res.status(201).json({ message: 'Meal ingredients created successfully', rowsAffected });
+  } catch (err) {
+    console.error('Error catching meal ingredients', err);
     res.status(500).send('Server error');
   }
 });

@@ -210,14 +210,29 @@ export default class Database {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('mealname', sql.VarChar, mealData.mealname)
-    request.input('weight', sql.Int, mealData.weight)
     request.input('user_ID', sql.Int, userID)
 
-    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, user_ID) VALUES (@mealname, @weight, @user_ID)`);
+    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, user_ID) VALUES (@mealname, @user_ID)`);
 
     return result.rowsAffected[0];
 
   };
+
+  async createMealIngredients(ingredientData) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('ingredientweight', sql.Int, ingredientData.ingredientweight)
+    request.input('meal_ID', sql.Int, ingredientData.meal_ID)
+    request.input('ingredient_ID', sql.Int, ingredientData.ingredient_ID)
+    request.input('weightKcal', sql.Int, ingredientData.weightKcal)
+    request.input('weightProtein', sql.Int, ingredientData.weightProtein)
+    request.input('weightFat', sql.Int, ingredientData.weightFat)
+    request.input('weightFiber', sql.Int, ingredientData.weightFiber)
+
+    const result = await request.query(`INSERT INTO Nutri.MealsIngredients (ingredientweight, meal_ID, ingredient_ID, weightKcal, weightProtein, weightFat, weightFiber) VALUES (@ingredientweight, @meal_ID, @ingredient_ID, @weightKcal, @weightProtein, @weightFat, @weightFiber)`);
+
+    return result.rowsAffected[0];
+  }
 
   //Alle vores aktiviteter
   async getAllActivities() {
