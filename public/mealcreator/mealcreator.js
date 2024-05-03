@@ -188,6 +188,7 @@ function addMealToTable() {
     closeMealCreator();
 };
 
+
 async function createMeal(mealData) {
 
     const token = localStorage.getItem('token');
