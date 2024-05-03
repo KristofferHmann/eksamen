@@ -139,13 +139,15 @@ function addMealToTable() {
     // Hent måltidsnavnet fra input feltet
     let mealName = document.getElementById("mealNameID").value;
 
+    const date = new Date();
+    const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
     // Opret en ny række og tilføj den til tabellen
     let row = mealTable.insertRow();
     row.insertCell().textContent = mealTable.rows.length; // # kolonne
     row.insertCell().textContent = mealName; // Meal Name kolonne (opdater denne værdi som nødvendigt)
     row.insertCell().textContent = numIngredients;
     row.insertCell().textContent = `${totalKcal.toFixed(2)} kcal, ${totalProtein.toFixed(2)} protein, ${totalFat.toFixed(2)} fat, ${totalFiber.toFixed(2)} fiber`;
-    row.insertCell().textContent = 'Added on'; // Added on kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = dateString; // Opdaterer denne værdi med datoen
 
     // Nulstil de globale totaler for det næste måltid
     totalKcal = 0;
