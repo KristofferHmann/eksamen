@@ -234,6 +234,9 @@ export default class Database {
     return result.rowsAffected[0];
   }
 
+  
+  
+
   //Alle vores aktiviteter
   async getAllActivities() {
     await this.connect();

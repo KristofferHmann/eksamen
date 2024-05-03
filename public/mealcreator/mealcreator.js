@@ -48,7 +48,9 @@ async function fetchNutrition(ingredientName) {
     if (!ingredient) {
         throw new Error('Ingredient not found');
     }
+    const ingredientID = ingredient.ingredient_ID;
     return {
+        ingredientID: ingredientID,
         kcal: ingredient.kcal,
         protein: ingredient.protein,
         fat: ingredient.fat,
@@ -82,6 +84,7 @@ async function foodFetch() {
                 const option = document.createElement('option');
                 option.value = ingredient.ingredientname;
                 option.textContent = ingredient.ingredientname;
+                option.id = ingredient.ingredient_ID
                 ressult.appendChild(option);
             });
     } catch (error) {
@@ -103,6 +106,9 @@ async function addIngredientToMeal() {
     const fat = (nutrition.fat * weightInGrams) / 100;
     const fiber = (nutrition.fiber * weightInGrams) / 100;
 
+
+    const ingredientID = nutrition.ingredientID;
+
     // Add the ingredient to the current meal
     currentMeal.push({
         name: selectedFoodItem,
@@ -110,9 +116,19 @@ async function addIngredientToMeal() {
         nutrition: { kcal, protein, fat, fiber }
     });
 
+    //skab ingredientsdata som skal sendes til backend
+    const ingredientData = {
+        ingredient_ID: ingredientID,
+        ingredientweight: weight,
+        weightKcal: kcal,
+        weightProtein: protein,
+        weightFat: fat,
+        weightFiber: fiber
+    }
+    //Kalder funktionen for at sende ingredienser til backend
+    createMealIngredient(ingredientData);
     // Define ingredientsTable
-    let ingredientsTable = document.getElementById('ingredientsTable'); // Replace 'your-table-id' with the actual ID of your ingredients table
-
+    let ingredientsTable = document.getElementById('ingredientsTable');
     // Opret en ny række og tilføj den til tabellen
     let row = ingredientsTable.insertRow();
     row.insertCell().textContent = ingredientsTable.rows.length - 1; // # column
@@ -281,6 +297,47 @@ addMealBtn.addEventListener("click", async () => {
     console.log(mealNameInput);
     const mealData = { mealname: mealNameInput }; // Assuming mealData should contain the meal name
 
-    await createMeal(mealData);
+    const mealID = await createMeal(mealData);
+    if (mealID) {
+        console.log('Created meal with ID:', mealID);
+        // Now you can use mealID for further processing if needed
+    } else {
+        console.log('Failed to create meal');
+    }
+});
+
+
+async function createMealIngredient(ingredientData) {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('Token missing');
+        return;
+    }
+
+    try {
+        const response = await fetch('http://localhost:3000/items/mealIngredients', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": "Bearer " + token,
+            },
+            body: JSON.stringify(ingredientData)
+        });
+
+        if (!response.ok) {
+            console.error('Failed to create meal ingredient');
+            return;
+        }
+
+        const data = await response.json();
+        console.log(data.rowsAffected);
+    } catch (error) {
+        console.error('Error creating meal ingredient:', error);
+    }
+}
+
+const addIngredientBtn = document.getElementById("addIngredient");
+addIngredientBtn.addEventListener("click", async () => {
+    addIngredientToMeal(ingredientData);
 });
 
