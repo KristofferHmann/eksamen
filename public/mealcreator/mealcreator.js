@@ -240,7 +240,7 @@ function displayMealsFromLocalStorage() {
             ).join('\n');
             // Display the ingredients
             alert('Ingredients:\n' + ingredientsStr);
-        });
+        });     
         // Add the button to the cell
         buttonCell.appendChild(button);
     });
