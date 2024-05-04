@@ -210,9 +210,10 @@ export default class Database {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('mealname', sql.VarChar, mealData.mealname)
+    request.input('weight', sql.Int, mealData.weight)
     request.input('user_ID', sql.Int, userID)
 
-    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, user_ID) VALUES (@mealname, @user_ID)`);
+    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, user_ID) VALUES (@mealname, @weight, @user_ID)`);
 
     return result.rowsAffected[0];
 

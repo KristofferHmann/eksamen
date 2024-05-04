@@ -160,3 +160,25 @@ th {
     max-width: 30%;
 }
 
+/* Meal Name Modal Styles */
+#mealNameModal {
+    display: none; /* Initially hidden */
+    position: fixed;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    position: fixed;
+    top: 0; /* Position at the top of the viewport */
+    left: 0; /* Position at the left of the viewport */
+    
+}
+
+#mealNameModal .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 500px;
+}

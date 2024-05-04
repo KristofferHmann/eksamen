@@ -8,6 +8,32 @@ let numIngredients = 0;
 let meals = []; // List of meals, each meal is a list of ingredients
 let currentMeal = []; // List of ingredients for the current meal
 
+
+function openMealNameModal() {
+    document.getElementById("mealNameModal").style.display = "block";
+}
+
+// Close Meal Name Modal
+function closeMealNameModal() {
+    document.getElementById("mealNameModal").style.display = "none";
+}
+
+// Submit Meal Name
+function submitMealName() {
+    // Get the meal name from the input field
+    let mealName = document.getElementById("mealNameInput").value;
+    let mealWeight = document.getElementById("mealWeightInput").value;
+    // Close the modal
+    closeMealNameModal();
+
+    const mealData = {
+        mealname: mealName,
+        weight: mealWeight
+    }
+    createMeal(mealData)
+    openMealCreator();
+}
+
 //Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
 function openMealCreator() {
     document.getElementById("modal").style.display = "block";
@@ -256,7 +282,7 @@ function displayMealsFromLocalStorage() {
             ).join('\n');
             // Display the ingredients
             alert('Ingredients:\n' + ingredientsStr);
-        });     
+        });
         // Add the button to the cell
         buttonCell.appendChild(button);
     });
