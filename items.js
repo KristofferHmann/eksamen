@@ -37,7 +37,6 @@ router.post('/mealCreator', async (req, res) => {
 
 router.get('/mealCreator', async (req, res) => {
   try {
-    const { mealname, meal_ID } = req.query;
     if (!req.headers.authorization) {
       return res.status(401).send('No authorization token provided');
     }
@@ -49,7 +48,7 @@ router.get('/mealCreator', async (req, res) => {
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
 
-    const trackedMeals = await database.getMealsFromMealCreator(userID, mealname, meal_ID);
+    const trackedMeals = await database.getMealsFromMealCreator(userID, token);
     res.status(200).json({ trackedMeals })
   } catch (err) {
     console.error(err);

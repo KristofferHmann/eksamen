@@ -235,14 +235,8 @@ export default class Database {
   }
 
   //route der henter måltider fra mealCreatoren til mealtracker
-async getMealsFromMealCreator(user_ID, mealname, meal_ID) {
-  const token = localStorage.getItem('token');
-  if (!token) {
-      console.error('Token missing');
-      return;
-  }
+async getMealsFromMealCreator(user_ID, token) {
   const url = new URL('http://localhost:3000/items/mealCreator');
-  url.search = new URLSearchParams({ user_ID, mealname, meal_ID });
 
   const response = await fetch(url, {
       method: 'GET',
