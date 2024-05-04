@@ -1,5 +1,5 @@
-//Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
-function openMealCreator() {
+ //Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
+ function openMealCreator() {
     document.getElementById("modal").style.display = "block";
     document.getElementById("mealCreatorModal").style.display = "block";
 }
@@ -48,7 +48,7 @@ async function foodFetch() {
                 option.textContent = ingredient.ingredientname;
                 ressult.appendChild(option);
             });
-/*
+
         ressult.addEventListener('change', function () {
             const selectedIngredient = data.allIngredients.find(ingredient => ingredient.ingredientname === this.value);
 
@@ -59,8 +59,81 @@ async function foodFetch() {
                 document.getElementById('fat').textContent = 'Fat: ' + selectedIngredient.fat;
                 document.getElementById('fiber').textContent = 'Fiber: ' + selectedIngredient.fiber;
             }
-        }); */
+        }); 
     } catch (error) {
         throw new Error('Error fetching data:' + error.toString());
     }
 };
+
+async function addIngredientToMeal() {
+    let selectedFoodItem = document.getElementById("searchResults");
+    console.log(selectedFoodItem.value);
+    let weight = document.getElementById('mealWeight').value;
+    console.log(weight);
+
+
+    //En div laves for de valgte ingredienser:
+    let chosenfoodDiv = document.getElementById("chosenFoodDivID");
+    
+    let selectedFoodDiv = document.createElement("div");
+};
+
+async function addIngredientToMeal() {
+    let selectedFoodItem = document.getElementById("searchResults");
+    let weight = document.getElementById('mealWeight').value;
+
+    // Find tabellen inde i ingredientsBox
+    let ingredientsTable = document.querySelector("#ingredientsBox table tbody");
+
+    // Opret en ny række og tilføj den til tabellen
+    let row = ingredientsTable.insertRow();
+    row.insertCell().textContent = ingredientsTable.rows.length; // # kolonne
+    row.insertCell().textContent = selectedFoodItem.value; // Ingredient Name kolonne
+    row.insertCell().textContent = weight; // Weight kolonne
+    row.insertCell().textContent = 'Nutrition'; // Nutrition kolonne (opdater denne værdi som nødvendigt)
+};
+document.getElementById("addIngredient").addEventListener("click", addIngredientToMeal);
+
+document.getElementById("SubmitButtonID").addEventListener("click", addMealToTable);
+
+function addMealToTable() {
+    // Find tabellen i mealCreator div
+    let mealTable = document.querySelector(".mealCreator table tbody");
+
+    // Hent måltidsnavnet fra input feltet
+    let mealName = document.getElementById("mealNameID").value;
+
+    // Hent antallet af ingredienser fra ingredientsBox
+    let numIngredients = document.querySelector("#ingredientsBox table tbody").rows.length;
+    closeMealCreator();
+    // Opret en ny række og tilføj den til tabellen
+    let row = mealTable.insertRow();
+    row.insertCell().textContent = mealTable.rows.length; // # kolonne
+    row.insertCell().textContent = mealName; // Meal Name kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = numIngredients; // # Ingredients kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = 'Nutrition'; // Nutrition kolonne (opdater denne værdi som nødvendigt)
+    row.insertCell().textContent = 'Added on'; // Added on kolonne (opdater denne værdi som nødvendigt)
+};
+
+
+
+async function createMeal(mealData){
+    const token = localStorage.getItem('token');
+
+const response = await fetch('http://localhost:3000/items/mealCreator', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      "Authorization": "Bearer " + token,
+      
+    },
+    body: JSON.stringify(mealData)
+  })
+ if (!response.ok) {
+    console.Error('Failed to update meals')
+    return;
+ }
+ const data = await response.json();
+ console.log(data.message);
+}
+

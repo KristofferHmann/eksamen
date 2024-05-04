@@ -47,15 +47,11 @@
     <table>
       <thead>
         <tr>
-          <th></th>
+          <th>#</th>
           <th>Meal Name</th>
-          <th>Total Kcal pr. 100g</th>
-          <th>Added on</th>
           <th># Ingredients</th>
-          <th>Times Eaten</th>
-          <th></th>
-          <th></th>
-          <th></th>
+          <th>Nutrition</th>
+          <th>Added on</th>
         </tr>
       </thead>
 
@@ -75,6 +71,7 @@
           name="text" onkeydown="searchButton_MC(event)" id="mcFoodSearch"></div>
       <select id="searchResults"></select>
       <input type="number" id="mealWeight" placeholder="Weight">
+      <button id="addIngredient" class="fa fa-add"></button>
     </div>
 
     <div id="searchIngredientdrop"></div>
@@ -82,9 +79,23 @@
     <button class="submit" id="SubmitButtonID" onclick="submitAction()">Submit</button>
 
     <button class="close" id="closebutton" onclick="closeMealCreator()">Close</button>
-    <div id="chosenFoodDivID"></div>
-
-
+    <div id="chosenFoodDivID"></div><br>
+    <span id="ingredientsBox">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Ingredient Name</th>
+            <th>Weight</th>
+            <th>Nutrition??????ikke krav men måske lækkert</th>
+          </tr>
+        </thead>
+  
+        <tbody>
+        </tbody>
+  
+      </table>
+    </span>
   </div>
 
   <script src="mealcreator.js"></script>
