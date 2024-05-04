@@ -69,3 +69,8 @@ th {
     text-decoration: none;
     cursor: pointer;
 }
+
+.fa-trash:hover {
+    color: red; 
+    cursor: pointer; 
+}

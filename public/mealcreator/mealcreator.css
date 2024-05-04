@@ -76,7 +76,6 @@ th {
 }
 
 .close{
-    transform: translate(729%, 2670%);
     background-color: #FFAB40;
     border-radius: 50px;
     color:#252525;
@@ -84,7 +83,6 @@ th {
 }
 
 .submit{
-    transform: translate(734%, 2530%);
     border-radius: 50px;
     color:#252525;
     background-color: #91c789;
@@ -142,7 +140,7 @@ th {
     flex-grow: 1;
 }
 
-.mealNameInput{
+#mealNameID{
     /* transform: translate(75%); */
     background-color: #f2fff5;
     border-radius: 10px;
@@ -161,3 +159,4 @@ th {
 #searchResults {
     max-width: 30%;
 }
+

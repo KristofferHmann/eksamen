@@ -65,7 +65,7 @@
   <div id="modal"></div>
   <div id="mealCreatorModal">
     <div class="Modal-MealCreator">
-      <div class="Modal-1"><input type="text" class="mealNameInput" placeholder="Your meal name" name="text"
+      <div class="Modal-1"><input type="text" placeholder="Your meal name" name="text"
           id="mealNameID"></div>
       <div class="Modal-1"><input type="text" class="searchIngredientInput" placeholder="Search for Ingredients"
           name="text" onkeydown="searchButton_MC(event)" id="mcFoodSearch"></div>
@@ -81,13 +81,13 @@
     <button class="close" id="closebutton" onclick="closeMealCreator()">Close</button>
     <div id="chosenFoodDivID"></div><br>
     <span id="ingredientsBox">
-      <table>
+      <table id="ingredientsTable">
         <thead>
           <tr>
             <th>#</th>
             <th>Ingredient Name</th>
             <th>Weight</th>
-            <th>Nutrition??????ikke krav men måske lækkert</th>
+            <th>Nutrition</th>
           </tr>
         </thead>
   
@@ -97,8 +97,16 @@
       </table>
     </span>
   </div>
-
+<!-- Modal for ingredients 
+  <div id="ingredientsModal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <p id="ingredientsText"></p>
+    </div>
+  </div>
+-->
   <script src="mealcreator.js"></script>
+  <script src="../signout.js"></script>
 </body>
 
 

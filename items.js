@@ -2,7 +2,6 @@ import express from 'express';
 import { config } from './config.js';
 import Database from './database.js';
 import jwt from 'jsonwebtoken'
-import { authMiddleware } from './authmiddleware.js';
 import * as dotenv from 'dotenv';
 dotenv.config({ path: `.env`, debug: true });
 //import cookieParser from 'cookie-parser';
@@ -22,14 +21,54 @@ const database = new Database(config);
 //Registrer et måltid
 router.post('/mealCreator', async (req, res) => {
   try {
+    const meal = req.body;
     const token = req.headers.authorization.split(' ')[1]
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
-    const meal = req.body;
-    const rowsAffected = await database.createMeal(meal);
-    res.status(201).json({ rowsAffected });
+    console.log(userID);
+    const rowsAffected = await database.createMeal(meal, userID);
+    res.status(201).json({ message: 'Meals created successfully', rowsAffected });
   } catch (err) {
+    console.error('Error cathing meal', err);
+    res.status(500).send('Server error');
+  }
+});
+
+router.get('/mealCreator', async (req, res) => {
+  try {
+    if (!req.headers.authorization) {
+      return res.status(401).send('No authorization token provided');
+    }
+    const token = req.headers.authorization.split(' ')[1]
+    if (!token) {
+      return res.status(401).send('Invalid token format');
+    }
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+
+    const trackedMeals = await database.getMealsFromMealCreator(userID, token);
+    res.status(200).json({ trackedMeals })
+  } catch (err) {
+    console.error(err);
+    res.status(500).send('Server Error')
+  }
+});
+
+
+router.post('/mealIngredients', async (req, res) => {
+  try {
+    const ingredientData = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    
+    const rowsAffected = await database.createMealIngredients(ingredientData);
+    res.status(201).json({ message: 'Meal ingredients created successfully', rowsAffected });
+  } catch (err) {
+    console.error('Error catching meal ingredients', err);
     res.status(500).send('Server error');
   }
 });
@@ -42,7 +81,6 @@ router.get('/userActivities', async (req, res) => {
     const userID = tokenDecoded.user_ID
 
     const getAllActivities = await database.getUserActivities(userID);
-    console.log("udfhguerhguhreugh");
     res.status(200).json({ getAllActivities });
   } catch (err) {
     res.status(500).send('Server error');
@@ -65,8 +103,6 @@ router.get('/allActivities', async (req, res) => {
 router.post('/addActivity', async (req, res) => {
   try {
     const activity = req.body;
-    console.log("data2", activity);
-
     const token = req.headers.authorization.split(' ')[1]
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
