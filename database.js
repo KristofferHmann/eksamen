@@ -207,17 +207,27 @@ export default class Database {
 
 
   async createMeal(mealData, userID) {
-    await this.connect();
-    const request = this.poolconnection.request();
-    request.input('mealname', sql.VarChar, mealData.mealname)
-    request.input('weight', sql.Int, mealData.weight)
-    request.input('user_ID', sql.Int, userID)
+    try {
+      await this.connect();
+      const request = this.poolconnection.request();
+      request.input('mealname', sql.VarChar, mealData.mealname);
+      request.input('weight', sql.Int, mealData.weight);
+      request.input('user_ID', sql.Int, userID);
 
-    const result = await request.query(`INSERT INTO Nutri.Meals (mealname, weight, user_ID) VALUES (@mealname, @weight, @user_ID)`);
+      const result = await request.query(`
+            INSERT INTO Nutri.Meals (mealname, weight, user_ID)
+            OUTPUT INSERTED.meal_ID
+            VALUES (@mealname, @weight, @user_ID);
+        `);
+      const mealID = result.recordset[0].meal_ID;
 
-    return result.rowsAffected[0];
+      return mealID;
+    } catch (error) {
+      console.error('Error creating meal:', error.message);
+      throw error;
+    }
+  }
 
-  };
 
   async createMealIngredients(ingredientData) {
     await this.connect();
@@ -236,26 +246,26 @@ export default class Database {
   }
 
   //route der henter måltider fra mealCreatoren til mealtracker
-async getMealsFromMealCreator(user_ID, token) {
-  const url = new URL('http://localhost:3000/items/mealCreator');
+  async getMealsFromMealCreator(user_ID, token) {
+    const url = new URL('http://localhost:3000/items/mealCreator');
 
-  const response = await fetch(url, {
+    const response = await fetch(url, {
       method: 'GET',
       headers: {
-          'Content-Type': 'application/json',
-          "Authorization": "Bearer " + token,
+        'Content-Type': 'application/json',
+        "Authorization": "Bearer " + token,
 
       },
       //body: JSON.stringify(user_ID, mealname, meal_ID)
-  });
-  //console.log(mealname, meal_ID);
-  if (!response.ok) {
+    });
+    //console.log(mealname, meal_ID);
+    if (!response.ok) {
       console.Error('Failed to fetch meals')
       return;
-  }
-  const data = await response.json();
-  console.log(data.trackedMeals);
-};
+    }
+    const data = await response.json();
+    console.log(data.trackedMeals);
+  };
 
   //Alle vores aktiviteter
   async getAllActivities() {

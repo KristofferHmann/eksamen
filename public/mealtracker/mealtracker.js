@@ -92,8 +92,8 @@ document.addEventListener("DOMContentLoaded", function () {
         const data = await response.json();
 
         if (data.address) {
-            const { amenity, town, postcode, country } = data.address;
-            return `${amenity}, ${town}, ${postcode}, ${country}`;
+            const { town, postcode, country } = data.address;
+            return `${town}, ${postcode}, ${country}`;
         } else {
             return null;
         }

@@ -104,6 +104,29 @@ p {
     align-items: center;
 }
 
+.outBtn {
+    position: relative; /* Required for ::after to position correctly */
+}
+
+.outBtn::after {
+    content: ""; /* Initially empty */
+    position: absolute;
+    top: 100%;
+    left: 50%; /* Center horizontally */
+    transform: translateX(-50%); /* Adjust horizontal positioning */
+    transition: opacity 0.5s ease; /* Smooth transition */
+    background-color: #C00000; /* Background color */
+    padding: 5px 10px; /* Padding for spacing */
+    border-radius: 5px; /* Rounded corners */
+    display: none; /* Initially hidden */
+}
+
+.outBtn:hover::after {
+    content: "Logout"; /* Display "Logout" text */
+    opacity: 1; /* Make the text visible */
+    display: block; /* Show on hover */
+}
+
 /* dropdown */
 .dropdownBtn {
     border: none;

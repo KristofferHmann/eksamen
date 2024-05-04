@@ -42,8 +42,6 @@
     <div id="overskrift">Meal Creator
       <button id="btn-addMeal" onclick="openMealNameModal()">+</button>
     </div>
-    <a id="link" href="http://localhost:3000/public/foodinspector/inspector.html">Inspect ingredients</a>
-
     <table>
       <thead>
         <tr>
@@ -59,21 +57,22 @@
       </tbody>
 
     </table>
+    <input id="mealIDHidden" type="hidden" value="" />
 
   </div>
   <div id="mealNameModal" class="modal">
     <div class="modal-content">
-        <span class="close" onclick="closeMealNameModal()">&times;</span>
-        <h2>Enter Meal Name</h2>
-        <input type="text" id="mealNameInput" placeholder="Enter meal name...">
-        <br>
-        <br>
-        <input type="number" id="mealWeightInput" placeholder="Enter meal weight... (g)">
-        <br>
-        <br>
-        <button onclick="submitMealName()">Submit</button>
+      <span onclick="closeMealNameModal()"><i class="fa-regular fa-circle-xmark"></i></span>
+      <h2>Create your meal</h2>
+      <input type="text" id="mealNameInput" placeholder="Enter meal name...">
+      <br>
+      <br>
+      <input type="number" id="mealWeightInput" placeholder="Enter meal weight... (g)">
+      <br>
+      <br>
+      <button id="submitMeal" onclick="submitMealName()">Add Ingredients</button>
     </div>
-</div>
+  </div>
 
   <div id="modal"></div>
   <div id="mealCreatorModal">
@@ -87,7 +86,7 @@
 
     <div id="searchIngredientdrop"></div>
 
-    <button class="submit" id="SubmitButtonID" onclick="submitAction()">Submit</button>
+    <button class="submit" id="SubmitButtonID">Submit</button>
 
     <button class="close" id="closebutton" onclick="closeMealCreator()">Close</button>
     <div id="chosenFoodDivID"></div><br>
@@ -101,14 +100,14 @@
             <th>Nutrition</th>
           </tr>
         </thead>
-  
+
         <tbody>
         </tbody>
-  
+
       </table>
     </span>
   </div>
-<!-- Modal for ingredients 
+  <!-- Modal for ingredients 
   <div id="ingredientsModal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>

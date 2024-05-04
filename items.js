@@ -27,8 +27,8 @@ router.post('/mealCreator', async (req, res) => {
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
     console.log(userID);
-    const rowsAffected = await database.createMeal(meal, userID);
-    res.status(201).json({ message: 'Meals created successfully', rowsAffected });
+    const meal_ID = await database.createMeal(meal, userID);
+    res.status(201).json({ message: 'Meals created successfully', meal_ID });
   } catch (err) {
     console.error('Error cathing meal', err);
     res.status(500).send('Server error');
@@ -72,6 +72,9 @@ router.post('/mealIngredients', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+
 
 router.get('/userActivities', async (req, res) => {
   try {

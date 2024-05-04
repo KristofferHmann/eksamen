@@ -142,6 +142,8 @@ async function addIngredientToMeal() {
         nutrition: { kcal, protein, fat, fiber }
     });
 
+    let meal_ID = document.getElementById('mealIDHidden').value; //tager value fra den gemte mealid input og bruger det i ingiredientdata for at gemme det i databasen
+
     //skab ingredientsdata som skal sendes til backend
     const ingredientData = {
         ingredient_ID: ingredientID,
@@ -149,7 +151,8 @@ async function addIngredientToMeal() {
         weightKcal: kcal,
         weightProtein: protein,
         weightFat: fat,
-        weightFiber: fiber
+        weightFiber: fiber,
+        meal_ID: meal_ID
     }
     //Kalder funktionen for at sende ingredienser til backend
     createMealIngredient(ingredientData);
@@ -179,7 +182,7 @@ function addMealToTable() {
     let mealTable = document.querySelector(".mealCreator table tbody");
 
     // Hent måltidsnavnet fra input feltet
-    let mealName = document.getElementById("mealNameID").value;
+    let mealName = document.getElementById("mealNameInput").value;
 
     const date = new Date();
     const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
@@ -244,7 +247,7 @@ function addMealToTable() {
     });
     // Add the button to the cell
     buttonCell.appendChild(button);
-
+    createMeal(mealData);
     closeMealCreator();
 };
 
@@ -254,12 +257,11 @@ function displayMealsFromLocalStorage() {
 
     // Find the table in the mealCreator div
     let mealTable = document.querySelector(".mealCreator table tbody");
-
     // For each key in local storage
     keys.forEach(key => {
         // Get the meal data from local storage
         const mealData = JSON.parse(localStorage.getItem(key));
-
+        console.log(mealData);
         // Create a new row and add it to the table
         let row = mealTable.insertRow();
         row.insertCell().textContent = mealTable.rows.length; // # column
@@ -273,7 +275,7 @@ function displayMealsFromLocalStorage() {
         // Create a button element
         let button = document.createElement('button');
         // Set the button text
-        button.textContent = 'Show Ingredients';
+        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
         // Add an event listener to the button
         button.addEventListener('click', () => {
             // Create a string with the ingredients
@@ -314,24 +316,13 @@ async function createMeal(mealData) {
         return;
     }
     const data = await response.json();
-    console.log(data.rowsAffected);
+    const meal_ID = data.meal_ID
+    console.log('mealid', meal_ID);
+document.getElementById('mealIDHidden').value = meal_ID;  //Gemmer mealID'et lokalt i html siden i det gemte input mealIDHidden
+
+    return meal_ID;
+    
 }
-
-const addMealBtn = document.getElementById("SubmitButtonID");
-addMealBtn.addEventListener("click", async () => {
-    const mealNameInput = document.getElementById('mealNameID').value;
-    console.log(mealNameInput);
-    const mealData = { mealname: mealNameInput }; // Assuming mealData should contain the meal name
-
-    const mealID = await createMeal(mealData);
-    if (mealID) {
-        console.log('Created meal with ID:', mealID);
-        // Now you can use mealID for further processing if needed
-    } else {
-        console.log('Failed to create meal');
-    }
-});
-
 
 async function createMealIngredient(ingredientData) {
     const token = localStorage.getItem('token');
@@ -361,9 +352,3 @@ async function createMealIngredient(ingredientData) {
         console.error('Error creating meal ingredient:', error);
     }
 }
-
-const addIngredientBtn = document.getElementById("addIngredient");
-addIngredientBtn.addEventListener("click", async () => {
-    addIngredientToMeal(ingredientData);
-});
-
