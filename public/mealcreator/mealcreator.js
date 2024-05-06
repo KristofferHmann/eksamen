@@ -210,6 +210,7 @@ function addMealToTable() {
         },
         addedOn: dateString,
     };
+    
     localStorage.setItem(mealName, JSON.stringify(mealData));
 
     // Reset numIngredients for the next meal
@@ -259,16 +260,31 @@ function displayMealsFromLocalStorage() {
     let mealTable = document.querySelector(".mealCreator table tbody");
     // For each key in local storage
     keys.forEach(key => {
-        // Get the meal data from local storage
-        const mealData = JSON.parse(localStorage.getItem(key));
-        console.log(mealData);
+        // Get the meal data from local storage uden at parse vores token
+        
+    if (key === "token") {
+        return; // Skip to the next iteration
+    }
+    const storedData = localStorage.getItem(key);
+    //console.log("Key:", key, "Data:", storedData);
+    
+    try {
+        const mealData = JSON.parse(storedData);
+        // Process mealData as JSON
+    
         // Create a new row and add it to the table
         let row = mealTable.insertRow();
         row.insertCell().textContent = mealTable.rows.length; // # column
         row.insertCell().textContent = mealData.name; // Meal Name column
         row.insertCell().textContent = mealData.numIngredients;
-        row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
+        if (mealData.nutrition) { // Check if nutrition is defined
+            row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
+        } else {
+            row.insertCell().textContent = "Nutrition data not available";
+        }
+        //row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
         row.insertCell().textContent = mealData.addedOn; // Date column
+
 
         // Add a new cell for the button
         let buttonCell = row.insertCell();
@@ -287,7 +303,12 @@ function displayMealsFromLocalStorage() {
         });
         // Add the button to the cell
         buttonCell.appendChild(button);
-    });
+    } catch (error) {
+        console.error("Error parsing JSON:", error);
+        // Handle the case where the data is not valid JSON
+    }
+});
+    ;
 }
 
 // Call the function when the document is loaded
