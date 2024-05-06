@@ -163,29 +163,75 @@ function displayIngredientInTable(ingredientData) {
         <td>${ingredientData.nutrition.kcal} kcal, ${ingredientData.nutrition.protein} protein, ${ingredientData.nutrition.fat} fat, ${ingredientData.nutrition.fiber} fiber</td>
         <td>
             <button class="edit-btn">Edit</button>
-            <button class="delete-btn">Delete</button>
+            <button id="delete-btn">Delete</button>
         </td>`;
     table.appendChild(row);
 }
-  
+window.onload = function () {
+    // Hent alle ingredienser fra lokal lagring
+    let ingredientsDataJson = localStorage.getItem('ingredientsdata');
+    let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
 
-  async function fetchUserMeals() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-          console.error('Token missing');
-          return;
-      }
-      const response = await fetch('http://localhost:3000/items/userMeals', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              "Authorization": "Bearer " + token,
-          },
-          body: JSON.stringify()
-      });
-      if (!response.ok) {
-          throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      console.log(data);
-    } 
+    // Vis hver ingrediens i tabellen
+    ingredientsData.forEach(ingredientData => {
+        displayIngredientInTable(ingredientData);
+    });
+
+    // Gennemgang af alle rækker i tabellen
+    const rows = document.querySelectorAll('table tbody tr');
+
+    rows.forEach((row, index) => {
+        // Finder "Delete" knappen i rækken
+        const deleteButton = row.querySelector('#delete-btn');
+        
+        // Tilføjer event listener til "Delete" knappen
+        deleteButton.addEventListener('click', () => {
+            // Fjerner ingrediensen fra lokal lagring
+            removeFromLocalStorageAndTable(index);
+        });
+    });
+};
+
+function removeFromLocalStorageAndTable(index) {
+    // Remove ingredient from local storage
+    let ingredientsDataJson = localStorage.getItem('ingredientsdata');
+    let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
+    
+    if (index >= 0 && index < ingredientsData.length) {
+        ingredientsData.splice(index, 1);
+        localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
+    } else {
+        console.error('Index out of bounds.');
+        return;
+    }
+
+    // Remove row from the table
+    const rows = document.querySelectorAll('table tbody tr');
+    if (index >= 0 && index < rows.length) {
+        rows[index].remove();
+    } else {
+        console.error('Index out of bounds.');
+    }
+}
+
+
+async function fetchUserMeals() {
+    const token = localStorage.getItem('token');
+    if (!token) {
+        console.error('Token missing');
+        return;
+    }
+    const response = await fetch('http://localhost:3000/items/userMeals', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json',
+            "Authorization": "Bearer " + token,
+        },
+        body: JSON.stringify()
+    });
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+    console.log(data);
+} 
