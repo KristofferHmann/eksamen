@@ -1,5 +1,5 @@
 //Updater per time
-setInterval(function() {updateHour()}, 1000 * 60 * 60 );
+/*setInterval(function() {updateHour()}, 1000 * 60 * 60 );
 
 //Ny række med kolonner - Ny per time
 function updateHour() {
@@ -100,7 +100,7 @@ function newRowDaily() {
     let dato = new Date().toLocaleDateString("da-DK");
 
 } 
-
+*/
 
 
 // let jsonObj = { 'newRow': newCell1 };
