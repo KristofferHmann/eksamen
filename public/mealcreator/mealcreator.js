@@ -230,7 +230,7 @@ function addMealToTable() {
     // Create a button element
     let button = document.createElement('button');
     // Set the button text
-    button.textContent = 'Show Ingredients';
+    button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
     // Store the index of the meal in the button's dataset
     button.dataset.mealIndex = meals.length - 1;
     // Add an event listener to the button

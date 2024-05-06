@@ -183,7 +183,7 @@ window.onload = function () {
     rows.forEach((row, index) => {
         // Finder "Delete" knappen i rækken
         const deleteButton = row.querySelector('#delete-btn');
-        
+
         // Tilføjer event listener til "Delete" knappen
         deleteButton.addEventListener('click', () => {
             // Fjerner ingrediensen fra lokal lagring
@@ -196,7 +196,7 @@ function removeFromLocalStorageAndTable(index) {
     // Remove ingredient from local storage
     let ingredientsDataJson = localStorage.getItem('ingredientsdata');
     let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
-    
+
     if (index >= 0 && index < ingredientsData.length) {
         ingredientsData.splice(index, 1);
         localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
@@ -216,102 +216,168 @@ function removeFromLocalStorageAndTable(index) {
 
 
 async function fetchUserMeals() {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.error('Token missing');
-        return;
-    }
-    const response = await fetch('http://localhost:3000/items/userMeals', {
-        method: 'GET',
-        headers: {
-            'Content-Type': 'application/json',
-            "Authorization": "Bearer " + token,
-        },
-        body: JSON.stringify()
-    });
-    if (!response.ok) {
-        throw new Error('Failed to fetch data');
-    }
-    const data = await response.json();
-    console.log(data);
-} 
-  /*async function fetchUserMeals() {
-      const token = localStorage.getItem('token');
-      if (!token) {
-          console.error('Token missing');
-          return;
-      }
-      const response = await fetch('http://localhost:3000/items/userMeals', {
-          method: 'GET',
-          headers: {
-              'Content-Type': 'application/json',
-              "Authorization": "Bearer " + token,
-          },
-          body: JSON.stringify()
-      });
-      if (!response.ok) {
-          throw new Error('Failed to fetch data');
-      }
-      const data = await response.json();
-      console.log(data);
-    } */
-
-    async function fetchUserMeals() {
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                console.error('Token missing');
-                return;
-            }
-            
-            const response = await fetch('http://localhost:3000/items/userMeals', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + token,
-                },
-                body: JSON.stringify()
-            });
-    
-            if (!response.ok) {
-                throw new Error('Failed to fetch data');
-            }
-    
-            const data = await response.json();
-            console.log(data);
-    
-            // Call the loadMeals function with the retrieved data
-            displayMeals(data.getUserMeals);
-        } catch (error) {
-            console.error(error);
-            // Handle errors
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
         }
-    }
 
-    function displayMeals(meals) {
-        const mealListDiv = document.getElementById('mealList');
-        mealListDiv.innerHTML = ''; // Clear previous content
-        
-        meals.forEach(meal => {
-            const button = document.createElement('button');
-            button.textContent = meal.mealname;
-            button.addEventListener('click', () => {
-                // Implement logic to handle when a meal button is clicked
-                console.log('Clicked on meal:', meal);
-            });
-            mealListDiv.appendChild(button);
+        const response = await fetch('http://localhost:3000/items/userMeals', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify()
         });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        const data = await response.json();
+        console.log(data);
+        const uniqueMeals = data.getUserMeals.filter((meal, index, self) =>
+            index === self.findIndex((t) => t.meal_ID === meal.meal_ID)
+        );
+        // Call the loadMeals function with the retrieved data
+        displayMeals(uniqueMeals);
+    } catch (error) {
+        console.error(error);
+        // Handle errors
     }
+}
 
-    document.getElementById('addMeal').addEventListener('click', () => {
-        const modal = document.getElementById('modal');
-        modal.style.display = 'block';
-        fetchUserMeals(); // Load meals when modal is opened
+function displayMeals(meals) {
+    const mealListDiv = document.getElementById('mealList');
+    mealListDiv.innerHTML = ''; // Clear previous content
+
+    meals.forEach(meal => {
+        const button = document.createElement('button');
+        button.textContent = meal.mealname;
+        button.classList.add('mealListButton');
+        button.addEventListener('click', () => {
+            openMealModal(meal);
+            // Implement logic to handle when a meal button is clicked
+            console.log('Clicked on meal:', meal);
+        });
+        mealListDiv.appendChild(button);
     });
+}
 
-    document.getElementsByClassName('close')[0].addEventListener('click', () => {
-        const modal = document.getElementById('modal');
+function openMealModal(meal) {
+    // Implement logic to open a modal with meal details
+    const modal = document.getElementById('mealModal');
+    const modalContent = document.getElementById('mealModalContent');
+
+    // Set modal content with meal details
+    modalContent.innerHTML = `
+        <h2>${meal.mealname}</h2>
+        <p class="modal-label">Kalories</p>
+        <input type="number" class="modal-input" value="${meal.totalKcal}" placeholder="Total Kcal">
+        <p class="modal-label">Protein</p>
+        <input type="number" class="modal-input" value="${meal.totalProtein}" placeholder="Total Protein" >
+        <p class="modal-label">Fedt</p>
+        <input type="number" class="modal-input" value="${meal.totalFat}" placeholder="Total Fat">
+        <p class="modal-label">Fiber</p>
+        <input type="number" class="modal-input" value="${meal.totalFiber}" placeholder="Total Fiber">
+        <p class="modal-label">Dato</p>
+        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
+        <button id="submitMealBtn">Submit</button>
+        <button id="closeMealModalBtn">Close</button>
+    `;
+
+
+    // Display modal
+    modal.style.display = 'block';
+
+    const submitBtn = document.getElementById('submitMealBtn');
+    submitBtn.addEventListener('click', () => {
+        displayMealInTable(meal);
+        const modal = document.getElementById('mealModal');
+        const mealListDiv = document.getElementById('modal');
+        modal.style.display = 'none';
+        mealListDiv.style.display = 'none';
+    });
+    const closeBtn = document.getElementById('closeMealModalBtn');
+    closeBtn.addEventListener('click', () => {
+        // Implement logic to close the modal
         modal.style.display = 'none';
     });
+}
 
-    
+function displayMealInTable(meal) {
+    const table = document.querySelector('table tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${table.childElementCount + 1}</td>
+        <td>${meal.mealname}</td>
+        <td>${getDate()}</td>
+        <td>${meal.address}</td>
+        <td>${meal.weight}</td>
+        <td>${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber}  </td>
+        <td>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+        </td>`;
+    table.appendChild(row);
+}
+
+
+document.getElementById('addMeal').addEventListener('click', () => {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'block';
+    fetchUserMeals(); // Load meals when modal is opened
+});
+
+document.getElementsByClassName('close')[0].addEventListener('click', () => {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'none';
+});
+
+
+
+  // Add meal to local storage
+  function addMealToLocalStorage(mealData) {
+    let mealsDataJson = localStorage.getItem('mealsdata');
+    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
+    mealsData.push(mealData);
+    localStorage.setItem('mealsdata', JSON.stringify(mealsData));
+}
+
+// Fetch meals data from local storage
+function fetchMealsFromLocalStorage() {
+    let mealsDataJson = localStorage.getItem('mealsdata');
+    return mealsDataJson ? JSON.parse(mealsDataJson) : [];
+}
+
+// Display meals from local storage
+function displayMealsFromLocalStorage() {
+    const mealsData = fetchMealsFromLocalStorage();
+    mealsData.forEach(mealData => {
+        displayMealInTable(mealData);
+    });
+}
+
+// Remove meal from local storage and update display
+function removeMealFromLocalStorageAndTable(index) {
+    let mealsDataJson = localStorage.getItem('mealsdata');
+    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
+
+    if (index >= 0 && index < mealsData.length) {
+        mealsData.splice(index, 1);
+        localStorage.setItem('mealsdata', JSON.stringify(mealsData));
+    } else {
+        console.error('Index out of bounds.');
+        return;
+    }
+
+    // Update display
+    const rows = document.querySelectorAll('table tbody tr');
+    if (index >= 0 && index < rows.length) {
+        rows[index].remove();
+    } else {
+        console.error('Index out of bounds.');
+    }
+}
