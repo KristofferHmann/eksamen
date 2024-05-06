@@ -1,314 +1,191 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const modal = document.getElementById("myModal");
-    const btn = document.getElementById("addIngredient");
-    const span = document.getElementsByClassName("close")[0];
+    // Fetch food data based on search input
+    const searchInput = document.getElementById('searchFoodInput');
+    searchInput.addEventListener('input', async () => {
+        try {
+            await foodFetch();
+        } catch (error) {
+            console.error('Error during fetch request:', error);
+        }
+    });
 
+    // Open modal when "Add Ingredient" button is clicked
+    const btn = document.getElementById("addIngredient");
     btn.onclick = function () {
+        const modal = document.getElementById("myModal");
         modal.style.display = "block";
     }
 
+    // Close modal when the close button is clicked
+    const span = document.getElementsByClassName("close")[0];
     span.onclick = function () {
+        const modal = document.getElementById("myModal");
         modal.style.display = "none";
     }
 
+    // Close modal when clicked outside the modal
     window.onclick = function (event) {
+        const modal = document.getElementById("myModal");
         if (event.target == modal) {
             modal.style.display = "none";
         }
     }
 
+    // Add ingredient when "Add" button inside the modal is clicked
     const addIngredientBtn = document.getElementById("addIngredientBtn");
     addIngredientBtn.addEventListener('click', async function () {
-        const selectedIngredient = document.getElementById('searchResults').value;
-        const weight = document.getElementById('Weight').value;
-        const table = document.querySelector('table tbody');
-        const row = document.createElement('tr');
-        const date = new Date(); // dato og tidspunkt ved jeg ikke helt hvad man skal gøre med databasen
-        const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+        try {
+            const selectedIngredient = document.getElementById('searchResults').value;
+            const weight = document.getElementById('Weight').value;
 
-        if (navigator.geolocation) {
+            // Fetch nutrition information
+            const nutrition = await fetchNutrition(selectedIngredient);
 
-            navigator.geolocation.getCurrentPosition(async position => {
-                const { latitude, longitude } = position.coords;
-                const address = await getAddressFromCoordinates(latitude, longitude)
+            // Calculate nutrition values based on weight
+            const weightInGrams = parseFloat(weight);
+            const kcal = (nutrition.kcal * weightInGrams) / 100;
+            const protein = (nutrition.protein * weightInGrams) / 100;
+            const fat = (nutrition.fat * weightInGrams) / 100;
+            const fiber = (nutrition.fiber * weightInGrams) / 100;
 
-                // Fetch nutrition information
-                const nutrition = await fetchNutrition(selectedIngredient);
+            const ingredientData = {
+                name: selectedIngredient,
+                date: getDate(),
+                address: await getAddress(),
+                weight: weight,
+                nutrition: {
+                    kcal: kcal.toFixed(2),
+                    protein: protein.toFixed(2),
+                    fat: fat.toFixed(2),
+                    fiber: fiber.toFixed(2),
+                },
+            };
 
-                // Calculate nutrition values based on weight
-                const weightInGrams = parseFloat(weight);
-                const kcal = (nutrition.kcal * weightInGrams) / 100;
-                const protein = (nutrition.protein * weightInGrams) / 100;
-                const fat = (nutrition.fat * weightInGrams) / 100;
-                const fiber = (nutrition.fiber * weightInGrams) / 100;
+            // Add ingredient to the list and save to local storage
+            addIngredientToLocalStorage(ingredientData);
 
-                const ingredientData = {
-                    name: selectedIngredient,
-                    date: dateString,
-                    address: address,
-                    weight: weight,
-                    nutrition: {
-                        kcal: kcal.toFixed(2),
-                        protein: protein.toFixed(2),
-                        fat: fat.toFixed(2),
-                        fiber: fiber.toFixed(2),
-                    },
-                };
-                // Fetch existing ingredients from local storage
-                let ingredientsDataJson = localStorage.getItem('ingredientsdata');
-                let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
+            // Display ingredient in the table
+            displayIngredientInTable(ingredientData);
 
-                // Add new ingredient to the list
-                ingredientsData.push(ingredientData);
-
-                // Save the list back to local storage
-                localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
-
-                row.innerHTML = `
-            <td>${table.childElementCount + 1}</td>
-            <td>${selectedIngredient}</td>
-            <td>${dateString}</td>
-            <td>${address}</td>
-            <td>${weight}</td>
-            <td>${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber</td>
-            <td><i class="fa fa-pencil" onclick="editMeal(${table.childElementCount})"></i>
-            <i class="fa fa-trash" onclick="deleteMeal(${table.childElementCount})"></i> </td>`;
-
-                table.appendChild(row);
-            });
+            // Close the modal
+            const modal = document.getElementById("myModal");
+            modal.style.display = "none";
+        } catch (error) {
+            console.error('Error adding ingredient:', error);
         }
     });
 
-
-
-
-    //funktion der sletter et tracked måltid fra tabellen.
-    /*function deleteMeals() {
-        const mealIndex = meals.findIndex(meal => meal.id === mealId);
-    }*/
-
-    async function getAddressFromCoordinates(latitude, longitude) {
-        const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
-        const data = await response.json();
-
-        if (data.address) {
-            const { town, postcode, country } = data.address;
-            return `${town}, ${postcode}, ${country}`;
-        } else {
-            return null;
-        }
-    }
-
-    async function fetchNutrition(ingredientName) {
-        const response = await fetch('http://localhost:3000/items/ingredients');
-        if (!response.ok) {
-            throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        const ingredient = data.allIngredients.find(ingredient => ingredient.ingredientname === ingredientName);
-        if (!ingredient) {
-            throw new Error('Ingredient not found');
-        }
-        return {
-            id: ingredient.ingredient_ID,
-            kcal: ingredient.kcal,
-            protein: ingredient.protein,
-            fat: ingredient.fat,
-            fiber: ingredient.fiber,
-        };
-    }
-
-});
-
-document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchFoodInput');
-    searchInput.addEventListener('input', async () => {
-        try {
-            await foodFetch();
-            console.log('Fetch request successful');
-        } catch (error) {
-            console.error('Error during fetch request:', error);
-        }
-    });
-});
-
-async function foodFetch() {
-    try {
-        const response = await fetch('http://localhost:3000/items/ingredients');
-        if (response.ok) {
-            console.log('Response status:', response.status);
-        } else {
-            throw new Error('Failed to fetch data');
-        }
-        const data = await response.json();
-        const ressult = document.getElementById('searchResults');
-        ressult.innerHTML = '';
-        const searchFoodInput = document.getElementById('searchFoodInput');
-        data.allIngredients
-            .filter(ingredient => ingredient.ingredientname.toLowerCase().includes(searchFoodInput.value.toLowerCase()))
-            .forEach((ingredient) => {
-                const option = document.createElement('option');
-                option.value = ingredient.ingredientname;
-                option.textContent = ingredient.ingredientname;
-                ressult.appendChild(option);
-            });
-    } catch (error) {
-        throw new Error('Error fetching data:' + error.toString());
-    }
-};
-
-
-
-async function getMealsFromMealCreator(mealname, meal_ID) {
-    await this.connect();
-    const request = this.poolconnection.request();
-
-    request.input('mealname', sql.varchar, mealname)
-    request.input('meal_ID', sql.Int, meal_ID)
-
-    const result = await request.query('SELECT Meals.meal_ID, mealname FROM Nutri.Meals');
-
-    return result.recordsets[0];
-};
-
-document.addEventListener('DOMContentLoaded', () => {
-    function displayIngredientsFromLocalStorage() {
-        // Get the ingredient data from local storage
-        const ingredientsDataJson = localStorage.getItem('ingredientsdata');
-        if (!ingredientsDataJson) {
-            console.log('No ingredient data found in local storage');
-            return;
-        }
-        const ingredientsData = JSON.parse(ingredientsDataJson);
-
-        // Find the table in the mealCreator div
-        let mealTable = document.querySelector("table tbody");
-
-        // Check if mealTable is not null
-        if (mealTable) {
-            // Loop through each ingredient in the ingredientsData array
-            ingredientsData.forEach((ingredient, index) => {
-                // Create a new row and add it to the table
-                let row = mealTable.insertRow();
-                row.insertCell().textContent = index + 1; // # column
-                row.insertCell().textContent = ingredient.name; // Ingredient Name column
-                row.insertCell().textContent = ingredient.date; // Date column
-                row.insertCell().textContent = ingredient.address; // Address column
-                row.insertCell().textContent = ingredient.weight; // Weight column
-                row.insertCell().textContent = `${ingredient.nutrition.kcal} kcal, ${ingredient.nutrition.protein} protein, ${ingredient.nutrition.fat} fat, ${ingredient.nutrition.fiber} fiber`; // Nutrition column
-
-                // Add a new cell for the button
-                let buttonCell = row.insertCell();
-                // Create a button element
-                let button = document.createElement('button');
-                // Set the button text
-                button.textContent = 'Edit';
-                // Add an event listener to the button
-                button.addEventListener('click', () => {
-                    // TODO: Add code to edit the ingredient
-                });
-                // Add the button to the cell
-                buttonCell.appendChild(button);
-
-                // Create a button element for delete
-                let deleteButton = document.createElement('button');
-                // Set the button text
-                deleteButton.textContent = 'Delete';
-                // Add an event listener to the button
-                deleteButton.addEventListener('click', () => {
-                    // TODO: Add code to delete the ingredient
-                });
-                // Add the button to the cell
-                buttonCell.appendChild(deleteButton);
-            });
-        } else {
-            console.log('No table found with the selector ".mealTracker table tbody"');
-        }
-    }
-
-    // Call the function when the document is loaded
-    displayIngredientsFromLocalStorage();
-});
-
-
-// async function getWeightAndTotalNutritionFromMealTracker(weight, totalKcal, totalFat, totalFiber, totalProtein) {
-//     const token = localStorage.getItem('token');
-//     if (!token) {
-//         console.error('Token missing');
-//         return;
-//     }
-//     const nutritionData = {
-//         weight: weight,
-//         totalKcal: totalKcal,
-//         totalFat: totalFat,
-//         totalFiber: totalFiber,
-//         totalProtein: totalProtein
-//     };
-//     const response = await fetch('http://localhost:3000/items/mealTracker', {
-//         method: 'POST',
-//         headers: {
-//             'Content-Type': 'application/json',
-//             "Authorization": "Bearer " + token,
-
-//         },
-//         body: JSON.stringify(nutritionData)
-//     })
-//     if (!response.ok) {
-//         console.Error('Failed to create meals')
-//         return;
-//     }
-//     const data = await response.json();
-//     console.log(data.rowsAffected);
-// };
-
-
-// mealtracker.js
-
-document.addEventListener('DOMContentLoaded', function () {
-    const token = localStorage.getItem('token'); 
-
-    // Function to fetch user meals
-    async function fetchUserMeals() {
-        try {
-            const response = await fetch('http://localhost:3000/items/userMeals', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            if (!response.ok) {
-                throw new Error('Network response was not ok');
-            }
-
-            const data = await response.json();
-            displayMeals(data.getAllMeals);
-        } catch (error) {
-            console.error('There was a problem with the fetch operation:', error);
-        }
-    }
-
-    // Function to display meals
-    function displayMeals(meals) {
-        const tbody = document.querySelector('tbody');
-        tbody.innerHTML = ''; // Clear existing meals
-
-        meals.forEach(meal => {
-            const row = document.createElement('tr');
-            row.innerHTML = `
-          <td>${meal.numIngredients}</td>
-          <td>${meal.mealName}</td>
-          <td>${meal.addedOn}</td>
-          <td>${meal.location}</td>
-          <td>${meal.weightInGrams}</td>
-          <td>${meal.nutrition}</td>
-          <td><button>Delete</button></td>
-        `;
-            tbody.appendChild(row);
-        });
-    }
-
-    // Call the function to fetch and display meals
+    // Fetch and display user meals
     fetchUserMeals();
 });
+
+// Fetch food data based on search input
+async function foodFetch() {
+    const response = await fetch('http://localhost:3000/items/ingredients');
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+    const ressult = document.getElementById('searchResults');
+    ressult.innerHTML = '';
+    const searchFoodInput = document.getElementById('searchFoodInput');
+    data.allIngredients
+        .filter(ingredient => ingredient.ingredientname.toLowerCase().includes(searchFoodInput.value.toLowerCase()))
+        .forEach((ingredient) => {
+            const option = document.createElement('option');
+            option.value = ingredient.ingredientname;
+            option.textContent = ingredient.ingredientname;
+            ressult.appendChild(option);
+        });
+}
+
+// Fetch nutrition information for the selected ingredient
+async function fetchNutrition(ingredientName) {
+    const response = await fetch('http://localhost:3000/items/ingredients');
+    if (!response.ok) {
+        throw new Error('Failed to fetch data');
+    }
+    const data = await response.json();
+    const ingredient = data.allIngredients.find(ingredient => ingredient.ingredientname === ingredientName);
+    if (!ingredient) {
+        throw new Error('Ingredient not found');
+    }
+    return {
+        id: ingredient.ingredient_ID,
+        kcal: ingredient.kcal,
+        protein: ingredient.protein,
+        fat: ingredient.fat,
+        fiber: ingredient.fiber,
+    };
+}
+
+// Get current date and time
+function getDate() {
+    const date = new Date();
+    return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
+}
+
+// Get address based on geolocation
+async function getAddress() {
+    return new Promise((resolve, reject) => {
+        navigator.geolocation.getCurrentPosition(async position => {
+            const { latitude, longitude } = position.coords;
+            const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
+            const data = await response.json();
+            if (data.address) {
+                const { town, postcode, country } = data.address;
+                resolve(`${town}, ${postcode}, ${country}`);
+            } else {
+                reject('Address not found');
+            }
+        }, error => reject(error));
+    });
+}
+
+// Add ingredient to local storage
+function addIngredientToLocalStorage(ingredientData) {
+    let ingredientsDataJson = localStorage.getItem('ingredientsdata');
+    let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
+    ingredientsData.push(ingredientData);
+    localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
+}
+
+// Display ingredient in the table
+function displayIngredientInTable(ingredientData) {
+    const table = document.querySelector('table tbody');
+    const row = document.createElement('tr');
+    row.innerHTML = `
+        <td>${table.childElementCount + 1}</td>
+        <td>${ingredientData.name}</td>
+        <td>${ingredientData.date}</td>
+        <td>${ingredientData.address}</td>
+        <td>${ingredientData.weight}</td>
+        <td>${ingredientData.nutrition.kcal} kcal, ${ingredientData.nutrition.protein} protein, ${ingredientData.nutrition.fat} fat, ${ingredientData.nutrition.fiber} fiber</td>
+        <td>
+            <button class="edit-btn">Edit</button>
+            <button class="delete-btn">Delete</button>
+        </td>`;
+    table.appendChild(row);
+}
+  
+
+  async function fetchUserMeals() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Token missing');
+          return;
+      }
+      const response = await fetch('http://localhost:3000/items/userMeals', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify()
+      });
+      if (!response.ok) {
+          throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log(data);
+    } 

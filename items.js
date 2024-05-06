@@ -82,7 +82,6 @@ router.get('/userMeals', async (req, res) => {
 
 
     const getUserMeals = await database.getUserMeals(userID);
-    console.log('23232',getUserMeals);
     res.status(200).json({ getUserMeals});
   } catch (err) {
     res.status(500).send('Server error');
