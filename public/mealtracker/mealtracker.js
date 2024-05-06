@@ -235,3 +235,83 @@ async function fetchUserMeals() {
     const data = await response.json();
     console.log(data);
 } 
+  /*async function fetchUserMeals() {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Token missing');
+          return;
+      }
+      const response = await fetch('http://localhost:3000/items/userMeals', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              "Authorization": "Bearer " + token,
+          },
+          body: JSON.stringify()
+      });
+      if (!response.ok) {
+          throw new Error('Failed to fetch data');
+      }
+      const data = await response.json();
+      console.log(data);
+    } */
+
+    async function fetchUserMeals() {
+        try {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('Token missing');
+                return;
+            }
+            
+            const response = await fetch('http://localhost:3000/items/userMeals', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                },
+                body: JSON.stringify()
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to fetch data');
+            }
+    
+            const data = await response.json();
+            console.log(data);
+    
+            // Call the loadMeals function with the retrieved data
+            displayMeals(data.getUserMeals);
+        } catch (error) {
+            console.error(error);
+            // Handle errors
+        }
+    }
+
+    function displayMeals(meals) {
+        const mealListDiv = document.getElementById('mealList');
+        mealListDiv.innerHTML = ''; // Clear previous content
+        
+        meals.forEach(meal => {
+            const button = document.createElement('button');
+            button.textContent = meal.mealname;
+            button.addEventListener('click', () => {
+                // Implement logic to handle when a meal button is clicked
+                console.log('Clicked on meal:', meal);
+            });
+            mealListDiv.appendChild(button);
+        });
+    }
+
+    document.getElementById('addMeal').addEventListener('click', () => {
+        const modal = document.getElementById('modal');
+        modal.style.display = 'block';
+        fetchUserMeals(); // Load meals when modal is opened
+    });
+
+    document.getElementsByClassName('close')[0].addEventListener('click', () => {
+        const modal = document.getElementById('modal');
+        modal.style.display = 'none';
+    });
+
+    
