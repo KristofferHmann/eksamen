@@ -245,27 +245,36 @@ export default class Database {
     return result.rowsAffected[0];
   }
 
-  //route der henter måltider fra mealCreatoren til mealtracker
-  async getMealsFromMealCreator(user_ID, token) {
-    const url = new URL('http://localhost:3000/items/mealCreator');
+  // //route der henter måltider fra mealCreatoren til mealtracker
+  // async getMealsFromMealCreator(user_ID, token) {
+  //   const url = new URL('http://localhost:3000/items/mealCreator');
 
-    const response = await fetch(url, {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        "Authorization": "Bearer " + token,
+  //   const response = await fetch(url, {
+  //     method: 'GET',
+  //     headers: {
+  //       'Content-Type': 'application/json',
+  //       "Authorization": "Bearer " + token,
 
-      },
-      //body: JSON.stringify(user_ID, mealname, meal_ID)
-    });
-    //console.log(mealname, meal_ID);
-    if (!response.ok) {
-      console.Error('Failed to fetch meals')
-      return;
-    }
-    const data = await response.json();
-    console.log(data.trackedMeals);
-  };
+  //     },
+  //     //body: JSON.stringify(user_ID, mealname, meal_ID)
+  //   });
+  //   //console.log(mealname, meal_ID);
+  //   if (!response.ok) {
+  //     console.Error('Failed to fetch meals')
+  //     return;
+  //   }
+  //   const data = await response.json();
+  //   console.log(data.trackedMeals);
+  // };
+
+  async getUserMeals(userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('user_ID', sql.Int, userID)
+    const result = await request.query(
+      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, Meals.date, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
+    return result.recordsets[0];
+  }
 
   //Alle vores aktiviteter
   async getAllActivities() {

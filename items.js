@@ -35,26 +35,26 @@ router.post('/mealCreator', async (req, res) => {
   }
 });
 
-router.get('/mealCreator', async (req, res) => {
-  try {
-    if (!req.headers.authorization) {
-      return res.status(401).send('No authorization token provided');
-    }
-    const token = req.headers.authorization.split(' ')[1]
-    if (!token) {
-      return res.status(401).send('Invalid token format');
-    }
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey)
-    const userID = tokenDecoded.user_ID
+// router.get('/mealCreator', async (req, res) => {
+//   try {
+//     if (!req.headers.authorization) {
+//       return res.status(401).send('No authorization token provided');
+//     }
+//     const token = req.headers.authorization.split(' ')[1]
+//     if (!token) {
+//       return res.status(401).send('Invalid token format');
+//     }
+//     const secretKey = process.env.JWT_SECRET;
+//     const tokenDecoded = jwt.verify(token, secretKey)
+//     const userID = tokenDecoded.user_ID
 
-    const trackedMeals = await database.getMealsFromMealCreator(userID, token);
-    res.status(200).json({ trackedMeals })
-  } catch (err) {
-    console.error(err);
-    res.status(500).send('Server Error')
-  }
-});
+//     const trackedMeals = await database.getMealsFromMealCreator(userID, token);
+//     res.status(200).json({ trackedMeals })
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send('Server Error')
+//   }
+// });
 
 
 router.post('/mealIngredients', async (req, res) => {
@@ -73,6 +73,21 @@ router.post('/mealIngredients', async (req, res) => {
   }
 });
 
+router.get('/userMeals', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+
+
+    const getUserMeals = await database.getUserMeals(userID);
+    console.log('23232',getUserMeals);
+    res.status(200).json({ getUserMeals});
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
 
 
 

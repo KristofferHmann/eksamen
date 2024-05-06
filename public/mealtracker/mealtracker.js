@@ -231,32 +231,84 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 
-async function getWeightAndTotalNutritionFromMealTracker(weight, totalKcal, totalFat, totalFiber, totalProtein) {
-    const token = localStorage.getItem('token');
-    if (!token) {
-        console.error('Token missing');
-        return;
-    }
-    const nutritionData = {
-        weight: weight,
-        totalKcal: totalKcal,
-        totalFat: totalFat,
-        totalFiber: totalFiber,
-        totalProtein: totalProtein
-    };
-    const response = await fetch('http://localhost:3000/items/mealTracker', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            "Authorization": "Bearer " + token,
+// async function getWeightAndTotalNutritionFromMealTracker(weight, totalKcal, totalFat, totalFiber, totalProtein) {
+//     const token = localStorage.getItem('token');
+//     if (!token) {
+//         console.error('Token missing');
+//         return;
+//     }
+//     const nutritionData = {
+//         weight: weight,
+//         totalKcal: totalKcal,
+//         totalFat: totalFat,
+//         totalFiber: totalFiber,
+//         totalProtein: totalProtein
+//     };
+//     const response = await fetch('http://localhost:3000/items/mealTracker', {
+//         method: 'POST',
+//         headers: {
+//             'Content-Type': 'application/json',
+//             "Authorization": "Bearer " + token,
 
-        },
-        body: JSON.stringify(nutritionData)
-    })
-    if (!response.ok) {
-        console.Error('Failed to create meals')
-        return;
+//         },
+//         body: JSON.stringify(nutritionData)
+//     })
+//     if (!response.ok) {
+//         console.Error('Failed to create meals')
+//         return;
+//     }
+//     const data = await response.json();
+//     console.log(data.rowsAffected);
+// };
+
+
+// mealtracker.js
+
+document.addEventListener('DOMContentLoaded', function () {
+    const token = localStorage.getItem('token'); 
+
+    // Function to fetch user meals
+    async function fetchUserMeals() {
+        try {
+            const response = await fetch('http://localhost:3000/items/userMeals', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                }
+            });
+
+            if (!response.ok) {
+                throw new Error('Network response was not ok');
+            }
+
+            const data = await response.json();
+            displayMeals(data.getAllMeals);
+        } catch (error) {
+            console.error('There was a problem with the fetch operation:', error);
+        }
     }
-    const data = await response.json();
-    console.log(data.rowsAffected);
-};
+
+    // Function to display meals
+    function displayMeals(meals) {
+        const tbody = document.querySelector('tbody');
+        tbody.innerHTML = ''; // Clear existing meals
+
+        meals.forEach(meal => {
+            const row = document.createElement('tr');
+            row.innerHTML = `
+          <td>${meal.numIngredients}</td>
+          <td>${meal.mealName}</td>
+          <td>${meal.addedOn}</td>
+          <td>${meal.location}</td>
+          <td>${meal.weightInGrams}</td>
+          <td>${meal.nutrition}</td>
+          <td><button>Delete</button></td>
+        `;
+            tbody.appendChild(row);
+        });
+    }
+
+    // Call the function to fetch and display meals
+    fetchUserMeals();
+});
