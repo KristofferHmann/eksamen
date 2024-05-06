@@ -88,6 +88,35 @@ router.get('/userMeals', async (req, res) => {
   }
 });
 
+router.put('/updateMeals', async (req, res) => {
+  try {
+    // Extract userID from the decoded token
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+
+    // Extract meal data from the request body
+    const mealData = req.body.mealData; // Assuming mealData is provided in the request body
+    const mealID = req.body.mealID; // Assuming mealID is provided in the request body
+
+    // Call the editMeals function with mealData, userID, and mealID
+    const rowsAffected = await database.editMeals(mealData, userID, mealID);
+
+    // Check if any rows were affected
+    if (rowsAffected > 0) {
+      res.status(200).json({ message: 'Meal updated successfully.' });
+    } else {
+      res.status(404).json({ message: 'Meal not found.' });
+    }
+  } catch (err) {
+    console.error('Error updating meals:', err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+
+
 router.get('/userActivities', async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1]

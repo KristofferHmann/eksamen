@@ -212,18 +212,54 @@ export default class Database {
       const request = this.poolconnection.request();
       request.input('mealname', sql.VarChar, mealData.mealname);
       request.input('weight', sql.Int, mealData.weight);
+      request.input('totalKcal', sql.Int, mealData.totalKcal);
+      request.input('totalProtein', sql.Int, mealData.totalProtein);
+      request.input('totalFat', sql.Int, mealData.totalFat);
+      request.input('totalFiber', sql.Int, mealData.totalFiber);
       request.input('user_ID', sql.Int, userID);
 
       const result = await request.query(`
-            INSERT INTO Nutri.Meals (mealname, weight, user_ID)
+            INSERT INTO Nutri.Meals (mealname, weight, totalKcal, totalProtein, totalFat, totalFiber, user_ID)
             OUTPUT INSERTED.meal_ID
-            VALUES (@mealname, @weight, @user_ID);
+            VALUES (@mealname, @weight, @totalKcal, @totalProtein, @totalFat, @totalFiber, @user_ID);
         `);
       const mealID = result.recordset[0].meal_ID;
 
       return mealID;
     } catch (error) {
       console.error('Error creating meal:', error.message);
+      throw error;
+    }
+  }
+
+  async editMeals(mealData, userID) {
+    try {
+      await this.connect();
+      const request = this.poolconnection.request();
+      request.input('mealname', sql.VarChar, mealData.mealname);
+      request.input('weight', sql.Int, mealData.weight);
+      request.input('totalKcal', sql.Int, mealData.totalKcal);
+      request.input('totalProtein', sql.Int, mealData.totalProtein);
+      request.input('totalFat', sql.Int, mealData.totalFat);
+      request.input('totalFiber', sql.Int, mealData.totalFiber);
+      request.input('user_ID', sql.Int, userID);
+
+      const result = await request.query(`
+      UPDATE Nutri.Meals
+      SET 
+          mealname = @mealname,
+          weight = @weight,
+          totalKcal = @totalKcal,
+          totalProtein = @totalProtein,
+          totalFat = @totalFat,
+          totalFiber = @totalFiber
+      WHERE
+          meal_ID = @meal_ID;
+      
+        `);
+        return result.rowsAffected[0];
+    } catch (error) {
+      console.error('Error editing meal:', error.message);
       throw error;
     }
   }

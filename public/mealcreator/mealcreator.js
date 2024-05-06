@@ -28,7 +28,11 @@ function submitMealName() {
 
     const mealData = {
         mealname: mealName,
-        weight: mealWeight
+        weight: mealWeight,
+        totalKcal: totalKcal,
+        totalProtein: totalProtein,
+        totalFat: totalFat,
+        totalFiber: totalFiber
     }
     createMeal(mealData)
     openMealCreator();
@@ -177,7 +181,7 @@ async function addIngredientToMeal() {
 
 document.getElementById("SubmitButtonID").addEventListener("click", addMealToTable);
 
-function addMealToTable() {
+async function addMealToTable() {
     // Find tabellen i mealCreator div
     let mealTable = document.querySelector(".mealCreator table tbody");
 
@@ -210,7 +214,7 @@ function addMealToTable() {
         },
         addedOn: dateString,
     };
-    
+
     localStorage.setItem(mealName, JSON.stringify(mealData));
 
     // Reset numIngredients for the next meal
@@ -248,7 +252,7 @@ function addMealToTable() {
     });
     // Add the button to the cell
     buttonCell.appendChild(button);
-    createMeal(mealData);
+
     closeMealCreator();
 };
 
@@ -261,53 +265,53 @@ function displayMealsFromLocalStorage() {
     // For each key in local storage
     keys.forEach(key => {
         // Get the meal data from local storage uden at parse vores token
-        
-    if (key === "token") {
-        return; // Skip to the next iteration
-    }
-    const storedData = localStorage.getItem(key);
-    //console.log("Key:", key, "Data:", storedData);
-    
-    try {
-        const mealData = JSON.parse(storedData);
-        // Process mealData as JSON
-    
-        // Create a new row and add it to the table
-        let row = mealTable.insertRow();
-        row.insertCell().textContent = mealTable.rows.length; // # column
-        row.insertCell().textContent = mealData.name; // Meal Name column
-        row.insertCell().textContent = mealData.numIngredients;
-        if (mealData.nutrition) { // Check if nutrition is defined
-            row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
-        } else {
-            row.insertCell().textContent = "Nutrition data not available";
+
+        if (key === "token") {
+            return; // Skip to the next iteration
         }
-        //row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
-        row.insertCell().textContent = mealData.addedOn; // Date column
+        const storedData = localStorage.getItem(key);
+        //console.log("Key:", key, "Data:", storedData);
+
+        try {
+            const mealData = JSON.parse(storedData);
+            // Process mealData as JSON
+
+            // Create a new row and add it to the table
+            let row = mealTable.insertRow();
+            row.insertCell().textContent = mealTable.rows.length; // # column
+            row.insertCell().textContent = mealData.name; // Meal Name column
+            row.insertCell().textContent = mealData.numIngredients;
+            if (mealData.nutrition) { // Check if nutrition is defined
+                row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
+            } else {
+                row.insertCell().textContent = "Nutrition data not available";
+            }
+            //row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
+            row.insertCell().textContent = mealData.addedOn; // Date column
 
 
-        // Add a new cell for the button
-        let buttonCell = row.insertCell();
-        // Create a button element
-        let button = document.createElement('button');
-        // Set the button text
-        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-        // Add an event listener to the button
-        button.addEventListener('click', () => {
-            // Create a string with the ingredients
-            let ingredientsStr = mealData.ingredients.map(ingredient =>
-                `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
-            ).join('\n');
-            // Display the ingredients
-            alert('Ingredients:\n' + ingredientsStr);
-        });
-        // Add the button to the cell
-        buttonCell.appendChild(button);
-    } catch (error) {
-        console.error("Error parsing JSON:", error);
-        // Handle the case where the data is not valid JSON
-    }
-});
+            // Add a new cell for the button
+            let buttonCell = row.insertCell();
+            // Create a button element
+            let button = document.createElement('button');
+            // Set the button text
+            button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+            // Add an event listener to the button
+            button.addEventListener('click', () => {
+                // Create a string with the ingredients
+                let ingredientsStr = mealData.ingredients.map(ingredient =>
+                    `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
+                ).join('\n');
+                // Display the ingredients
+                alert('Ingredients:\n' + ingredientsStr);
+            });
+            // Add the button to the cell
+            buttonCell.appendChild(button);
+        } catch (error) {
+            console.error("Error parsing JSON:", error);
+            // Handle the case where the data is not valid JSON
+        }
+    });
     ;
 }
 
@@ -339,10 +343,10 @@ async function createMeal(mealData) {
     const data = await response.json();
     const meal_ID = data.meal_ID
     console.log('mealid', meal_ID);
-document.getElementById('mealIDHidden').value = meal_ID;  //Gemmer mealID'et lokalt i html siden i det gemte input mealIDHidden
+    document.getElementById('mealIDHidden').value = meal_ID;  //Gemmer mealID'et lokalt i html siden i det gemte input mealIDHidden
 
     return meal_ID;
-    
+
 }
 
 async function createMealIngredient(ingredientData) {
