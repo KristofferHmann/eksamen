@@ -362,4 +362,23 @@ export default class Database {
   };
 
 
+  async addNutrition(nutritionData, userID) {
+    await this.connect(); // Assuming you have a method to establish a database connection
+    const request = this.poolconnection.request();
+    request.input('dateTime', sql.DateTime, nutritionData.dateTime);
+    request.input('energiIntake', sql.Int, nutritionData.energiIntake);
+    request.input('waterIntake', sql.Int, nutritionData.waterIntake);
+    request.input('burning', sql.Int, nutritionData.burning);
+    request.input('kcalBalance', sql.Int, nutritionData.kcalBalance);
+    request.input('user_ID', sql.Int, userID);
+    
+    const result = await request.query(`
+        INSERT INTO Nutri.dailyNutri (dateTime, energiIntake, waterIntake, burning, kcalBalance, user_ID) 
+        VALUES (@dateTime, @energiIntake, @waterIntake, @burning, @kcalBalance, @user_ID)
+    `);
+  
+    return result.rowsAffected[0];
+  }
+  
+
 };

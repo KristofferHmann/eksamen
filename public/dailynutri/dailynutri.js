@@ -105,3 +105,43 @@ function newRowDaily() {
 
 // let jsonObj = { 'newRow': newCell1 };
 // localStorage.setItem('newRow', JSON.stringify(jsonObj));
+
+
+  // Function to update the table
+  function updateTable(meals) {
+    const tbody = document.getElementById('overview');
+    tbody.innerHTML = ''; // Clear existing rows
+  
+    meals.forEach(meal => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${meal.hour}</td>
+        <td>${meal.mealName}</td>
+        <td>${meal.waterConsumed}</td>
+        <td>${meal.caloriesConsumed}</td>
+        <td>${meal.caloriesBurned}</td>
+        <td>${meal.caloriesSurplusOrDeficit}</td>
+      `;
+      tbody.appendChild(row);
+    });
+  }
+  
+  // Initial table update
+  updateTable(meals, 'hours');
+  
+  // Function to handle view change
+  function updateView(view) {
+    updateTable(meals, view);
+  }
+  
+  //Event listeners til de forskellige knapper der tager en til siderne
+  document.getElementById('btn-hours').addEventListener('click', () => {
+    updateView('hours');
+    window.location.href = 'dailynutri.html'; // Redirect to maintain state
+  });
+  
+  document.getElementById('btn-days').addEventListener('click', () => {
+    updateView('days');
+    window.location.href = 'days.html'; // Redirect to maintain state
+  });
+  

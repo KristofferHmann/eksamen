@@ -264,7 +264,21 @@ router.put('/edit', async (req, res) => {
   }
 });
 
-
+router.post('/nutrition', async (req, res) => {
+  try {
+    const nutritionData = req.body;
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+    
+    const rowsAffected = await database.addNutrition(nutritionData, userID);
+    res.status(201).json({ message: 'Nutrition data added successfully', rowsAffected });
+  } catch (err) {
+    console.error('Error adding nutrition data:', err);
+    res.status(500).send('Server error');
+  }
+});
 
 
 

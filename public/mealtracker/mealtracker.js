@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     // Close modal when the close button is clicked
-    const span = document.getElementsByClassName("close")[0];
+    const span = document.getElementsByClassName("close")[1];
     span.onclick = function () {
         const modal = document.getElementById("myModal");
         modal.style.display = "none";
