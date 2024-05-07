@@ -18,26 +18,6 @@ function closeMealNameModal() {
     document.getElementById("mealNameModal").style.display = "none";
 }
 
-// Submit Meal Name
-function submitMealName() {
-    // Get the meal name from the input field
-    let mealName = document.getElementById("mealNameInput").value;
-    let mealWeight = document.getElementById("mealWeightInput").value;
-    // Close the modal
-    closeMealNameModal();
-
-    const mealData = {
-        mealname: mealName,
-        weight: mealWeight,
-        totalKcal: totalKcal,
-        totalProtein: totalProtein,
-        totalFat: totalFat,
-        totalFiber: totalFiber
-    }
-    createMeal(mealData)
-    openMealCreator();
-}
-
 //Knapper til at åbne modal (tilføj måltid), åbne og lukke modalvindue.
 function openMealCreator() {
     document.getElementById("modal").style.display = "block";
@@ -214,7 +194,7 @@ async function addMealToTable() {
         },
         addedOn: dateString,
     };
-
+    adam();
     localStorage.setItem(mealName, JSON.stringify(mealData));
 
     // Reset numIngredients for the next meal
@@ -255,6 +235,28 @@ async function addMealToTable() {
 
     closeMealCreator();
 };
+
+// Submit Meal Name
+function submitMealName() {
+    // Close the modal
+    closeMealNameModal();
+    openMealCreator();
+}
+
+function adam() {
+    let mealName = document.getElementById("mealNameInput").value;
+    let mealWeight = document.getElementById("mealWeightInput").value;
+    const mealData = {
+        mealname: mealName,
+        weight: mealWeight,
+        totalKcal: totalKcal,
+        totalProtein: totalProtein,
+        totalFat: totalFat,
+        totalFiber: totalFiber
+    }
+    console.log(mealData);
+    createMeal(mealData)    
+}
 
 function displayMealsFromLocalStorage() {
     // Get all keys from local storage
@@ -377,3 +379,5 @@ async function createMealIngredient(ingredientData) {
         console.error('Error creating meal ingredient:', error);
     }
 }
+
+
