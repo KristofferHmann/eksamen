@@ -316,7 +316,7 @@ function displayMealInTable(meal) {
         <td>${getDate()}</td>
         <td>${meal.address}</td>
         <td>${meal.weight}</td>
-        <td>${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber}  </td>
+        <td>${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber} g </td>
         <td>
             <button class="edit-btn">Edit</button>
             <button class="delete-btn">Delete</button>
