@@ -116,7 +116,12 @@ async function addIngredientToMeal() {
     const fat = (nutrition.fat * weightInGrams) / 100;
     const fiber = (nutrition.fiber * weightInGrams) / 100;
 
-
+    // Opdater de globale totaler
+    totalKcal += kcal;
+    totalProtein += protein;
+    totalFat += fat;
+    totalFiber += fiber;
+    
     const ingredientID = nutrition.ingredientID;
 
     // Add the ingredient to the current meal
@@ -149,11 +154,7 @@ async function addIngredientToMeal() {
     row.insertCell().textContent = weight; // Weight column
     row.insertCell().textContent = `${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber`; // Nutrition column
 
-    // Opdater de globale totaler
-    totalKcal += kcal;
-    totalProtein += protein;
-    totalFat += fat;
-    totalFiber += fiber;
+
 
     // Update numIngredients after a new row is added
     numIngredients += 1;
