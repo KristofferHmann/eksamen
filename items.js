@@ -35,26 +35,6 @@ router.post('/mealCreator', async (req, res) => {
   }
 });
 
-// router.get('/mealCreator', async (req, res) => {
-//   try {
-//     if (!req.headers.authorization) {
-//       return res.status(401).send('No authorization token provided');
-//     }
-//     const token = req.headers.authorization.split(' ')[1]
-//     if (!token) {
-//       return res.status(401).send('Invalid token format');
-//     }
-//     const secretKey = process.env.JWT_SECRET;
-//     const tokenDecoded = jwt.verify(token, secretKey)
-//     const userID = tokenDecoded.user_ID
-
-//     const trackedMeals = await database.getMealsFromMealCreator(userID, token);
-//     res.status(200).json({ trackedMeals })
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send('Server Error')
-//   }
-// });
 
 
 router.post('/mealIngredients', async (req, res) => {
@@ -263,24 +243,5 @@ router.put('/edit', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-router.post('/nutrition', async (req, res) => {
-  try {
-    const nutritionData = req.body;
-    const token = req.headers.authorization.split(' ')[1];
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey);
-    const userID = tokenDecoded.user_ID;
-    
-    const rowsAffected = await database.addNutrition(nutritionData, userID);
-    res.status(201).json({ message: 'Nutrition data added successfully', rowsAffected });
-  } catch (err) {
-    console.error('Error adding nutrition data:', err);
-    res.status(500).send('Server error');
-  }
-});
-
-
-
 
 export default router;

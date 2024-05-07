@@ -42,6 +42,7 @@ addActivityBtn.addEventListener("click", async () => {
     const totalKcalBurned = (kcalBurnedPerHour / 60) * duration; // Calculate total kcal burned
     console.log(selectedActivityID, duration, totalKcalBurned);
     
+
     const token = localStorage.getItem("token");
     const response = await fetch('http://localhost:3000/items/addActivity', {
         method: "POST",

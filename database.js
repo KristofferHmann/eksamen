@@ -212,10 +212,10 @@ export default class Database {
       const request = this.poolconnection.request();
       request.input('mealname', sql.VarChar, mealData.mealname);
       request.input('weight', sql.Int, mealData.weight);
-      request.input('totalKcal', sql.Int, mealData.totalKcal);
-      request.input('totalProtein', sql.Int, mealData.totalProtein);
-      request.input('totalFat', sql.Int, mealData.totalFat);
-      request.input('totalFiber', sql.Int, mealData.totalFiber);
+      request.input('totalKcal', sql.Float, mealData.totalKcal);
+      request.input('totalProtein', sql.Float, mealData.totalProtein);
+      request.input('totalFat', sql.Float, mealData.totalFat);
+      request.input('totalFiber', sql.Float, mealData.totalFiber);
       request.input('user_ID', sql.Int, userID);
 
       const result = await request.query(`
@@ -238,10 +238,10 @@ export default class Database {
       const request = this.poolconnection.request();
       request.input('mealname', sql.VarChar, mealData.mealname);
       request.input('weight', sql.Int, mealData.weight);
-      request.input('totalKcal', sql.Int, mealData.totalKcal);
-      request.input('totalProtein', sql.Int, mealData.totalProtein);
-      request.input('totalFat', sql.Int, mealData.totalFat);
-      request.input('totalFiber', sql.Int, mealData.totalFiber);
+      request.input('totalKcal', sql.Float, mealData.totalKcal);
+      request.input('totalProtein', sql.Float, mealData.totalProtein);
+      request.input('totalFat', sql.Float, mealData.totalFat);
+      request.input('totalFiber', sql.Float, mealData.totalFiber);
       request.input('user_ID', sql.Int, userID);
 
       const result = await request.query(`
@@ -281,27 +281,7 @@ export default class Database {
     return result.rowsAffected[0];
   }
 
-  // //route der henter måltider fra mealCreatoren til mealtracker
-  // async getMealsFromMealCreator(user_ID, token) {
-  //   const url = new URL('http://localhost:3000/items/mealCreator');
 
-  //   const response = await fetch(url, {
-  //     method: 'GET',
-  //     headers: {
-  //       'Content-Type': 'application/json',
-  //       "Authorization": "Bearer " + token,
-
-  //     },
-  //     //body: JSON.stringify(user_ID, mealname, meal_ID)
-  //   });
-  //   //console.log(mealname, meal_ID);
-  //   if (!response.ok) {
-  //     console.Error('Failed to fetch meals')
-  //     return;
-  //   }
-  //   const data = await response.json();
-  //   console.log(data.trackedMeals);
-  // };
 
   async getUserMeals(userID) {
     await this.connect();
@@ -361,24 +341,6 @@ export default class Database {
 
   };
 
-
-  async addNutrition(nutritionData, userID) {
-    await this.connect(); // Assuming you have a method to establish a database connection
-    const request = this.poolconnection.request();
-    request.input('dateTime', sql.DateTime, nutritionData.dateTime);
-    request.input('energiIntake', sql.Int, nutritionData.energiIntake);
-    request.input('waterIntake', sql.Int, nutritionData.waterIntake);
-    request.input('burning', sql.Int, nutritionData.burning);
-    request.input('kcalBalance', sql.Int, nutritionData.kcalBalance);
-    request.input('user_ID', sql.Int, userID);
-    
-    const result = await request.query(`
-        INSERT INTO Nutri.dailyNutri (dateTime, energiIntake, waterIntake, burning, kcalBalance, user_ID) 
-        VALUES (@dateTime, @energiIntake, @waterIntake, @burning, @kcalBalance, @user_ID)
-    `);
-  
-    return result.rowsAffected[0];
-  }
   
 
 };

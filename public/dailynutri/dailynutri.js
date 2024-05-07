@@ -1,3 +1,5 @@
+import { getActivitiesFromLocalStorage } from './activitytracker.js';
+
 //Updater per time
 /*setInterval(function() {updateHour()}, 1000 * 60 * 60 );
 
@@ -106,7 +108,12 @@ function newRowDaily() {
 // let jsonObj = { 'newRow': newCell1 };
 // localStorage.setItem('newRow', JSON.stringify(jsonObj));
 
-
+// Example data - replace with your actual data fetching logic
+let mergedData = {
+  activities: [], // Data from activitytracker.js
+  meals: []      // Data from mealtracker.js
+};
+  
   // Function to update the table
   function updateTable(meals) {
     const tbody = document.getElementById('overview');

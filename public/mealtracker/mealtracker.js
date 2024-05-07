@@ -275,13 +275,13 @@ function openMealModal(meal) {
     modalContent.innerHTML = `
         <h2>${meal.mealname}</h2>
         <p class="modal-label">Kalories</p>
-        <input type="number" class="modal-input" value="${meal.totalKcal}" placeholder="Total Kcal">
+        <input type="number" class="modal-input" value="${meal.totalKcal}" placeholder="Total Kcal" readonly>
         <p class="modal-label">Protein</p>
-        <input type="number" class="modal-input" value="${meal.totalProtein}" placeholder="Total Protein" >
+        <input type="number" class="modal-input" value="${meal.totalProtein}" placeholder="Total Protein" readonly>
         <p class="modal-label">Fedt</p>
-        <input type="number" class="modal-input" value="${meal.totalFat}" placeholder="Total Fat">
+        <input type="number" class="modal-input" value="${meal.totalFat}" placeholder="Total Fat" readonly>
         <p class="modal-label">Fiber</p>
-        <input type="number" class="modal-input" value="${meal.totalFiber}" placeholder="Total Fiber">
+        <input type="number" class="modal-input" value="${meal.totalFiber}" placeholder="Total Fiber" readonly>
         <p class="modal-label">Dato</p>
         <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
         <button id="submitMealBtn">Submit</button>
@@ -316,7 +316,7 @@ function displayMealInTable(meal) {
         <td>${getDate()}</td>
         <td>${meal.address}</td>
         <td>${meal.weight}</td>
-        <td>${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber} g </td>
+        <td> ${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber} g </td>
         <td>
             <button class="edit-btn">Edit</button>
             <button class="delete-btn">Delete</button>
@@ -338,17 +338,10 @@ document.getElementsByClassName('close')[0].addEventListener('click', () => {
 
 
 
-  // Add meal to local storage
-  function addMealToLocalStorage(mealData) {
-    let mealsDataJson = localStorage.getItem('mealsdata');
-    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
-    mealsData.push(mealData);
-    localStorage.setItem('mealsdata', JSON.stringify(mealsData));
-}
 
 // Fetch meals data from local storage
 function fetchMealsFromLocalStorage() {
-    let mealsDataJson = localStorage.getItem('mealsdata');
+    let mealsDataJson = localStorage.getItem('mealName');
     return mealsDataJson ? JSON.parse(mealsDataJson) : [];
 }
 
@@ -362,12 +355,12 @@ function displayMealsFromLocalStorage() {
 
 // Remove meal from local storage and update display
 function removeMealFromLocalStorageAndTable(index) {
-    let mealsDataJson = localStorage.getItem('mealsdata');
+    let mealsDataJson = localStorage.getItem('mealName');
     let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
 
     if (index >= 0 && index < mealsData.length) {
         mealsData.splice(index, 1);
-        localStorage.setItem('mealsdata', JSON.stringify(mealsData));
+        localStorage.setItem('mealName', JSON.stringify(mealsData));
     } else {
         console.error('Index out of bounds.');
         return;
