@@ -265,16 +265,16 @@ export default class Database {
   }
 
 
-  async createMealIngredients(ingredientData) {
+  async createMealIngredients(ingredientData, userID) {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('ingredientweight', sql.Int, ingredientData.ingredientweight)
     request.input('meal_ID', sql.Int, ingredientData.meal_ID)
     request.input('ingredient_ID', sql.Int, ingredientData.ingredient_ID)
-    request.input('weightKcal', sql.Int, ingredientData.weightKcal)
-    request.input('weightProtein', sql.Int, ingredientData.weightProtein)
-    request.input('weightFat', sql.Int, ingredientData.weightFat)
-    request.input('weightFiber', sql.Int, ingredientData.weightFiber)
+    request.input('weightKcal', sql.Float, ingredientData.weightKcal)
+    request.input('weightProtein', sql.Float, ingredientData.weightProtein)
+    request.input('weightFat', sql.Float, ingredientData.weightFat)
+    request.input('weightFiber', sql.Float, ingredientData.weightFiber)
 
     const result = await request.query(`INSERT INTO Nutri.MealsIngredients (ingredientweight, meal_ID, ingredient_ID, weightKcal, weightProtein, weightFat, weightFiber) VALUES (@ingredientweight, @meal_ID, @ingredient_ID, @weightKcal, @weightProtein, @weightFat, @weightFiber)`);
 

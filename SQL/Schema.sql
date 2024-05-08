@@ -58,10 +58,10 @@ GO
         ingredientweight INT,
         meal_ID INTEGER FOREIGN KEY REFERENCES Nutri.Meals (meal_ID),
         ingredient_ID INTEGER FOREIGN KEY REFERENCES Nutri.Ingredients (ingredient_ID),
-        weightKcal INT NOT NULL,
-        weightProtein INT NOT NULL,
-        weightFat INT NOT NULL,
-        weightFiber INT NOT NULL
+        weightKcal FLOAT NOT NULL,
+        weightProtein FLOAT NOT NULL,
+        weightFat FLOAT NOT NULL,
+        weightFiber FLOAT NOT NULL
     );
 
 GO

@@ -375,7 +375,7 @@ async function createMealIngredient(ingredientData) {
         }
 
         const data = await response.json();
-        console.log(data.rowsAffected);
+        console.log(data);
     } catch (error) {
         console.error('Error creating meal ingredient:', error);
     }
