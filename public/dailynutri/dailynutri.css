@@ -53,3 +53,41 @@ th {
     padding-left: 15px;
     padding-right: 15px;
 }
+
+/* Modalen (baggrunden) */
+.modal {
+    display: none; /* Skjult som standard */
+    position: fixed; /* Bliv på toppen */
+    z-index: 1; /* Ligger over alt andet */
+    left: 0;
+    top: 0;
+    width: 100%; /* Fuld bredde */
+    height: 100%; /* Fuld højde */
+    overflow: auto; /* Gør det muligt at scrolle */
+    background-color: rgb(0,0,0); /* Sort med lidt gennemsigtighed */
+    background-color: rgba(0,0,0,0.4); /* Sort med lidt gennemsigtighed */
+  }
+  
+  /* Modalens indhold */
+  .modal-content {
+    background-color: #fefefe;
+    margin: 15% auto; /* 15% fra toppen og centreret */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Kunne være mere eller mindre, afhængig af skærmstørrelse */
+  }
+  
+  /* Luk-knappen */
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+  
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }

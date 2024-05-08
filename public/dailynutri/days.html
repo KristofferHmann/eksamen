@@ -38,22 +38,29 @@
   </header>
   <div class="daily">
     <h1 id="overskrift"> Daily Nutri </h1>
-    <button id="btn-hours" onclick="window.location.href='dailynutri.html'">hours</button> <!-- onclick func til at sende til den anden side-->
-    <button id="btn-days" onclick="updateDaily();window.location.href='days.html'">Days</button>
+    <button id="btn-hours">hours</button> <!-- onclick func til at sende til den anden side-->
+    <button id="btn-days">Days</button> 
+    <button id="showWater">Water</button>
     <table>
       <thead>
         <tr>
-          <th>Days</th>
-          <th>Meal Consumed</th>
+          <th>Hours</th>
+          <th>Meal Name</th>
           <th>Water Consumed</th>
           <th>Calories Consumed</th>
           <th>Calories Burned</th>
           <th>Calories Surplus or Deficit</th>
         </tr>
       </thead>
-      <tbody id="overviewDaily">
+    <tbody id="overview">
       </tbody>
     </table>
+  </div>
+  <div id="modal" class="modal">
+    <div class="modal-content">
+      <span class="close">&times;</span>
+      <div id="mealList"></div>
+    </div>
   </div>
   <script src="dailynutri.js"></script>
   <script src="../signout.js"></script>
