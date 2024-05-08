@@ -292,16 +292,17 @@ async function fetchUserMeals() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch data');
+            throw new Error(`Failed to fetch data. Status: ${response.status}, Status Text: ${response.statusText}`);
         }
+        
 
         const data = await response.json();
         console.log(data);
-        const uniqueMeals = data.getUserMeals.filter((meal, index, self) =>
-            index === self.findIndex((t) => t.meal_ID === meal.meal_ID)
-        );
+        // const uniqueMeals = data.getUserMeals.filter((meal, index, self) =>
+        //     index === self.findIndex((t) => t.meal_ID === meal.meal_ID)
+        // );
         // Call the loadMeals function with the retrieved data
-        displayMeals(uniqueMeals);
+        displayMeals(data.getUserMeals);
     } catch (error) {
         console.error(error);
         // Handle errors
