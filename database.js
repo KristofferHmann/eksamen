@@ -265,11 +265,11 @@ export default class Database {
   }
 
 
-  async createMealIngredients(ingredientData, userID) {
+  async createMealIngredients(ingredientData, meal_ID) {
     await this.connect();
     const request = this.poolconnection.request();
     request.input('ingredientweight', sql.Int, ingredientData.ingredientweight)
-    request.input('meal_ID', sql.Int, ingredientData.meal_ID)
+    request.input('meal_ID', sql.Int, meal_ID)
     request.input('ingredient_ID', sql.Int, ingredientData.ingredient_ID)
     request.input('weightKcal', sql.Float, ingredientData.weightKcal)
     request.input('weightProtein', sql.Float, ingredientData.weightProtein)

@@ -121,7 +121,7 @@ async function addIngredientToMeal() {
     totalProtein += protein;
     totalFat += fat;
     totalFiber += fiber;
-    
+
     const ingredientID = nutrition.ingredientID;
 
     // Add the ingredient to the current meal
@@ -238,13 +238,24 @@ async function addMealToTable() {
 };
 
 // Submit Meal Name
-function submitMealName() {
+async function submitMealName() {
     // Close the modal
     closeMealNameModal();
     openMealCreator();
+    
+    try {
+        // Call adam function to create the meal and get the meal_ID
+        const meal_ID = await adam();
+        // Remove any existing value in the hidden input field
+        document.getElementById('mealIDHidden').value = '';
+        // Set the meal_ID in the hidden input field
+        document.getElementById('mealIDHidden').value = meal_ID;
+    } catch (error) {
+        console.error('Error submitting meal name:', error);
+    }
 }
 
-function adam() {
+async function adam() {
     let mealName = document.getElementById("mealNameInput").value;
     let mealWeight = document.getElementById("mealWeightInput").value;
     const mealData = {
@@ -255,9 +266,20 @@ function adam() {
         totalFat: totalFat,
         totalFiber: totalFiber
     }
-    console.log(mealData);
-    createMeal(mealData)    
+
+    try {
+        // Create the meal and get the meal_ID
+        const meal_ID = await createMeal(mealData);
+
+        // Return the meal_ID
+        return meal_ID;
+    } catch (error) {
+        console.error('Error creating meal:', error);
+        throw error; // Rethrow the error to handle it in the caller function
+    }
 }
+
+
 
 function displayMealsFromLocalStorage() {
     // Get all keys from local storage
@@ -370,7 +392,7 @@ async function createMealIngredient(ingredientData) {
         });
 
         if (!response.ok) {
-            console.error('Failed to create meal ingredient');
+            console.error('HTTP error');
             return;
         }
 
