@@ -31,6 +31,65 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     }
 
+    // Get the close button
+    const closeBtn = document.getElementById('closeBtn');
+
+    // When the user clicks on the close button, close the modal
+    closeBtn.onclick = function () {
+        document.getElementById('waterModal').style.display = "none";
+    }
+
+    async function fetchAllIngredients() {
+        const response = await fetch('http://localhost:3000/items/ingredients');
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const allIngredients = await response.json();
+        return allIngredients;
+    }
+
+    const waterBtn = document.getElementById('addWaterBtn');
+    const waterModal = document.getElementById('waterModal');
+    const waterIngredientList = document.getElementById('waterIngredientList');
+
+    waterBtn.addEventListener('click', async function () {
+        waterModal.style.display = "block";
+
+        // Fetch all ingredients
+        const allIngredients = await fetchAllIngredients();
+
+        // Find water ingredient
+        const allArrays = Object.values(allIngredients).flat();
+        const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
+
+        // Display water ingredient in the modal
+        waterIngredientList.textContent = water.ingredientname;
+
+        document.getElementById('waterTime').textContent = 'Added on: ' + getDate();
+    });
+
+    const addWaterBtn = document.getElementById('addWater');
+
+addWaterBtn.addEventListener('click', function () {
+    // Get water amount
+    const waterAmount = document.getElementById('waterAmount').value;
+
+    // Get water ingredient name and time
+    const ingredientname = waterIngredientList.textContent;
+    const waterTime = document.getElementById('waterTime').textContent;
+
+    // Save ingredientname, waterAmount and waterTime in localStorage
+    const waterData = {
+        ingredientname: ingredientname,
+        waterAmount: waterAmount,
+        waterTime: waterTime
+    };
+    localStorage.setItem('waterData', JSON.stringify(waterData));
+    
+    // Close the modal
+    waterModal.style.display = "none";
+});
+
     // Add ingredient when "Add" button inside the modal is clicked
     const addIngredientBtn = document.getElementById("addIngredientBtn");
     addIngredientBtn.addEventListener('click', async function () {
@@ -324,7 +383,6 @@ function displayMealInTable(meal) {
     table.appendChild(row);
 }
 
-
 document.getElementById('addMeal').addEventListener('click', () => {
     const modal = document.getElementById('modal');
     modal.style.display = 'block';
@@ -335,9 +393,6 @@ document.getElementsByClassName('close')[0].addEventListener('click', () => {
     const modal = document.getElementById('modal');
     modal.style.display = 'none';
 });
-
-
-
 
 // Fetch meals data from local storage
 function fetchMealsFromLocalStorage() {
