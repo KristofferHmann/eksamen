@@ -288,7 +288,7 @@ export default class Database {
     const request = this.poolconnection.request();
     request.input('user_ID', sql.Int, userID)
     const result = await request.query(
-      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, Meals.date, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
+      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
     return result.recordsets[0];
   }
 

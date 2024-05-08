@@ -61,8 +61,8 @@ router.get('/userMeals', async (req, res) => {
     const userID = tokenDecoded.user_ID;
 
 
-    const getUserMeals = await database.getUserMeals(userID);
-    res.status(200).json({ getUserMeals});
+    const userMeals  = await database.getUserMeals(userID);
+    res.status(200).json({ userMeals });
   } catch (err) {
     res.status(500).send('Server error');
   }
