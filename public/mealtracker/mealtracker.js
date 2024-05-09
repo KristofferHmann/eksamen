@@ -327,12 +327,12 @@ function displayMeals(meals) {
         button.classList.add('mealListButton');
         button.addEventListener('click', () => {
             openMealModal(meal);
-            // Implement logic to handle when a meal button is clicked
+
             console.log('Clicked on meal:', meal);
         });
         mealListDiv.appendChild(button);
     });
-}
+} 
 
 function openMealModal(meal) {
     // Implement logic to open a modal with meal details
