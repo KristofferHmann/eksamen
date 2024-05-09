@@ -1,5 +1,3 @@
-
-
 let totalKcal = 0;
 let totalProtein = 0;
 let totalFat = 0;
@@ -105,6 +103,13 @@ async function foodFetch() {
 async function addIngredientToMeal() {
     let selectedFoodItem = document.getElementById("searchResults").value;
     let weight = document.getElementById('mealWeight').value;
+
+    // Check if selectedFoodItem or weight is empty
+    if (!selectedFoodItem.trim() || !weight.trim()) {
+        alert('Please select a food item and enter its weight');
+        return; // Exit the function early if any input is empty
+    }
+
 
     // Fetch nutrition information
     const nutrition = await fetchNutrition(selectedFoodItem);

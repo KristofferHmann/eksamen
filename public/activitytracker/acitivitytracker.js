@@ -41,8 +41,9 @@ addActivityBtn.addEventListener("click", async () => {
     const duration = parseFloat(durationInput.value);
     const totalKcalBurned = (kcalBurnedPerHour / 60) * duration; // Calculate total kcal burned
     console.log(selectedActivityID, duration, totalKcalBurned);
-    
 
+    // Define activityTime here
+    const activityTime = new Date().toLocaleString("en-US", { timeZone: "Europe/Copenhagen" });
     const token = localStorage.getItem("token");
     const response = await fetch('http://localhost:3000/items/addActivity', {
         method: "POST",
@@ -53,7 +54,8 @@ addActivityBtn.addEventListener("click", async () => {
         body: JSON.stringify({
             activity_ID: selectedActivityID,
             duration: duration,
-            durationkcal: totalKcalBurned
+            durationkcal: totalKcalBurned,
+            activityTime: activityTime
         })
     });
     if (!response.ok) {
@@ -82,16 +84,14 @@ async function updateActivityList() {
     activityBody.innerHTML = '';
     console.log(userActivities);
     for (let index = 0; index < userActivities.length; index++) {
-        
         // Add a new row to the table
         const row = document.createElement('tr');
         row.innerHTML = `
+        <td>${userActivities[index].activityTime}</td>
         <td>${userActivities[index].activities}</td>
         <td>${userActivities[index].duration}</td>
         <td>${userActivities[index].durationkcal}</td>`  // Round to 2 decimal places
         activityBody.appendChild(row);
-
-
     }
-   
+
 }
