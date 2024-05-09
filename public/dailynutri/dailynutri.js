@@ -1,155 +1,50 @@
-// import { getActivitiesFromLocalStorage } from './activitytracker.js';
+document.addEventListener('DOMContentLoaded', () => {
+  // Få knappen der åbner modalen
+  const waterBtn = document.getElementById('showWater');
 
-//Updater per time
-/*setInterval(function() {updateHour()}, 1000 * 60 * 60 );
+  // Få modal elementet
+  const modal = document.getElementById('modal');
 
-//Ny række med kolonner - Ny per time
-function updateHour() {
-    let tbodyRef = document.getElementById('overview');
-    //Ny række til tabellen
-    let newRow = tbodyRef.insertRow(0);
-    newRow.id = "newRowHour";
+  // Få elementet der lukker modalen
+  const closeBtn = document.querySelector(".close");
 
-    //Insætter celler/kolonner til slutningen af række
-    let newCell1 = newRow.insertCell(-1);
-    let div1 = document.createElement("div");
-    div1.innerHTML = "Hour";
-    newCell1.appendChild(div1);
+  // Få mealList elementet
+  const mealList = document.getElementById('mealList');
 
-    let newCell2 = newRow.insertCell(-1);
-    let div2 = document.createElement("div");
-    div2.innerHTML = "Meal Name";
-    newCell2.appendChild(div2);
+  // Når brugeren klikker på knappen, åben modalen 
+  waterBtn.addEventListener('click', () => {
+    modal.style.display = "block";
+  });
 
-    let newCell3 = newRow.insertCell(-1);
-    let div3 = document.createElement("div");
-    div3.innerHTML = "Water Consumed";
-    newCell3.appendChild(div3);
-
-    let newCell4 = newRow.insertCell(-1);
-    let div4 = document.createElement("div");
-    div4.innerHTML = "Calories Consumed";
-    newCell4.appendChild(div4);
-
-    let newCell5 = newRow.insertCell(-1);
-    let div5 = document.createElement("div");
-    div5.innerHTML = "Calories Burned";
-    newCell5.appendChild(div5);
-
-    let newCell6 = newRow.insertCell(-1);
-    let div6 = document.createElement("div");
-    div6.innerHTML = "Calories Surplus or Deficit";
-    newCell6.appendChild(div6);
-
-    let oldData = localStorage.getItem('overviewTable') || '';
-
-    let newData = oldData + tbodyRef.outerHTML;
-
-    localStorage.setItem('overviewTable', newData);
-    console.log('Table saved to local storage')
-
-    return tbodyRef.outerHTML;
-}
-
-
-// setInterval(function() {updateDaily()}, 20000);
-function updateDaily() {
-    let dato = new Date().toLocaleDateString("da-DK");
-
-    if(!document.getElementById(dato)) {
-        newRowDaily();
-    };
-};
-
-//Ny række med kolonner - Ny per dag
-function newRowDaily() {
-
-    let tbodyRef = document.getElementById('overviewDaily');
-    //Ny række til tabellen
-    let newRow = tbodyRef.insertRow(0);
-
-
-    //Insætter celler/kolonner til slutningen af række
-    let newCell1 = newRow.insertCell(-1);
-    let div1 = document.createElement("div");
-    div1.innerHTML = "Days";
-    newCell1.appendChild(div1);
-
-    let newCell2 = newRow.insertCell(-1);
-    let div2 = document.createElement("div");
-    div2.innerHTML = "Meal Name";
-    newCell2.appendChild(div2);
-
-    let newCell3 = newRow.insertCell(-1);
-    let div3 = document.createElement("div");
-    div3.innerHTML = "Water Consumed";
-    newCell3.appendChild(div3);
-
-    let newCell4 = newRow.insertCell(-1);
-    let div4 = document.createElement("div");
-    div4.innerHTML = "Calories Consumed";
-    newCell4.appendChild(div4);
-
-    let newCell5 = newRow.insertCell(-1);
-    let div5 = document.createElement("div");
-    div5.innerHTML = "Calories Burned";
-    newCell5.appendChild(div5);
-
-    let newCell6 = newRow.insertCell(-1);
-    let div6 = document.createElement("div");
-    div6.innerHTML = "Calories Surplus or Deficit";
-    newCell6.appendChild(div6);
-    let dato = new Date().toLocaleDateString("da-DK");
-
-} 
-*/
-
-
-// let jsonObj = { 'newRow': newCell1 };
-// localStorage.setItem('newRow', JSON.stringify(jsonObj));
-
-
-
-// Få knappen der åbner modalen
-const waterBtn = document.getElementById('showWater');
-
-// Få modal elementet
-const modal = document.getElementById('modal');
-
-// Få elementet der lukker modalen
-const closeBtn = document.querySelector(".close");
-
-// Når brugeren klikker på knappen, åben modalen 
-waterBtn.addEventListener('click', () => {
-  modal.style.display = "block";
-});
-
-// Når brugeren klikker på <span> (x), luk modalen
-waterBtn.addEventListener('click', () => {
-  // Hent waterData fra localStorage
-  const waterData = JSON.parse(localStorage.getItem('waterData'));
-
-  // Opdater mealList's indhold med waterData
-  mealList.innerHTML = '';
-  if (waterData) {
-    waterData.forEach(data => {
-      mealList.innerHTML += `<p>Ingredient Name: ${data.ingredientname}</p>`;
-      mealList.innerHTML += `<p>Water Amount: ${data.waterAmount}</p>`;
-      mealList.innerHTML += `<p>Water Time: ${data.waterTime}</p>`;
-      mealList.innerHTML += `<hr>`; // Add a horizontal line for readability
-    });
-  }
-
-  modal.style.display = "block";
-});
-
-// Når brugeren klikker hvor som helst uden for modalen, luk den
-window.addEventListener('click', (event) => {
-  if (event.target == modal) {
+  // Når brugeren klikker på <span> (x), luk modalen
+  closeBtn.addEventListener('click', () => {
     modal.style.display = "none";
-  }
-});
+  });
 
+  // Når brugeren klikker på knappen, opdater mealList
+  waterBtn.addEventListener('click', () => {
+    // Hent waterData fra localStorage
+    const waterData = JSON.parse(localStorage.getItem('waterData'));
+
+    // Opdater mealList's indhold med waterData
+    mealList.innerHTML = '';
+    if (waterData) {
+      waterData.forEach(data => {
+        mealList.innerHTML += `<p>Ingredient Name: ${data.ingredientname}</p>`;
+        mealList.innerHTML += `<p>Water Amount: ${data.waterAmount}</p>`;
+        mealList.innerHTML += `<p>Water Time: ${data.waterTime}</p>`;
+        mealList.innerHTML += `<hr>`; // Add a horizontal line for readability
+      });
+    }
+  });
+
+  // Når brugeren klikker hvor som helst uden for modalen, luk den
+  window.addEventListener('click', (event) => {
+    if (event.target == modal) {
+      modal.style.display = "none";
+    }
+  });
+});
 
 
 // Example data - replace with your actual data fetching logic

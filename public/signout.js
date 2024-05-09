@@ -30,8 +30,9 @@ async function logout() {
         location.reload();
     }
 }
-
+document.addEventListener('DOMContentLoaded', () => {
 const logoutButton = document.getElementsByClassName('outBtn')[0];
 logoutButton.addEventListener('click', () => {
     logout().catch(error => console.error(error));
+});
 });

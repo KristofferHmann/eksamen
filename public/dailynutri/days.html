@@ -8,7 +8,8 @@
   <link rel="stylesheet" href="dailynutri.css">
   <link rel="stylesheet" href="../style.css">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+  <script src="dailynutri.js"></script>
+  <script src="../signout.js"></script>
 </head>
 
 <body>
@@ -38,8 +39,8 @@
   </header>
   <div class="daily">
     <h1 id="overskrift"> Daily Nutri </h1>
-    <button id="btn-hours">hours</button> <!-- onclick func til at sende til den anden side-->
-    <button id="btn-days">Days</button> 
+    <button id="btn-hours" onclick="window.location.href='dailynutri.html'">hours</button> <!-- onclick func til at sende til den anden side-->
+    <button id="btn-days" onclick="updateDaily();window.location.href='days.html'">Days</button>
     <button id="showWater">Water</button>
     <table>
       <thead>
@@ -56,14 +57,14 @@
       </tbody>
     </table>
   </div>
+  
   <div id="modal" class="modal">
     <div class="modal-content">
       <span class="close">&times;</span>
       <div id="mealList"></div>
     </div>
   </div>
-  <script src="dailynutri.js"></script>
-  <script src="../signout.js"></script>
+  
 </body>
 
 
