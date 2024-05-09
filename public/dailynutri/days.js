@@ -7,7 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
       // Group the data by date and calculate the total water amount for each day
       const groupedData = waterData.reduce((acc, data) => {
         // Extract the date from the string
-        const date = data.waterTime.split('Added on: ')[1].split(' ')[0];
+        const date = data.waterTime;
   
         // If the date is already in the accumulator, add the waterAmount
         // Otherwise, initialize the date with the waterAmount

@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Filter the data based on the timestamp
     const filteredData = waterData.filter(data => {
       // Extract the date and time from the string
-      const dateTime = data.waterTime.split('Added on: ')[1];
+      const dateTime = data.waterTime;
 
       // Convert the date string to the format "mm-dd-yyyy hh:mm:ss"
       const dateParts = dateTime.split(' ')[0].split('-');

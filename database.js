@@ -308,7 +308,7 @@ export default class Database {
 
     request.input('user_ID', sql.Int, userID)
 
-    const result = await request.query('SELECT Activities.activity_ID, activities, durationkcal, duration FROM Nutri.Activities JOIN Nutri.ActivitiesUser on Activities.activity_ID = ActivitiesUser.activity_ID WHERE user_ID = @user_ID');
+    const result = await request.query('SELECT Activities.activity_ID, activities, durationkcal, duration, activityTime FROM Nutri.Activities JOIN Nutri.ActivitiesUser on Activities.activity_ID = ActivitiesUser.activity_ID WHERE user_ID = @user_ID');
 
     return result.recordsets[0];
   };
@@ -320,7 +320,8 @@ export default class Database {
     request.input('duration', sql.Int, data.duration)
     request.input('durationkcal', sql.Int, data.durationkcal)
     request.input('user_ID', sql.Int, userID)
-    const result = await request.query(`INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, durationkcal) VALUES (@user_ID, @activity_ID, @duration, @durationkcal)`);
+    request.input('activityTime', sql.DateTime, data.activityTime)
+    const result = await request.query(`INSERT INTO Nutri.ActivitiesUser (user_ID, activity_ID, duration, durationkcal, activityTime) VALUES (@user_ID, @activity_ID, @duration, @durationkcal, @activityTime)`);
 
     return result.rowsAffected[0];
 

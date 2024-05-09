@@ -65,7 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
         // Display water ingredient in the modal
         waterIngredientList.textContent = water.ingredientname;
 
-        document.getElementById('waterTime').textContent = 'Added on: ' + getDate();
+        document.getElementById('waterTime').textContent = getDate();
     });
 
     const addWaterBtn = document.getElementById('addWater');
