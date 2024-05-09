@@ -296,7 +296,6 @@ async function fetchUserMeals() {
                 'Content-Type': 'application/json',
                 'Authorization': 'Bearer ' + token,
             },
-            body: JSON.stringify()
         });
 
         if (!response.ok) {
@@ -305,15 +304,24 @@ async function fetchUserMeals() {
 
         
         const data = await response.json();
+
         console.log(data);
-        const uniqueMeals = data.userMeals.filter((meal, index, self) =>
-            index === self.findIndex((t) => t.meal_ID === meal.meal_ID)
-        );
-        // Call the loadMeals function with the retrieved data
+        const latestMeals = data.userMeals.reduce((acc, meal) => {
+            // Tjek om der allerede er et måltid med samme navn i akkumulatoren
+            if (!acc[meal.mealname] || meal.meal_ID > acc[meal.mealname].meal_ID) {
+                
+                // Opdater kun akkumulatoren hvis det aktuelle måltids-ID er større end det gemte
+                acc[meal.mealname] = meal;
+            }
+            return acc;
+        }, {});
+        
+        const uniqueMeals = Object.values(latestMeals);
+        
+        // Kalder displayMeals med de filtrerede måltider
         displayMeals(uniqueMeals);
     } catch (error) {
         console.error(error);
-        // Handle errors
     }
 }
 
@@ -351,7 +359,7 @@ function openMealModal(meal) {
         <p class="modal-label">Fiber</p>
         <input type="number" class="modal-input" value="${meal.totalFiber}" placeholder="Total Fiber" readonly>
         <p class="modal-label">Dato</p>
-        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
+        <input type="text" class="modal-input" value="${new Date(meal.createdAt).toLocaleDateString()}" placeholder="Date" readonly>
         <button id="submitMealBtn">Submit</button>
         <button id="closeMealModalBtn">Close</button>
     `;
