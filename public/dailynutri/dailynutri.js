@@ -1,92 +1,55 @@
 document.addEventListener('DOMContentLoaded', () => {
-  // Få knappen der åbner modalen
-  const waterBtn = document.getElementById('showWater');
+  // Function to fetch waterData and update the table
+  function fetchAndUpdate() {
+    // Fetch waterData from localStorage
+    const waterData = JSON.parse(localStorage.getItem('waterData')) || [];
 
-  // Få modal elementet
-  const modal = document.getElementById('modal');
+    // Get the current date
+    const now = new Date();
 
-  // Få elementet der lukker modalen
-  const closeBtn = document.querySelector(".close");
+    // Filter the data based on the timestamp
+    const filteredData = waterData.filter(data => {
+      // Extract the date and time from the string
+      const dateTime = data.waterTime.split('Added on: ')[1];
 
-  // Få mealList elementet
-  const mealList = document.getElementById('mealList');
+      // Convert the date string to the format "mm-dd-yyyy hh:mm:ss"
+      const dateParts = dateTime.split(' ')[0].split('-');
+      const timePart = dateTime.split(' ')[1];
+      const formattedDateTime = `${dateParts[1]}-${dateParts[0]}-${dateParts[2]} ${timePart}`;
 
-  // Når brugeren klikker på knappen, åben modalen 
-  waterBtn.addEventListener('click', () => {
-    modal.style.display = "block";
-  });
+      // Convert the date and time string to a Date object
+      const dataDate = new Date(formattedDateTime);
 
-  // Når brugeren klikker på <span> (x), luk modalen
-  closeBtn.addEventListener('click', () => {
-    modal.style.display = "none";
-  });
+      // Calculate the difference in days
+      const diffInDays = (now - dataDate) / (1000 * 60 * 60 * 24);
 
-  // Når brugeren klikker på knappen, opdater mealList
-  waterBtn.addEventListener('click', () => {
-    // Hent waterData fra localStorage
-    const waterData = JSON.parse(localStorage.getItem('waterData'));
+      // Check if the difference is less than or equal to 24 hours
+      return diffInDays <= 1;
+    });
 
-    // Opdater mealList's indhold med waterData
-    mealList.innerHTML = '';
-    if (waterData) {
-      waterData.forEach(data => {
-        mealList.innerHTML += `<p>Ingredient Name: ${data.ingredientname}</p>`;
-        mealList.innerHTML += `<p>Water Amount: ${data.waterAmount}</p>`;
-        mealList.innerHTML += `<p>Water Time: ${data.waterTime}</p>`;
-        mealList.innerHTML += `<hr>`; // Add a horizontal line for readability
-      });
-    }
-  });
+    // Update the table with filteredData
+    updateTable(filteredData);
+  }
 
-  // Når brugeren klikker hvor som helst uden for modalen, luk den
-  window.addEventListener('click', (event) => {
-    if (event.target == modal) {
-      modal.style.display = "none";
-    }
-  });
-});
+  // Function to update the table
+  function updateTable(data) {
+    const tbody = document.getElementById('overview');
+    tbody.innerHTML = ''; // Clear existing rows
 
-
-// Example data - replace with your actual data fetching logic
-let mergedData = {
-  activities: [], // Data from activitytracker.js
-  meals: []      // Data from mealtracker.js
-};
-
-// Function to update the table
-function updateTable(meals) {
-  const tbody = document.getElementById('overview');
-  tbody.innerHTML = ''; // Clear existing rows
-
-  meals.forEach(meal => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${meal.hour}</td>
-        <td>${meal.mealName}</td>
-        <td>${meal.waterConsumed}</td>
-        <td>${meal.caloriesConsumed}</td>
-        <td>${meal.caloriesBurned}</td>
-        <td>${meal.caloriesSurplusOrDeficit}</td>
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${item.waterTime}</td>
+        <td>${item.ingredientname}</td>
+        <td>${item.waterAmount}</td>
+        <td></td>
+        <td></td>
+        <td></td>
       `;
-    tbody.appendChild(row);
-  });
-}
+      tbody.appendChild(row);
+    });
+  }
 
-// Initial table update
-updateTable(meals, 'hours');
-
-// Function to handle view change
-function updateView(view) {
-  updateTable(meals, view);
-}
-
-//Event listeners til de forskellige knapper der tager en til siderne
-document.getElementById('btn-hours').addEventListener('click', () => {
-  updateView('hours');
-  window.location.href = 'dailynutri.html'; // Redirect to maintain state
-});
-
-document.getElementById('btn-days').addEventListener('click', () => {
-  updateView('days');
-  window.location.href = 'days.html'; // Redirect to maintain state
+  // Initial table update
+  fetchAndUpdate();
 });
