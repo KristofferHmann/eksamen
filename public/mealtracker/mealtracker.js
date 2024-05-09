@@ -359,7 +359,7 @@ function openMealModal(meal) {
         <p class="modal-label">Fiber</p>
         <input type="number" class="modal-input" value="${meal.totalFiber}" placeholder="Total Fiber" readonly>
         <p class="modal-label">Dato</p>
-        <input type="text" class="modal-input" value="${new Date(meal.createdAt).toLocaleDateString()}" placeholder="Date" readonly>
+        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
         <button id="submitMealBtn">Submit</button>
         <button id="closeMealModalBtn">Close</button>
     `;
