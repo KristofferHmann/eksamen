@@ -364,7 +364,6 @@ function openMealModal(meal) {
         <button id="closeMealModalBtn">Close</button>
     `;
 
-
     // Display modal
     modal.style.display = 'block';
 
@@ -383,14 +382,23 @@ function openMealModal(meal) {
     });
 }
 
-function displayMealInTable(meal) {
+async function displayMealInTable(meal) {
     const table = document.querySelector('table tbody');
     const row = document.createElement('tr');
+
+    // Get location from browser
+    let address = 'Address not available';
+    try {
+        address = await getAddress();
+    } catch (error) {
+        console.error(error);
+    }
+
     row.innerHTML = `
         <td>${table.childElementCount + 1}</td>
         <td>${meal.mealname}</td>
         <td>${getDate()}</td>
-        <td>${meal.address}</td>
+        <td>${address}</td>
         <td>${meal.weight}</td>
         <td> ${meal.totalKcal} kcal, ${meal.totalProtein} g, ${meal.totalFat} g, ${meal.totalFiber} g </td>
         <td>

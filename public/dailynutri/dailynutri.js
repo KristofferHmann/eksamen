@@ -1,197 +1,55 @@
-// import { getActivitiesFromLocalStorage } from './activitytracker.js';
+document.addEventListener('DOMContentLoaded', () => {
+  // Function to fetch waterData and update the table
+  function fetchAndUpdate() {
+    // Fetch waterData from localStorage
+    const waterData = JSON.parse(localStorage.getItem('waterData')) || [];
 
-//Updater per time
-/*setInterval(function() {updateHour()}, 1000 * 60 * 60 );
+    // Get the current date
+    const now = new Date();
 
-//Ny række med kolonner - Ny per time
-function updateHour() {
-    let tbodyRef = document.getElementById('overview');
-    //Ny række til tabellen
-    let newRow = tbodyRef.insertRow(0);
-    newRow.id = "newRowHour";
+    // Filter the data based on the timestamp
+    const filteredData = waterData.filter(data => {
+      // Extract the date and time from the string
+      const dateTime = data.waterTime.split('Added on: ')[1];
 
-    //Insætter celler/kolonner til slutningen af række
-    let newCell1 = newRow.insertCell(-1);
-    let div1 = document.createElement("div");
-    div1.innerHTML = "Hour";
-    newCell1.appendChild(div1);
+      // Convert the date string to the format "mm-dd-yyyy hh:mm:ss"
+      const dateParts = dateTime.split(' ')[0].split('-');
+      const timePart = dateTime.split(' ')[1];
+      const formattedDateTime = `${dateParts[1]}-${dateParts[0]}-${dateParts[2]} ${timePart}`;
 
-    let newCell2 = newRow.insertCell(-1);
-    let div2 = document.createElement("div");
-    div2.innerHTML = "Meal Name";
-    newCell2.appendChild(div2);
+      // Convert the date and time string to a Date object
+      const dataDate = new Date(formattedDateTime);
 
-    let newCell3 = newRow.insertCell(-1);
-    let div3 = document.createElement("div");
-    div3.innerHTML = "Water Consumed";
-    newCell3.appendChild(div3);
+      // Calculate the difference in days
+      const diffInDays = (now - dataDate) / (1000 * 60 * 60 * 24);
 
-    let newCell4 = newRow.insertCell(-1);
-    let div4 = document.createElement("div");
-    div4.innerHTML = "Calories Consumed";
-    newCell4.appendChild(div4);
+      // Check if the difference is less than or equal to 24 hours
+      return diffInDays <= 1;
+    });
 
-    let newCell5 = newRow.insertCell(-1);
-    let div5 = document.createElement("div");
-    div5.innerHTML = "Calories Burned";
-    newCell5.appendChild(div5);
+    // Update the table with filteredData
+    updateTable(filteredData);
+  }
 
-    let newCell6 = newRow.insertCell(-1);
-    let div6 = document.createElement("div");
-    div6.innerHTML = "Calories Surplus or Deficit";
-    newCell6.appendChild(div6);
+  // Function to update the table
+  function updateTable(data) {
+    const tbody = document.getElementById('overview');
+    tbody.innerHTML = ''; // Clear existing rows
 
-    let oldData = localStorage.getItem('overviewTable') || '';
-
-    let newData = oldData + tbodyRef.outerHTML;
-
-    localStorage.setItem('overviewTable', newData);
-    console.log('Table saved to local storage')
-
-    return tbodyRef.outerHTML;
-}
-
-
-// setInterval(function() {updateDaily()}, 20000);
-function updateDaily() {
-    let dato = new Date().toLocaleDateString("da-DK");
-
-    if(!document.getElementById(dato)) {
-        newRowDaily();
-    };
-};
-
-//Ny række med kolonner - Ny per dag
-function newRowDaily() {
-
-    let tbodyRef = document.getElementById('overviewDaily');
-    //Ny række til tabellen
-    let newRow = tbodyRef.insertRow(0);
-
-
-    //Insætter celler/kolonner til slutningen af række
-    let newCell1 = newRow.insertCell(-1);
-    let div1 = document.createElement("div");
-    div1.innerHTML = "Days";
-    newCell1.appendChild(div1);
-
-    let newCell2 = newRow.insertCell(-1);
-    let div2 = document.createElement("div");
-    div2.innerHTML = "Meal Name";
-    newCell2.appendChild(div2);
-
-    let newCell3 = newRow.insertCell(-1);
-    let div3 = document.createElement("div");
-    div3.innerHTML = "Water Consumed";
-    newCell3.appendChild(div3);
-
-    let newCell4 = newRow.insertCell(-1);
-    let div4 = document.createElement("div");
-    div4.innerHTML = "Calories Consumed";
-    newCell4.appendChild(div4);
-
-    let newCell5 = newRow.insertCell(-1);
-    let div5 = document.createElement("div");
-    div5.innerHTML = "Calories Burned";
-    newCell5.appendChild(div5);
-
-    let newCell6 = newRow.insertCell(-1);
-    let div6 = document.createElement("div");
-    div6.innerHTML = "Calories Surplus or Deficit";
-    newCell6.appendChild(div6);
-    let dato = new Date().toLocaleDateString("da-DK");
-
-} 
-*/
-
-
-// let jsonObj = { 'newRow': newCell1 };
-// localStorage.setItem('newRow', JSON.stringify(jsonObj));
-
-
-
-// Få knappen der åbner modalen
-const waterBtn = document.getElementById('showWater');
-
-// Få modal elementet
-const modal = document.getElementById('modal');
-
-// Få elementet der lukker modalen
-const closeBtn = document.querySelector(".close");
-
-// Når brugeren klikker på knappen, åben modalen 
-waterBtn.addEventListener('click', () => {
-  modal.style.display = "block";
-});
-
-// Når brugeren klikker på <span> (x), luk modalen
-waterBtn.addEventListener('click', () => {
-  // Hent waterData fra localStorage
-  const waterData = JSON.parse(localStorage.getItem('waterData'));
-
-  // Opdater mealList's indhold med waterData
-  mealList.innerHTML = '';
-  if (waterData) {
-    waterData.forEach(data => {
-      mealList.innerHTML += `<p>Ingredient Name: ${data.ingredientname}</p>`;
-      mealList.innerHTML += `<p>Water Amount: ${data.waterAmount}</p>`;
-      mealList.innerHTML += `<p>Water Time: ${data.waterTime}</p>`;
-      mealList.innerHTML += `<hr>`; // Add a horizontal line for readability
+    data.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `
+        <td>${item.waterTime}</td>
+        <td>${item.ingredientname}</td>
+        <td>${item.waterAmount}</td>
+        <td></td>
+        <td></td>
+        <td></td>
+      `;
+      tbody.appendChild(row);
     });
   }
 
-  modal.style.display = "block";
-});
-
-// Når brugeren klikker hvor som helst uden for modalen, luk den
-window.addEventListener('click', (event) => {
-  if (event.target == modal) {
-    modal.style.display = "none";
-  }
-});
-
-
-
-// Example data - replace with your actual data fetching logic
-let mergedData = {
-  activities: [], // Data from activitytracker.js
-  meals: []      // Data from mealtracker.js
-};
-
-// Function to update the table
-function updateTable(meals) {
-  const tbody = document.getElementById('overview');
-  tbody.innerHTML = ''; // Clear existing rows
-
-  meals.forEach(meal => {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-        <td>${meal.hour}</td>
-        <td>${meal.mealName}</td>
-        <td>${meal.waterConsumed}</td>
-        <td>${meal.caloriesConsumed}</td>
-        <td>${meal.caloriesBurned}</td>
-        <td>${meal.caloriesSurplusOrDeficit}</td>
-      `;
-    tbody.appendChild(row);
-  });
-}
-
-// Initial table update
-updateTable(meals, 'hours');
-
-// Function to handle view change
-function updateView(view) {
-  updateTable(meals, view);
-}
-
-//Event listeners til de forskellige knapper der tager en til siderne
-document.getElementById('btn-hours').addEventListener('click', () => {
-  updateView('hours');
-  window.location.href = 'dailynutri.html'; // Redirect to maintain state
-});
-
-document.getElementById('btn-days').addEventListener('click', () => {
-  updateView('days');
-  window.location.href = 'days.html'; // Redirect to maintain state
+  // Initial table update
+  fetchAndUpdate();
 });
