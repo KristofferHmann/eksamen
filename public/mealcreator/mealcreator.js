@@ -285,7 +285,7 @@ async function adam() {
 }
 
 
-
+/*
 function displayMealsFromLocalStorage() {
     // Get all keys from local storage
     const keys = Object.keys(localStorage);
@@ -345,9 +345,10 @@ function displayMealsFromLocalStorage() {
     ;
 }
 
+
 // Call the function when the document is loaded
 document.addEventListener('DOMContentLoaded', displayMealsFromLocalStorage);
-
+*/
 
 async function createMeal(mealData) {
 
@@ -408,4 +409,56 @@ async function createMealIngredient(ingredientData) {
     }
 }
 
+async function fetchUserMeals() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
 
+        const response = await fetch('http://localhost:3000/items/userMeals', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch data');
+        }
+
+        const data = await response.json();
+
+        const latestMeals = data.userMeals.reduce((acc, meal) => {
+            if (!acc[meal.mealname] || meal.meal_ID > acc[meal.mealname].meal_ID) {
+                acc[meal.mealname] = meal;
+            }
+            return acc;
+        }, {});
+
+        const uniqueMeals = Object.values(latestMeals);
+
+        displayMeals(uniqueMeals);
+    } catch (error) {
+        console.error(error);
+    }
+}
+
+function displayMeals(meals) {
+    const mealTableBody = document.querySelector('.mealCreator table tbody');
+    mealTableBody.innerHTML = ''; // Clear previous content
+
+    meals.forEach((meal, index) => {
+        const row = mealTableBody.insertRow();
+        row.insertCell().textContent = index + 1; // # column
+        row.insertCell().textContent = meal.mealname; // Meal Name column
+        row.insertCell().textContent = meal.ingredients ? meal.ingredients.length : 'N/A'; // # Ingredients column
+        row.insertCell().textContent = meal.nutrition; // Nutrition column
+        row.insertCell().textContent = meal.addedOn; // Added on column
+    });
+}
+
+// Call the function when the document is loaded
+document.addEventListener('DOMContentLoaded', fetchUserMeals);
