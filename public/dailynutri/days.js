@@ -1,3 +1,4 @@
+/*
 document.addEventListener('DOMContentLoaded', () => {
     // Function to fetch waterData and update the table
     function fetchAndUpdate() {
@@ -42,3 +43,59 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial table update
     fetchAndUpdate();
   });
+
+async function fetchAndGroupUserActivities() {
+  // Fetch userActivities from the server
+  const token = localStorage.getItem("token");
+  const response = await fetch('http://localhost:3000/items/userActivities', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userActivities = await response.json();
+  console.log(userActivities);
+}
+fetchAndGroupUserActivities();
+*/
+
+async function fetchAndGroupUserActivities() {
+  // Fetch userActivities from the server
+  const token = localStorage.getItem("token");
+  const response = await fetch('http://localhost:3000/items/userActivities', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userActivities = await response.json();
+
+  // Group activities by date and calculate total durationKcal
+  const groupedActivities = userActivities.getAllActivities.reduce((acc, activity) => {
+    const date = new Date(activity.activityTime).toISOString().split('T')[0]; // Extract date from activityTime
+    if (!acc[date]) {
+      acc[date] = 0; // Initialize if not already present
+    }
+    acc[date] += activity.durationkcal; // Add durationKcal to the total
+    return acc;
+  }, {});
+
+  // Display the grouped activities in HTML
+  const tbody = document.getElementById('overview');
+  for (const date in groupedActivities) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${date}</td>
+      <td>Water, tap, drinking, average values</td>
+      <td></td>
+      <td></td>
+      <td>${groupedActivities[date]}</td>
+      <td></td>
+    `;
+    tbody.appendChild(row);
+  }
+}
+
+fetchAndGroupUserActivities();
