@@ -269,7 +269,8 @@ async function adam() {
         totalKcal: totalKcal,
         totalProtein: totalProtein,
         totalFat: totalFat,
-        totalFiber: totalFiber
+        totalFiber: totalFiber,
+        mealTime: new Date()
     }
 
     try {
@@ -345,7 +346,6 @@ function displayMealsFromLocalStorage() {
     ;
 }
 
-
 // Call the function when the document is loaded
 document.addEventListener('DOMContentLoaded', displayMealsFromLocalStorage);
 */
@@ -409,6 +409,33 @@ async function createMealIngredient(ingredientData) {
     }
 }
 
+let ingredients;
+
+async function fetchAllIngredients() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/items/ingredients', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to fetch ingredients');
+        }
+
+        ingredients = await response.json();
+    } catch (error) {
+        console.error(error);
+    }
+}
 async function fetchUserMeals() {
     try {
         const token = localStorage.getItem('token');
@@ -440,6 +467,27 @@ async function fetchUserMeals() {
 
         const uniqueMeals = Object.values(latestMeals);
 
+        // Fetch all ingredients if not already fetched
+        if (!ingredients) {
+            await fetchAllIngredients();
+        }
+
+        // Log ingredient ids
+        uniqueMeals.forEach(meal => {
+            if (meal.ingredient_IDs) { // Assuming meal.ingredient_IDs is a list of ingredient IDs
+                meal.ingredient_IDs.forEach(ingredient_ID => {
+                    const foundIngredient = ingredients.allIngredients.find(ingredient => ingredient.ingredient_ID === ingredient_ID);
+        
+                    if (foundIngredient) {
+                        console.log(foundIngredient.ingredient_ID);
+                    } else {
+                        console.log('Ingen ingrediens fundet med id:', ingredient_ID);
+                    }
+                });
+            } else {
+                console.log('Ingen ingrediens ID fundet for måltidet:', meal.mealname);
+            }
+        });
         displayMeals(uniqueMeals);
     } catch (error) {
         console.error(error);
@@ -456,7 +504,53 @@ function displayMeals(meals) {
         row.insertCell().textContent = meal.mealname; // Meal Name column
         row.insertCell().textContent = meal.ingredients ? meal.ingredients.length : 'N/A'; // # Ingredients column
         row.insertCell().textContent = meal.nutrition; // Nutrition column
-        row.insertCell().textContent = meal.addedOn; // Added on column
+        console.log(meal);
+        row.insertCell().textContent = meal.mealTime ? new Date(meal.mealTime).toLocaleString() : 'N/A'; // Added on column
+
+        // Create a new button element
+        const button = document.createElement('button');
+        button.textContent = 'Vis ingredienser';
+
+        // When the button is clicked, open a modal showing the ingredients
+        button.addEventListener('click', () => {
+            const foundIngredient = ingredients.allIngredients.find(ingredient => ingredient.ingredient_ID === meal.ingredient_ID);
+            console.log('Meal object:', meal);
+            // Create a new modal element
+            const modal = document.createElement('div');
+            modal.classList.add('modal');
+        
+            // Create a new content element for the modal
+            const content = document.createElement('div');
+            content.classList.add('modal-content');
+        
+            // Add the ingredient information to the modal content
+            if (foundIngredient) {
+                content.innerHTML = `
+                    <p>Ingrediensnavn: ${foundIngredient.ingredientname}</p>
+                    <p>Vægt: ${meal.ingredientweight}</p>
+                    <p>Fedt: ${meal.weightFat}</p>
+                    <p>Fiber: ${meal.weightFiber}</p>
+                    <p>Kcal: ${meal.weightKcal}</p>
+                    <p>Protein: ${meal.weightProtein}</p>
+                `;
+            } else {
+                content.textContent = 'Ingen ingrediens fundet';
+            }
+        
+            // Add the content to the modal
+            modal.appendChild(content);
+        
+            // Add the modal to the body
+            document.body.appendChild(modal);
+        
+            // When the modal is clicked, remove it
+            modal.addEventListener('click', () => {
+                document.body.removeChild(modal);
+            });
+        });
+
+        // Add the button to the row
+        row.appendChild(button);
     });
 }
 

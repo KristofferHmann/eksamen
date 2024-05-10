@@ -217,11 +217,12 @@ export default class Database {
       request.input('totalFat', sql.Float, mealData.totalFat);
       request.input('totalFiber', sql.Float, mealData.totalFiber);
       request.input('user_ID', sql.Int, userID);
+      request.input('mealTime', sql.DateTime, mealData.mealTime);
 
       const result = await request.query(`
-            INSERT INTO Nutri.Meals (mealname, weight, totalKcal, totalProtein, totalFat, totalFiber, user_ID)
+            INSERT INTO Nutri.Meals (mealname, weight, totalKcal, totalProtein, totalFat, totalFiber, user_ID, mealTime)
             OUTPUT INSERTED.meal_ID
-            VALUES (@mealname, @weight, @totalKcal, @totalProtein, @totalFat, @totalFiber, @user_ID);
+            VALUES (@mealname, @weight, @totalKcal, @totalProtein, @totalFat, @totalFiber, @user_ID, @mealTime);
         `);
       const mealID = result.recordset[0].meal_ID;
 
@@ -288,7 +289,7 @@ export default class Database {
     const request = this.poolconnection.request();
     request.input('user_ID', sql.Int, userID)
     const result = await request.query(
-      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
+      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.mealTime, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
     return result.recordsets[0];
   }
 
