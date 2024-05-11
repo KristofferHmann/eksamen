@@ -200,9 +200,14 @@ async function addMealToTable() {
         },
         addedOn: dateString,
     };
-    adam();
-    localStorage.setItem(mealName, JSON.stringify(mealData));
+    try {
+        // Call the updateMealID function to update the meal ID
+        const meal_ID = await updateMealID(document.getElementById('mealIDHidden').value);
+    } catch (error) {
+        console.error('Error submitting meal name:', error);
+    }
 
+    localStorage.setItem(mealName, JSON.stringify(mealData));
     // Reset numIngredients for the next meal
     numIngredients = 0;
 
@@ -215,29 +220,30 @@ async function addMealToTable() {
     // Reset the current meal for the next meal
     currentMeal = [];
 
-    // Add a new cell for the button
-    let buttonCell = row.insertCell();
-    // Create a button element
-    let button = document.createElement('button');
-    // Set the button text
-    button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-    // Store the index of the meal in the button's dataset
-    button.dataset.mealIndex = meals.length - 1;
-    // Add an event listener to the button
-    button.addEventListener('click', (event) => {
-        // Get the index of the meal from the button's dataset
-        let mealIndex = event.target.dataset.mealIndex;
-        // Get the ingredients of the meal
-        let ingredients = meals[mealIndex];
-        // Create a string with the ingredients
-        let ingredientsStr = ingredients.map(ingredient =>
-            `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
-        ).join('\n');
-        // Display the ingredients
-        alert('Ingredients:\n' + ingredientsStr);
-    });
-    // Add the button to the cell
-    buttonCell.appendChild(button);
+    // gammen måde at lave en knap på til at åbne alert med ingredienser
+    // // Add a new cell for the button
+    // let buttonCell = row.insertCell();
+    // // Create a button element
+    // let button = document.createElement('button');
+    // // Set the button text
+    // button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+    // // Store the index of the meal in the button's dataset
+    // button.dataset.mealIndex = meals.length - 1;
+    // // Add an event listener to the button
+    // button.addEventListener('click', (event) => {
+    //     // Get the index of the meal from the button's dataset
+    //     let mealIndex = event.target.dataset.mealIndex;
+    //     // Get the ingredients of the meal
+    //     let ingredients = meals[mealIndex];
+    //     // Create a string with the ingredients
+    //     let ingredientsStr = ingredients.map(ingredient =>
+    //         `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
+    //     ).join('\n');
+    //     // Display the ingredients
+    //     alert('Ingredients:\n' + ingredientsStr);
+    // });
+    // // Add the button to the cell
+    // buttonCell.appendChild(button);
 
     closeMealCreator();
 };
@@ -281,6 +287,32 @@ async function adam() {
         return meal_ID;
     } catch (error) {
         console.error('Error creating meal:', error);
+        throw error; // Rethrow the error to handle it in the caller function
+    }
+}
+
+async function updateMealID(meal_ID) {
+    try {
+        // Retrieve meal data from the current meal
+        const mealName = document.getElementById("mealNameInput").value;
+        const mealWeight = document.getElementById("mealWeightInput").value;
+        const mealData = {
+            mealname: mealName,
+            weight: mealWeight,
+            totalKcal: totalKcal.toFixed(2),
+            totalProtein: totalProtein.toFixed(2),
+            totalFat: totalFat.toFixed(2),
+            totalFiber: totalFiber.toFixed(2),
+            mealTime: new Date()
+        };
+
+        // Update the meal with the given meal_ID
+        await updateMeals(mealData, meal_ID);
+
+        // Set the meal_ID in the hidden input field
+        document.getElementById('mealIDHidden').value = meal_ID;
+    } catch (error) {
+        console.error('Error updating meal ID:', error);
         throw error; // Rethrow the error to handle it in the caller function
     }
 }
@@ -493,6 +525,44 @@ async function fetchUserMeals() {
         console.error(error);
     }
 }
+async function updateMeals(mealData, mealID) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/items/updateMeals', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                mealData: mealData,
+                mealID: mealID
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update meal');
+        }
+
+        const data = await response.json();
+        console.log(data.message); // Log the response message
+    } catch (error) {
+        console.error('Error updating meals:', error);
+    }
+}
+
+async function callUpdateMeals() {
+    const mealData = await adam(); // Ensure adam() returns the correct mealData
+    const mealID = document.getElementById('mealIDHidden').value; // Correctly retrieve the mealID
+    await updateMeals(mealData, mealID); // Pass the mealData and mealID to updateMeals
+}
+
+
 
 function displayMeals(meals) {
     const mealTableBody = document.querySelector('.mealCreator table tbody');
@@ -509,7 +579,7 @@ function displayMeals(meals) {
 
         // Create a new button element
         const button = document.createElement('button');
-        button.textContent = 'Vis ingredienser';
+        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
 
         // When the button is clicked, open a modal showing the ingredients
         button.addEventListener('click', () => {
@@ -528,10 +598,10 @@ function displayMeals(meals) {
                 content.innerHTML = `
                     <p>Ingrediensnavn: ${foundIngredient.ingredientname}</p>
                     <p>Vægt: ${meal.ingredientweight}</p>
-                    <p>Fedt: ${meal.weightFat}</p>
-                    <p>Fiber: ${meal.weightFiber}</p>
-                    <p>Kcal: ${meal.weightKcal}</p>
-                    <p>Protein: ${meal.weightProtein}</p>
+                    <p>Fedt: ${meal.weightFat.toFixed(2)}</p>
+                    <p>Fiber: ${meal.weightFiber.toFixed(2)}</p>
+                    <p>Kcal: ${meal.weightKcal.toFixed(2)}</p>
+                    <p>Protein: ${meal.weightProtein.toFixed(2)}</p>
                 `;
             } else {
                 content.textContent = 'Ingen ingrediens fundet';

@@ -77,11 +77,11 @@ router.put('/updateMeals', async (req, res) => {
     const userID = tokenDecoded.user_ID;
 
     // Extract meal data from the request body
-    const mealData = req.body.mealData; // Assuming mealData is provided in the request body
-    const mealID = req.body.mealID; // Assuming mealID is provided in the request body
+    const mealData = req.body.mealData;
+    const mealID = req.body.mealID;
 
-    // Call the editMeals function with mealData, userID, and mealID
-    const rowsAffected = await database.editMeals(mealData, userID, mealID);
+    // Call the editMeals function with all necessary data
+    const rowsAffected = await database.editMeals(mealID, mealData);
 
     // Check if any rows were affected
     if (rowsAffected > 0) {
@@ -240,6 +240,36 @@ router.put('/edit', async (req, res) => {
     }
   } catch (err) {
     console.error(err.message);
+    res.status(500).send('Server error');
+  }
+});
+
+router.get('/allWater', async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+
+    const getAllWater = await database.getUserWater(userID);
+    res.status(200).json({ getAllWater });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+//Registrer et måltid
+router.post('/addWater', async (req, res) => {
+  try {
+    const water = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    const rowsAffected = await database.addWater(water, userID);
+    res.status(201).json({ rowsAffected });
+  } catch (err) {
+    console.error(err, 'hep a'); // Tilføj denne linje
     res.status(500).send('Server error');
   }
 });

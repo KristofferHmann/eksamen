@@ -1,3 +1,4 @@
+/*
 document.addEventListener('DOMContentLoaded', () => {
     // Function to fetch waterData and update the table
     function fetchAndUpdate() {
@@ -42,3 +43,82 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initial table update
     fetchAndUpdate();
   });
+
+async function fetchAndGroupUserActivities() {
+  // Fetch userActivities from the server
+  const token = localStorage.getItem("token");
+  const response = await fetch('http://localhost:3000/items/userActivities', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userActivities = await response.json();
+  console.log(userActivities);
+}
+fetchAndGroupUserActivities();
+*/
+async function fetchAndGroupUserActivities() {
+  // Fetch userActivities from the server
+  const token = localStorage.getItem("token");
+  const response = await fetch('http://localhost:3000/items/userActivities', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userActivities = await response.json();
+
+  // Fetch water data from the server
+  const waterResponse = await fetch('http://localhost:3000/items/allWater', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  if (!waterResponse.ok) {
+    console.error('Error fetching water data:', waterResponse.status, waterResponse.statusText);
+    return;
+  }
+  const userWater = await waterResponse.json();
+// Group activities by date and calculate total durationKcal
+let groupedActivities = userActivities.getAllActivities.reduce((acc, activity) => {
+  const date = new Date(activity.activityTime).toISOString().substring(0, 10); // Extract date from activityTime
+  console.log('date:', date); // Log the date
+  if (!acc[date]) {
+    acc[date] = { durationKcal: 0, waterVolume: 0 }; // Initialize if not already present
+  }
+  acc[date].durationKcal += activity.durationkcal; // Add durationKcal to the total
+  return acc;
+}, {});
+
+// Add water volume to the total
+userWater.getAllWater.forEach(water => {
+  const waterDate = new Date(water.waterTime).toISOString().substring(0, 10);
+  console.log('waterDate:', waterDate); // Log the waterDate
+  console.log('waterVolume:', water.waterVolume); // Log the waterVolume
+  if (groupedActivities[waterDate]) {
+    groupedActivities[waterDate].waterVolume += water.waterVolume;
+  }
+});
+
+  // Display the grouped activities in HTML
+  const tbody = document.getElementById('overview');
+  for (const date in groupedActivities) {
+    const row = document.createElement('tr');
+    row.innerHTML = `
+      <td>${date}</td>
+      <td>Water, tap, drinking, average values</td>
+      <td>${groupedActivities[date].waterVolume} ml</td>
+      <td></td>
+      <td>${groupedActivities[date].durationKcal}</td>
+      <td></td>
+    `;
+    tbody.appendChild(row);
+  }
+}
+
+fetchAndGroupUserActivities();

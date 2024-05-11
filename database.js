@@ -233,37 +233,38 @@ export default class Database {
     }
   }
 
-  async editMeals(mealData, userID) {
+  async editMeals(mealID, mealData) {
     try {
-      await this.connect();
-      const request = this.poolconnection.request();
-      request.input('mealname', sql.VarChar, mealData.mealname);
-      request.input('weight', sql.Int, mealData.weight);
-      request.input('totalKcal', sql.Float, mealData.totalKcal);
-      request.input('totalProtein', sql.Float, mealData.totalProtein);
-      request.input('totalFat', sql.Float, mealData.totalFat);
-      request.input('totalFiber', sql.Float, mealData.totalFiber);
-      request.input('user_ID', sql.Int, userID);
+        await this.connect();
+        const request = this.poolconnection.request();
+        const {weight, totalKcal, totalProtein, totalFat, totalFiber } = mealData
+        request.input('weight', sql.Int, weight);
+        request.input('totalKcal', sql.Float, totalKcal);
+        request.input('totalProtein', sql.Float, totalProtein);
+        request.input('totalFat', sql.Float, totalFat);
+        request.input('totalFiber', sql.Float, totalFiber);
+        request.input('meal_ID', sql.Int, mealID);
 
-      const result = await request.query(`
-      UPDATE Nutri.Meals
-      SET 
-          mealname = @mealname,
-          weight = @weight,
-          totalKcal = @totalKcal,
-          totalProtein = @totalProtein,
-          totalFat = @totalFat,
-          totalFiber = @totalFiber
-      WHERE
-          meal_ID = @meal_ID;
-      
+        const result = await request.query(`
+        UPDATE Nutri.Meals
+        SET 
+            weight = @weight,
+            totalKcal = @totalKcal,
+            totalProtein = @totalProtein,
+            totalFat = @totalFat,
+            totalFiber = @totalFiber
+        WHERE
+            meal_ID = @meal_ID;
+        
         `);
         return result.rowsAffected[0];
     } catch (error) {
-      console.error('Error editing meal:', error.message);
-      throw error;
+        console.error('Error editing meal:', error.message);
+        throw error;
     }
-  }
+}
+
+
 
 
   async createMealIngredients(ingredientData, meal_ID) {
@@ -289,7 +290,7 @@ export default class Database {
     const request = this.poolconnection.request();
     request.input('user_ID', sql.Int, userID)
     const result = await request.query(
-      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.mealTime, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID;')
+      'SELECT Meals.meal_ID, Meals.mealname, Meals.weight, Meals.mealTime, Meals.totalKcal, Meals.totalProtein, Meals.totalFat, Meals.totalFiber, MealsIngredients.ingredient_ID, MealsIngredients.ingredientweight, MealsIngredients.weightKcal, MealsIngredients.weightProtein, MealsIngredients.weightFat, MealsIngredients.weightFiber FROM Nutri.Meals JOIN Nutri.MealsIngredients ON Meals.meal_ID = MealsIngredients.meal_ID WHERE Meals.user_ID = @user_ID ORDER BY Meals.meal_ID ASC;')
     return result.recordsets[0];
   }
 
@@ -343,6 +344,28 @@ export default class Database {
 
   };
 
+
+  async getUserWater(userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+
+    request.input('user_ID', sql.Int, userID)
+
+    const result = await request.query('SELECT water_ID, waterTime, waterVolume, user_ID FROM Nutri.Water WHERE user_ID = @user_ID');
+
+    return result.recordsets[0];
+  };
+
+  async addWater(data, userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('waterName', sql.VarChar, data.waterName)
+    request.input('waterTime', sql.DateTime, data.waterTime)
+    request.input('user_ID', sql.Int, userID)
+    request.input('waterVolume', sql.Int, data.waterVolume)
+    const result = await request.query(`INSERT INTO Nutri.Water (user_ID, waterName, waterTime, waterVolume) VALUES (@user_ID, @waterName, @waterTime, @waterVolume)`);
+    return result.rowsAffected[0];
+  };
   
 
 };
