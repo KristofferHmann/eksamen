@@ -237,7 +237,8 @@ export default class Database {
     try {
         await this.connect();
         const request = this.poolconnection.request();
-        const { totalKcal, totalProtein, totalFat, totalFiber } = mealData
+        const {weight, totalKcal, totalProtein, totalFat, totalFiber } = mealData
+        request.input('weight', sql.Int, weight);
         request.input('totalKcal', sql.Float, totalKcal);
         request.input('totalProtein', sql.Float, totalProtein);
         request.input('totalFat', sql.Float, totalFat);
@@ -247,6 +248,7 @@ export default class Database {
         const result = await request.query(`
         UPDATE Nutri.Meals
         SET 
+            weight = @weight,
             totalKcal = @totalKcal,
             totalProtein = @totalProtein,
             totalFat = @totalFat,
