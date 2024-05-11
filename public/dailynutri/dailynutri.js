@@ -59,7 +59,43 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndUpdate();
 });
 */
-async function fetchAndGroupUserActivities() {
+async function fetchUserInfo() {
+  try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Token missing');
+          return;
+      }
+
+      const response = await fetch('http://localhost:3000/items/userInfo', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+          },
+      });
+      if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+      }
+
+      const userData = await response.json();
+      console.log(userData);
+
+      // Extract BMR from user data
+      const userBMR = userData.bmr;
+
+      // Now you have userBMR available for use
+      console.log('User BMR:', userBMR);
+      
+      // Call fetchAndGroupUserActivities with userBMR
+      fetchAndGroupUserActivities(userBMR);
+  } catch (error) {
+      console.error('Error fetching user meals:', error);
+  }
+}
+fetchUserInfo();
+
+async function fetchAndGroupUserActivities(userBMR) {
   // Fetch userActivities from the server
   const token = localStorage.getItem("token");
   const response = await fetch('http://localhost:3000/items/userActivities', {

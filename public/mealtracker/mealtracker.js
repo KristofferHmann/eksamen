@@ -114,6 +114,35 @@ const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString()
         document.getElementById('waterTime').textContent = getDate();
     });
 
+
+    addWaterBtn.addEventListener('click', function () {
+        // Get water amount
+        const waterAmount = document.getElementById('waterAmount').value;
+
+        // Get water ingredient name and time
+        const ingredientname = waterIngredientList.textContent;
+        const waterTime = document.getElementById('waterTime').textContent;
+
+        // Create new water data
+        const newWaterData = {
+            ingredientname: ingredientname,
+            waterAmount: waterAmount,
+            waterTime: waterTime
+        };
+
+        // Get existing water data from localStorage
+        const existingWaterData = JSON.parse(localStorage.getItem('waterData')) || [];
+
+        // Add new water data to existing water data
+        existingWaterData.push(newWaterData);
+
+        // Save existing water data back to localStorage
+        localStorage.setItem('waterData', JSON.stringify(existingWaterData));
+
+        // Close the modal
+        waterModal.style.display = "none";
+    });
+
     // Add ingredient when "Add" button inside the modal is clicked
     const addIngredientBtn = document.getElementById("addIngredientBtn");
     addIngredientBtn.addEventListener('click', async function () {
@@ -245,35 +274,43 @@ function displayIngredientInTable(ingredientData) {
         <td>${ingredientData.weight}</td>
         <td>${ingredientData.nutrition.kcal} kcal, ${ingredientData.nutrition.protein} protein, ${ingredientData.nutrition.fat} fat, ${ingredientData.nutrition.fiber} fiber</td>
         <td>
-            <button class="edit-btn">Edit</button>
             <button id="delete-btn">Delete</button>
         </td>`;
     table.appendChild(row);
+    const deleteButton = row.querySelector('#delete-btn');
+    deleteButton.addEventListener('click', () => {
+        const rowIndex = Array.from(table.querySelectorAll('tr')).indexOf(row);
+        removeFromLocalStorageAndTable(rowIndex);
+    });
 }
 window.onload = function () {
-    // Hent alle ingredienser fra lokal lagring
+    // Display Ingredients
+    displayIngredientsFromLocalStorage();
+
+    // Display Meals
+    displayMealsFromLocalStorage();
+};
+
+// Function to display ingredients from local storage
+function displayIngredientsFromLocalStorage() {
     let ingredientsDataJson = localStorage.getItem('ingredientsdata');
     let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
 
-    // Vis hver ingrediens i tabellen
     ingredientsData.forEach(ingredientData => {
         displayIngredientInTable(ingredientData);
     });
+}
 
-    // Gennemgang af alle rækker i tabellen
-    const rows = document.querySelectorAll('table tbody tr');
+// Function to display meals from local storage
+function displayMealsFromLocalStorage() {
+    let mealsDataJson = localStorage.getItem('meals');
+    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
 
-    rows.forEach((row, index) => {
-        // Finder "Delete" knappen i rækken
-        const deleteButton = row.querySelector('#delete-btn');
-
-        // Tilføjer event listener til "Delete" knappen
-        deleteButton.addEventListener('click', () => {
-            // Fjerner ingrediensen fra lokal lagring
-            removeFromLocalStorageAndTable(index);
-        });
+    mealsData.forEach(mealData => {
+        displayMealInTable(mealData);
     });
-};
+}
+
 
 function removeFromLocalStorageAndTable(index) {
     // Remove ingredient from local storage
@@ -297,6 +334,33 @@ function removeFromLocalStorageAndTable(index) {
     }
 }
 
+// Remove meal from local storage and update display
+function removeMealFromLocalStorageAndTable(index) {
+    let mealsDataJson = localStorage.getItem('meals');
+    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
+
+    if (index >= 0 && index < mealsData.length) {
+        mealsData.splice(index, 1);
+        localStorage.setItem('meals', JSON.stringify(mealsData));
+    } else {
+        console.error('Index out of bounds.');
+        return;
+    }
+
+    // Update display
+    const rows = document.querySelectorAll('table tbody tr');
+    if (index >= 0 && index < rows.length) {
+        rows[index].remove();
+    } else {
+        console.error('Index out of bounds.');
+    }
+}
+document.getElementById('addMeal').addEventListener('click', () => {
+    const modal = document.getElementById('modal');
+    modal.style.display = 'block';
+    // Fetch user meals only when the modal is opened for adding a new meal
+    fetchUserMeals(); 
+});
 
 async function fetchUserMeals() {
     try {
@@ -351,12 +415,12 @@ function displayMeals(meals) {
         button.classList.add('mealListButton');
         button.addEventListener('click', () => {
             openMealModal(meal);
-            // Implement logic to handle when a meal button is clicked
+
             console.log('Clicked on meal:', meal);
         });
         mealListDiv.appendChild(button);
     });
-}
+} 
 
 function openMealModal(meal) {
     // Implement logic to open a modal with meal details
@@ -398,10 +462,87 @@ function openMealModal(meal) {
     });
 }
 
+function openEditModal(meal) {
+    // Implement logic to open a modal with meal details
+    const modal = document.getElementById('mealModalEdit');
+    const modalContent = document.getElementById('mealModalContentEdit');
+    document.getElementById('mealIDHidden').value = meal.meal_ID;
+    // Set modal content with meal details
+    modalContent.innerHTML = `
+        <h2>Rediger dit måltid: <br> ${meal.mealname}</h2>
+        <p class="modal-label">Weight</p>
+        <input type="number" class="modal-input" id="weightEdit" value="${meal.weight}" placeholder="Weight">
+        <p class="modal-label">Kalories</p>
+        <input type="number" class="modal-input" id="totalKcalEdit" value="${meal.totalKcal}" placeholder="Total Kcal">
+        <p class="modal-label">Protein</p>
+        <input type="number" class="modal-input" id="totalProteinEdit" value="${meal.totalProtein}" placeholder="Total Protein">
+        <p class="modal-label">Fedt</p>
+        <input type="number" class="modal-input" id="totalFatEdit" value="${meal.totalFat}" placeholder="Total Fat">
+        <p class="modal-label">Fiber</p>
+        <input type="number" class="modal-input" id="totalFiberEdit" value="${meal.totalFiber}" placeholder="Total Fiber">
+        <p class="modal-label">Dato</p>
+        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
+        <button id="submitMealEditBtn">Submit</button>
+        <button id="closeMealModalEditBtn">Close</button>
+    `;
+
+    // Display modal
+    modal.style.display = 'block';
+
+    const submitBtn = document.getElementById('submitMealEditBtn');
+    submitBtn.addEventListener('click', async () => {
+        try {
+            // Get updated meal data from the modal inputs
+            const updatedMeal = {
+                mealname: meal.mealname,
+                weight: parseInt(document.getElementById('weightEdit').value),
+                totalKcal: parseFloat(document.getElementById('totalKcalEdit').value),
+                totalProtein: parseFloat(document.getElementById('totalProteinEdit').value),
+                totalFat: parseFloat(document.getElementById('totalFatEdit').value),
+                totalFiber: parseFloat(document.getElementById('totalFiberEdit').value),
+                // Add other properties if needed
+            };
+
+            // Update the meal in the table
+            updateMealInTable(updatedMeal);
+
+            await updateMeals(updatedMeal, meal.mealID);
+            // Close the edit modal
+            modal.style.display = 'none';
+        } catch (error) {
+            console.error('Error updating meal:', error);
+        }
+    });
+    const closeBtn = document.getElementById('closeMealModalEditBtn');
+    closeBtn.addEventListener('click', () => {
+        // Implement logic to close the modal
+        modal.style.display = 'none';
+    });
+}
+
+function updateMealInTable(updatedMeal) {
+    // Find the row corresponding to the updated meal
+    const table = document.querySelector('table tbody');
+    const rows = table.querySelectorAll('tr');
+    const rowToUpdate = Array.from(rows).find(row => row.cells[1].textContent === updatedMeal.mealname);
+
+    if (rowToUpdate) {
+        // Update the meal details in the table row
+        rowToUpdate.cells[4].textContent = `${updatedMeal.weight}`
+        rowToUpdate.cells[5].textContent = `${updatedMeal.totalKcal} kcal, ${updatedMeal.totalProtein} g, ${updatedMeal.totalFat} g, ${updatedMeal.totalFiber} g`;
+    } else {
+        console.error('Row not found for meal:', updatedMeal.mealname);
+    }
+    const mealID = document.getElementById('mealIDHidden').value;
+console.log(updatedMeal, "id", mealID);
+    // Call the function to update the meal in the database
+    updateMeals(updatedMeal, mealID);
+}
 async function displayMealInTable(meal) {
     const table = document.querySelector('table tbody');
     const row = document.createElement('tr');
 
+    const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
     // Get location from browser
     let address = 'Address not available';
     try {
@@ -422,6 +563,49 @@ async function displayMealInTable(meal) {
             <button class="delete-btn">Delete</button>
         </td>`;
     table.appendChild(row);
+
+    mealsData.push(meal);
+    localStorage.setItem('meals', JSON.stringify(mealsData));
+
+    const editButton = row.querySelector('.edit-btn');
+    editButton.addEventListener('click', () => {
+        openEditModal(meal);
+    });
+    const deleteButton = row.querySelector('.delete-btn');
+    deleteButton.addEventListener('click', () => {
+        const rowIndex = Array.from(table.querySelectorAll('tr')).indexOf(row);
+        removeMealFromLocalStorageAndTable(rowIndex);
+    });
+}
+async function updateMeals(mealData, mealID) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/items/updateMeals', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                mealData: mealData,
+                mealID: mealID
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update meal');
+        }
+
+        const data = await response.json();
+        console.log(data.message); // Log the response message
+    } catch (error) {
+        console.error('Error updating meals:', error);
+    }
 }
 
 document.getElementById('addMeal').addEventListener('click', () => {
@@ -435,38 +619,3 @@ document.getElementsByClassName('close')[0].addEventListener('click', () => {
     modal.style.display = 'none';
 });
 
-// Fetch meals data from local storage
-function fetchMealsFromLocalStorage() {
-    let mealsDataJson = localStorage.getItem('mealName');
-    return mealsDataJson ? JSON.parse(mealsDataJson) : [];
-}
-
-// Display meals from local storage
-function displayMealsFromLocalStorage() {
-    const mealsData = fetchMealsFromLocalStorage();
-    mealsData.forEach(mealData => {
-        displayMealInTable(mealData);
-    });
-}
-
-// Remove meal from local storage and update display
-function removeMealFromLocalStorageAndTable(index) {
-    let mealsDataJson = localStorage.getItem('mealName');
-    let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
-
-    if (index >= 0 && index < mealsData.length) {
-        mealsData.splice(index, 1);
-        localStorage.setItem('mealName', JSON.stringify(mealsData));
-    } else {
-        console.error('Index out of bounds.');
-        return;
-    }
-
-    // Update display
-    const rows = document.querySelectorAll('table tbody tr');
-    if (index >= 0 && index < rows.length) {
-        rows[index].remove();
-    } else {
-        console.error('Index out of bounds.');
-    }
-}

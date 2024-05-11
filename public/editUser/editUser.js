@@ -122,3 +122,38 @@ const logoutButton = document.getElementById('logoutButton');
 logoutButton.addEventListener('click', () => {
     logout().catch(error => console.error(error));
 });
+
+
+async function fetchUserMeals() {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
+  
+        const response = await fetch('http://localhost:3000/items/userInfo', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+        });
+        if (!response.ok) {
+            throw new Error('Failed to fetch user data');
+        }
+  
+        const userData = await response.json();
+        const userDataContainer = document.getElementById('userData');
+        userDataContainer.innerHTML = `
+            <h2><strong>Hello</strong> ${userData.username}</h2>
+            <p><strong>Gender:</strong> ${userData.gender}</p>
+            <p><strong>Age:</strong> ${userData.age}</p>
+            <p><strong>Weight:</strong> ${userData.weight} kg</p>
+            <p><strong>BMR:</strong> ${userData.bmr}</p>
+        `;
+        } catch (error) {
+        console.error('Error fetching user meals:', error);
+    }
+  }
+  fetchUserMeals();

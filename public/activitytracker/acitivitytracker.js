@@ -84,10 +84,13 @@ async function updateActivityList() {
     activityBody.innerHTML = '';
     console.log(userActivities);
     for (let index = 0; index < userActivities.length; index++) {
+        // Manipulate the activityTime string to remove 'Z' and 'T' symbols
+        const formattedActivityTime = userActivities[index].activityTime.replace(/[TZ]/g, ' ').split('.')[0];
+
         // Add a new row to the table
         const row = document.createElement('tr');
         row.innerHTML = `
-        <td>${userActivities[index].activityTime}</td>
+        <td>${formattedActivityTime}</td>
         <td>${userActivities[index].activities}</td>
         <td>${userActivities[index].duration}</td>
         <td>${userActivities[index].durationkcal}</td>`  // Round to 2 decimal places

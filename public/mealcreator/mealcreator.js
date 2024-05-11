@@ -598,10 +598,10 @@ function displayMeals(meals) {
                 content.innerHTML = `
                     <p>Ingrediensnavn: ${foundIngredient.ingredientname}</p>
                     <p>Vægt: ${meal.ingredientweight}</p>
-                    <p>Fedt: ${meal.weightFat}</p>
-                    <p>Fiber: ${meal.weightFiber}</p>
-                    <p>Kcal: ${meal.weightKcal}</p>
-                    <p>Protein: ${meal.weightProtein}</p>
+                    <p>Fedt: ${meal.weightFat.toFixed(2)}</p>
+                    <p>Fiber: ${meal.weightFiber.toFixed(2)}</p>
+                    <p>Kcal: ${meal.weightKcal.toFixed(2)}</p>
+                    <p>Protein: ${meal.weightProtein.toFixed(2)}</p>
                 `;
             } else {
                 content.textContent = 'Ingen ingrediens fundet';

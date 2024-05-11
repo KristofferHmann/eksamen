@@ -118,6 +118,23 @@ export default class Database {
     }
   };
 
+  async getUser(user_ID) {
+    try {
+      await this.connect();
+      const request = this.poolconnection.request();
+      request.input('user_ID', sql.Int, user_ID);
+      const result = await request.query(`
+      SELECT user_ID, username, weight, gender, age, bmr
+      FROM Nutri.[USER]
+      WHERE user_ID = @user_ID      
+      `);
+      return result.recordset[0];
+    } catch (error) {
+      console.error('Error getting user:', error.message);
+      throw error;
+    }
+  };
+
   //deleting a user
   async deleteUser(userId) {
     try {
@@ -235,18 +252,20 @@ export default class Database {
 
   async editMeals(mealID, mealData) {
     try {
-        await this.connect();
-        const request = this.poolconnection.request();
-        const { totalKcal, totalProtein, totalFat, totalFiber } = mealData
-        request.input('totalKcal', sql.Float, totalKcal);
-        request.input('totalProtein', sql.Float, totalProtein);
-        request.input('totalFat', sql.Float, totalFat);
-        request.input('totalFiber', sql.Float, totalFiber);
-        request.input('meal_ID', sql.Int, mealID);
+      await this.connect();
+      const request = this.poolconnection.request();
+      const { weight, totalKcal, totalProtein, totalFat, totalFiber } = mealData
+      request.input('weight', sql.Int, weight);
+      request.input('totalKcal', sql.Float, totalKcal);
+      request.input('totalProtein', sql.Float, totalProtein);
+      request.input('totalFat', sql.Float, totalFat);
+      request.input('totalFiber', sql.Float, totalFiber);
+      request.input('meal_ID', sql.Int, mealID);
 
-        const result = await request.query(`
+      const result = await request.query(`
         UPDATE Nutri.Meals
         SET 
+            weight = @weight,
             totalKcal = @totalKcal,
             totalProtein = @totalProtein,
             totalFat = @totalFat,
@@ -255,12 +274,12 @@ export default class Database {
             meal_ID = @meal_ID;
         
         `);
-        return result.rowsAffected[0];
+      return result.rowsAffected[0];
     } catch (error) {
-        console.error('Error editing meal:', error.message);
-        throw error;
+      console.error('Error editing meal:', error.message);
+      throw error;
     }
-}
+  }
 
 
 
@@ -378,7 +397,7 @@ export default class Database {
     const result = await request.query(`INSERT INTO Nutri.Water (user_ID, waterName, waterTime, waterVolume) VALUES (@user_ID, @waterName, @waterTime, @waterVolume)`);
     return result.rowsAffected[0];
   };
-  
+
 
 };
 
