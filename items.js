@@ -246,9 +246,12 @@ router.put('/edit', async (req, res) => {
 
 router.get('/allWater', async (req, res) => {
   try {
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
 
-    const water = req.body;
-    const getAllWater = await database.getUserWater(water);
+    const getAllWater = await database.getUserWater(userID);
     res.status(200).json({ getAllWater });
   } catch (err) {
     res.status(500).send('Server error');

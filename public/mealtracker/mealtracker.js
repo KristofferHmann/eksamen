@@ -55,11 +55,18 @@ document.addEventListener("DOMContentLoaded", function () {
     addWaterBtn.addEventListener('click', async function () {
         // Get water amount
         const waterVolume = document.getElementById('waterAmount').value;
-    
+
         // Get water ingredient name and time
         const waterName = waterIngredientList.textContent;
-        const waterTime = document.getElementById('waterTime').textContent;
-    
+        const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth() + 1; // getMonth is zero-based, so add 1
+const day = now.getDate();
+const hours = now.getHours();
+const minutes = now.getMinutes();
+const seconds = now.getSeconds();
+const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
         // Get user ID
         const user_ID = localStorage.getItem('user_ID'); // Assuming you store user ID in localStorage
         const token = localStorage.getItem('token');
@@ -70,7 +77,7 @@ document.addEventListener("DOMContentLoaded", function () {
             waterTime: waterTime,
             user_ID: user_ID
         };
-    
+
         // Send new water data to the server
         const response = await fetch('http://localhost:3000/items/addWater', {
             method: 'POST',
@@ -81,31 +88,31 @@ document.addEventListener("DOMContentLoaded", function () {
             body: JSON.stringify(newWaterData)
         });
 
-    if (!response.ok) {
-        console.error('Failed to save water data', response);
-    }
+        if (!response.ok) {
+            console.error('Failed to save water data', response);
+        }
 
-    // Close the modal
-    waterModal.style.display = "none";
-});
+        // Close the modal
+        waterModal.style.display = "none";
+    });
 
-const waterBtn = document.getElementById('addWaterBtn'); // The button that opens the modal
+    const waterBtn = document.getElementById('addWaterBtn'); // The button that opens the modal
 
-waterBtn.addEventListener('click', async function () {
-    waterModal.style.display = "block";
+    waterBtn.addEventListener('click', async function () {
+        waterModal.style.display = "block";
 
-    // Fetch all ingredients
-    const allIngredients = await fetchAllIngredients();
+        // Fetch all ingredients
+        const allIngredients = await fetchAllIngredients();
 
-    // Find water ingredient
-    const allArrays = Object.values(allIngredients).flat();
-    const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
+        // Find water ingredient
+        const allArrays = Object.values(allIngredients).flat();
+        const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
 
-    // Display water ingredient in the modal
-    waterIngredientList.textContent = water.ingredientname;
+        // Display water ingredient in the modal
+        waterIngredientList.textContent = water.ingredientname;
 
-    document.getElementById('waterTime').textContent = getDate();
-});
+        document.getElementById('waterTime').textContent = getDate();
+    });
 
     // Add ingredient when "Add" button inside the modal is clicked
     const addIngredientBtn = document.getElementById("addIngredientBtn");
@@ -308,25 +315,25 @@ async function fetchUserMeals() {
         });
 
         if (!response.ok) {
-      throw new Error('Failed to fetch data');
+            throw new Error('Failed to fetch data');
         }
 
-        
+
         const data = await response.json();
 
         console.log(data);
         const latestMeals = data.userMeals.reduce((acc, meal) => {
             // Tjek om der allerede er et måltid med samme navn i akkumulatoren
             if (!acc[meal.mealname] || meal.meal_ID > acc[meal.mealname].meal_ID) {
-                
+
                 // Opdater kun akkumulatoren hvis det aktuelle måltids-ID er større end det gemte
                 acc[meal.mealname] = meal;
             }
             return acc;
         }, {});
-        
+
         const uniqueMeals = Object.values(latestMeals);
-        
+
         // Kalder displayMeals med de filtrerede måltider
         displayMeals(uniqueMeals);
     } catch (error) {
