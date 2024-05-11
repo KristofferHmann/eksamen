@@ -77,11 +77,11 @@ router.put('/updateMeals', async (req, res) => {
     const userID = tokenDecoded.user_ID;
 
     // Extract meal data from the request body
-    const mealData = req.body.mealData; // Assuming mealData is provided in the request body
-    const mealID = req.body.mealID; // Assuming mealID is provided in the request body
+    const mealData = req.body.mealData;
+    const mealID = req.body.mealID;
 
-    // Call the editMeals function with mealData, userID, and mealID
-    const rowsAffected = await database.editMeals(mealData, userID, mealID);
+    // Call the editMeals function with all necessary data
+    const rowsAffected = await database.editMeals(mealID, mealData);
 
     // Check if any rows were affected
     if (rowsAffected > 0) {

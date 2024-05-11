@@ -200,9 +200,14 @@ async function addMealToTable() {
         },
         addedOn: dateString,
     };
-    adam();
-    localStorage.setItem(mealName, JSON.stringify(mealData));
+    try {
+        // Call the updateMealID function to update the meal ID
+        const meal_ID = await updateMealID(document.getElementById('mealIDHidden').value);
+    } catch (error) {
+        console.error('Error submitting meal name:', error);
+    }
 
+    localStorage.setItem(mealName, JSON.stringify(mealData));
     // Reset numIngredients for the next meal
     numIngredients = 0;
 
@@ -281,6 +286,32 @@ async function adam() {
         return meal_ID;
     } catch (error) {
         console.error('Error creating meal:', error);
+        throw error; // Rethrow the error to handle it in the caller function
+    }
+}
+
+async function updateMealID(meal_ID) {
+    try {
+        // Retrieve meal data from the current meal
+        const mealName = document.getElementById("mealNameInput").value;
+        const mealWeight = document.getElementById("mealWeightInput").value;
+        const mealData = {
+            mealname: mealName,
+            weight: mealWeight,
+            totalKcal: totalKcal.toFixed(2),
+            totalProtein: totalProtein.toFixed(2),
+            totalFat: totalFat.toFixed(2),
+            totalFiber: totalFiber.toFixed(2),
+            mealTime: new Date()
+        };
+
+        // Update the meal with the given meal_ID
+        await updateMeals(mealData, meal_ID);
+
+        // Set the meal_ID in the hidden input field
+        document.getElementById('mealIDHidden').value = meal_ID;
+    } catch (error) {
+        console.error('Error updating meal ID:', error);
         throw error; // Rethrow the error to handle it in the caller function
     }
 }
@@ -493,6 +524,44 @@ async function fetchUserMeals() {
         console.error(error);
     }
 }
+async function updateMeals(mealData, mealID) {
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+            console.error('Token missing');
+            return;
+        }
+
+        const response = await fetch('http://localhost:3000/items/updateMeals', {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token,
+            },
+            body: JSON.stringify({
+                mealData: mealData,
+                mealID: mealID
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error('Failed to update meal');
+        }
+
+        const data = await response.json();
+        console.log(data.message); // Log the response message
+    } catch (error) {
+        console.error('Error updating meals:', error);
+    }
+}
+
+async function callUpdateMeals() {
+    const mealData = await adam(); // Ensure adam() returns the correct mealData
+    const mealID = document.getElementById('mealIDHidden').value; // Correctly retrieve the mealID
+    await updateMeals(mealData, mealID); // Pass the mealData and mealID to updateMeals
+}
+
+
 
 function displayMeals(meals) {
     const mealTableBody = document.querySelector('.mealCreator table tbody');
@@ -509,7 +578,7 @@ function displayMeals(meals) {
 
         // Create a new button element
         const button = document.createElement('button');
-        button.textContent = 'Vis ingredienser';
+        button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
 
         // When the button is clicked, open a modal showing the ingredients
         button.addEventListener('click', () => {
