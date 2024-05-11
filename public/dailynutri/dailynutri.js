@@ -186,4 +186,4 @@ for (const dayHour in groupedActivities) {
 
 fetchAndGroupUserActivities();
 
-// færdiggør daily: fetch bmr og kcal consumed, udregn og vis surplus or deficit
+// færdiggør daily: fetch bmr og kcal consumed for det i tracker i stedet for creator, udregn og vis surplus or deficit, lige nu opdate den kun hvis der er tilføjet vand også
