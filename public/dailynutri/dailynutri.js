@@ -59,7 +59,43 @@ document.addEventListener('DOMContentLoaded', () => {
   fetchAndUpdate();
 });
 */
-async function fetchAndGroupUserActivities() {
+async function fetchUserInfo() {
+  try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+          console.error('Token missing');
+          return;
+      }
+
+      const response = await fetch('http://localhost:3000/items/userInfo', {
+          method: 'GET',
+          headers: {
+              'Content-Type': 'application/json',
+              'Authorization': 'Bearer ' + token,
+          },
+      });
+      if (!response.ok) {
+          throw new Error('Failed to fetch user data');
+      }
+
+      const userData = await response.json();
+      console.log(userData);
+
+      // Extract BMR from user data
+      const userBMR = userData.bmr;
+
+      // Now you have userBMR available for use
+      console.log('User BMR:', userBMR);
+      
+      // Call fetchAndGroupUserActivities with userBMR
+      fetchAndGroupUserActivities(userBMR);
+  } catch (error) {
+      console.error('Error fetching user meals:', error);
+  }
+}
+fetchUserInfo();
+
+async function fetchAndGroupUserActivities(userBMR) {
   // Fetch userActivities from the server
   const token = localStorage.getItem("token");
   const response = await fetch('http://localhost:3000/items/userActivities', {
@@ -102,17 +138,17 @@ async function fetchAndGroupUserActivities() {
     }
     return acc;
   }, {});
-
   // Display the grouped activities and water in HTML
   const tbody = document.getElementById('overview');
   for (const dayHour in groupedActivities) {
+    const totalDurationKcal = groupedActivities[dayHour].durationKcal + userBMR/24;
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${dayHour}</td>
       <td>Water, tap, drinking, average values</td>
       <td>${groupedActivities[dayHour].waterVolume} ml</td>
       <td></td>
-      <td>${groupedActivities[dayHour].durationKcal}</td>
+      <td>${totalDurationKcal.toFixed(2)}</td>
       <td></td>
     `;
     tbody.appendChild(row);

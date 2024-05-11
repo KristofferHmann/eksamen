@@ -61,7 +61,7 @@ router.get('/userMeals', async (req, res) => {
     const userID = tokenDecoded.user_ID;
 
 
-    const userMeals  = await database.getUserMeals(userID);
+    const userMeals = await database.getUserMeals(userID);
     res.status(200).json({ userMeals });
   } catch (err) {
     res.status(500).send('Server error');
@@ -241,6 +241,26 @@ router.put('/edit', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
+  }
+});
+router.get('/userInfo', async (req, res) => {
+  try {
+    // Extracting and decoding the token
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userId = tokenDecoded.user_ID;
+
+    // Retrieve user information from the database using the getUser function
+    const userData = await database.getUser(userId); // Use userId instead of req.params.user_ID
+    if (!userData) {
+      return res.status(404).send('User not found');
+    }
+    // If userData is not empty, send it as a response
+    return res.status(200).json(userData);
+  } catch (error) {
+    console.error('Error fetching user by user ID:', error);
+    return res.status(500).send('Error fetching user');
   }
 });
 
