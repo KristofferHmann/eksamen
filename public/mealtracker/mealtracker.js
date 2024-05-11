@@ -48,55 +48,64 @@ document.addEventListener("DOMContentLoaded", function () {
         return allIngredients;
     }
 
-    const waterBtn = document.getElementById('addWaterBtn');
     const waterModal = document.getElementById('waterModal');
     const waterIngredientList = document.getElementById('waterIngredientList');
-
-    waterBtn.addEventListener('click', async function () {
-        waterModal.style.display = "block";
-
-        // Fetch all ingredients
-        const allIngredients = await fetchAllIngredients();
-
-        // Find water ingredient
-        const allArrays = Object.values(allIngredients).flat();
-        const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
-
-        // Display water ingredient in the modal
-        waterIngredientList.textContent = water.ingredientname;
-
-        document.getElementById('waterTime').textContent = getDate();
-    });
-
     const addWaterBtn = document.getElementById('addWater');
 
-    addWaterBtn.addEventListener('click', function () {
+    addWaterBtn.addEventListener('click', async function () {
         // Get water amount
-        const waterAmount = document.getElementById('waterAmount').value;
+        const waterVolume = document.getElementById('waterAmount').value;
     
         // Get water ingredient name and time
-        const ingredientname = waterIngredientList.textContent;
+        const waterName = waterIngredientList.textContent;
         const waterTime = document.getElementById('waterTime').textContent;
     
+        // Get user ID
+        const user_ID = localStorage.getItem('user_ID'); // Assuming you store user ID in localStorage
+        const token = localStorage.getItem('token');
         // Create new water data
         const newWaterData = {
-            ingredientname: ingredientname,
-            waterAmount: waterAmount,
-            waterTime: waterTime
+            waterName: waterName,
+            waterVolume: waterVolume,
+            waterTime: waterTime,
+            user_ID: user_ID
         };
     
-        // Get existing water data from localStorage
-        const existingWaterData = JSON.parse(localStorage.getItem('waterData')) || [];
-    
-        // Add new water data to existing water data
-        existingWaterData.push(newWaterData);
-    
-        // Save existing water data back to localStorage
-        localStorage.setItem('waterData', JSON.stringify(existingWaterData));
-    
-        // Close the modal
-        waterModal.style.display = "none";
-    });
+        // Send new water data to the server
+        const response = await fetch('http://localhost:3000/items/addWater', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token, // Assuming you store your JWT token in localStorage
+            },
+            body: JSON.stringify(newWaterData)
+        });
+
+    if (!response.ok) {
+        console.error('Failed to save water data', response);
+    }
+
+    // Close the modal
+    waterModal.style.display = "none";
+});
+
+const waterBtn = document.getElementById('addWaterBtn'); // The button that opens the modal
+
+waterBtn.addEventListener('click', async function () {
+    waterModal.style.display = "block";
+
+    // Fetch all ingredients
+    const allIngredients = await fetchAllIngredients();
+
+    // Find water ingredient
+    const allArrays = Object.values(allIngredients).flat();
+    const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
+
+    // Display water ingredient in the modal
+    waterIngredientList.textContent = water.ingredientname;
+
+    document.getElementById('waterTime').textContent = getDate();
+});
 
     // Add ingredient when "Add" button inside the modal is clicked
     const addIngredientBtn = document.getElementById("addIngredientBtn");

@@ -244,4 +244,31 @@ router.put('/edit', async (req, res) => {
   }
 });
 
+router.get('/allWater', async (req, res) => {
+  try {
+
+    const water = req.body;
+    const getAllWater = await database.getUserWater(water);
+    res.status(200).json({ getAllWater });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+//Registrer et måltid
+router.post('/addWater', async (req, res) => {
+  try {
+    const water = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    const rowsAffected = await database.addWater(water, userID);
+    res.status(201).json({ rowsAffected });
+  } catch (err) {
+    console.error(err, 'hep a'); // Tilføj denne linje
+    res.status(500).send('Server error');
+  }
+});
+
 export default router;

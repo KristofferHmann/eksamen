@@ -215,29 +215,30 @@ async function addMealToTable() {
     // Reset the current meal for the next meal
     currentMeal = [];
 
-    // Add a new cell for the button
-    let buttonCell = row.insertCell();
-    // Create a button element
-    let button = document.createElement('button');
-    // Set the button text
-    button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-    // Store the index of the meal in the button's dataset
-    button.dataset.mealIndex = meals.length - 1;
-    // Add an event listener to the button
-    button.addEventListener('click', (event) => {
-        // Get the index of the meal from the button's dataset
-        let mealIndex = event.target.dataset.mealIndex;
-        // Get the ingredients of the meal
-        let ingredients = meals[mealIndex];
-        // Create a string with the ingredients
-        let ingredientsStr = ingredients.map(ingredient =>
-            `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
-        ).join('\n');
-        // Display the ingredients
-        alert('Ingredients:\n' + ingredientsStr);
-    });
-    // Add the button to the cell
-    buttonCell.appendChild(button);
+    // gammen måde at lave en knap på til at åbne alert med ingredienser
+    // // Add a new cell for the button
+    // let buttonCell = row.insertCell();
+    // // Create a button element
+    // let button = document.createElement('button');
+    // // Set the button text
+    // button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
+    // // Store the index of the meal in the button's dataset
+    // button.dataset.mealIndex = meals.length - 1;
+    // // Add an event listener to the button
+    // button.addEventListener('click', (event) => {
+    //     // Get the index of the meal from the button's dataset
+    //     let mealIndex = event.target.dataset.mealIndex;
+    //     // Get the ingredients of the meal
+    //     let ingredients = meals[mealIndex];
+    //     // Create a string with the ingredients
+    //     let ingredientsStr = ingredients.map(ingredient =>
+    //         `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
+    //     ).join('\n');
+    //     // Display the ingredients
+    //     alert('Ingredients:\n' + ingredientsStr);
+    // });
+    // // Add the button to the cell
+    // buttonCell.appendChild(button);
 
     closeMealCreator();
 };
