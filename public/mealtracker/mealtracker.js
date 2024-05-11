@@ -114,7 +114,6 @@ const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString()
         document.getElementById('waterTime').textContent = getDate();
     });
 
-    const addWaterBtn = document.getElementById('addWater');
 
     addWaterBtn.addEventListener('click', function () {
         // Get water amount
