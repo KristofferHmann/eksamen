@@ -345,5 +345,27 @@ export default class Database {
   };
 
 
+  async getUserWater(userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+
+    request.input('user_ID', sql.Int, userID)
+
+    const result = await request.query('SELECT water_ID, waterTime, waterVolume, user_ID FROM Nutri.Water WHERE user_ID = @user_ID');
+
+    return result.recordsets[0];
+  };
+
+  async addWater(data, userID) {
+    await this.connect();
+    const request = this.poolconnection.request();
+    request.input('waterName', sql.VarChar, data.waterName)
+    request.input('waterTime', sql.DateTime, data.waterTime)
+    request.input('user_ID', sql.Int, userID)
+    request.input('waterVolume', sql.Int, data.waterVolume)
+    const result = await request.query(`INSERT INTO Nutri.Water (user_ID, waterName, waterTime, waterVolume) VALUES (@user_ID, @waterName, @waterTime, @waterVolume)`);
+    return result.rowsAffected[0];
+  };
+  
 
 };

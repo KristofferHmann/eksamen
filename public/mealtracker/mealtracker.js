@@ -48,9 +48,55 @@ document.addEventListener("DOMContentLoaded", function () {
         return allIngredients;
     }
 
-    const waterBtn = document.getElementById('addWaterBtn');
     const waterModal = document.getElementById('waterModal');
     const waterIngredientList = document.getElementById('waterIngredientList');
+    const addWaterBtn = document.getElementById('addWater');
+
+    addWaterBtn.addEventListener('click', async function () {
+        // Get water amount
+        const waterVolume = document.getElementById('waterAmount').value;
+
+        // Get water ingredient name and time
+        const waterName = waterIngredientList.textContent;
+        const now = new Date();
+const year = now.getFullYear();
+const month = now.getMonth() + 1; // getMonth is zero-based, so add 1
+const day = now.getDate();
+const hours = now.getHours();
+const minutes = now.getMinutes();
+const seconds = now.getSeconds();
+const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+
+        // Get user ID
+        const user_ID = localStorage.getItem('user_ID'); // Assuming you store user ID in localStorage
+        const token = localStorage.getItem('token');
+        // Create new water data
+        const newWaterData = {
+            waterName: waterName,
+            waterVolume: waterVolume,
+            waterTime: waterTime,
+            user_ID: user_ID
+        };
+
+        // Send new water data to the server
+        const response = await fetch('http://localhost:3000/items/addWater', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + token, // Assuming you store your JWT token in localStorage
+            },
+            body: JSON.stringify(newWaterData)
+        });
+
+        if (!response.ok) {
+            console.error('Failed to save water data', response);
+        }
+
+        // Close the modal
+        waterModal.style.display = "none";
+    });
+
+    const waterBtn = document.getElementById('addWaterBtn'); // The button that opens the modal
 
     waterBtn.addEventListener('click', async function () {
         waterModal.style.display = "block";

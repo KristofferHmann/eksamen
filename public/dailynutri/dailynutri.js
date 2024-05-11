@@ -71,32 +71,48 @@ async function fetchAndGroupUserActivities() {
   });
   const userActivities = await response.json();
 
-  // Filter activities from the last 24 hours
+  // Fetch userWater from the server
+  const responseWater = await fetch('http://localhost:3000/items/allWater', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userWater = await responseWater.json();
+
+  // Filter activities and water from the last 24 hours
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const recentActivities = userActivities.getAllActivities.filter(activity => new Date(activity.activityTime) >= oneDayAgo);
+  const recentWater = userWater.getAllWater.filter(water => new Date(water.waterTime) >= oneDayAgo);
 
-  // Group activities by hour and calculate total durationKcal
-  const groupedActivities = recentActivities.reduce((acc, activity) => {
-    const date = new Date(activity.activityTime);
-    const hour = date.toISOString().split('T')[1].split(':')[0]; // Extract hour from activityTime
+  // Group activities and water by hour and calculate total durationKcal and waterVolume
+  const groupedActivities = [...recentActivities, ...recentWater].reduce((acc, item) => {
+    const date = new Date(item.activityTime || item.waterTime);
+    const hour = date.toISOString().split('T')[1].split(':')[0]; // Extract hour from time
     const dayHour = `${date.toISOString().split('T')[0]} ${hour}:00`; // Combine date and hour
     if (!acc[dayHour]) {
-      acc[dayHour] = 0; // Initialize if not already present
+      acc[dayHour] = { durationKcal: 0, waterVolume: 0 }; // Initialize if not already present
     }
-    acc[dayHour] += activity.durationkcal; // Add durationKcal to the total
+    if (item.durationkcal) {
+      acc[dayHour].durationKcal += item.durationkcal; // Add durationKcal to the total
+    }
+    if (item.waterVolume) {
+      acc[dayHour].waterVolume += item.waterVolume; // Add waterVolume to the total
+    }
     return acc;
   }, {});
 
-  // Display the grouped activities in HTML
+  // Display the grouped activities and water in HTML
   const tbody = document.getElementById('overview');
   for (const dayHour in groupedActivities) {
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${dayHour}</td>
       <td>Water, tap, drinking, average values</td>
+      <td>${groupedActivities[dayHour].waterVolume} ml</td>
       <td></td>
-      <td></td>
-      <td>${groupedActivities[dayHour]}</td>
+      <td>${groupedActivities[dayHour].durationKcal}</td>
       <td></td>
     `;
     tbody.appendChild(row);

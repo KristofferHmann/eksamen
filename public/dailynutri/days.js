@@ -59,7 +59,6 @@ async function fetchAndGroupUserActivities() {
 }
 fetchAndGroupUserActivities();
 */
-
 async function fetchAndGroupUserActivities() {
   // Fetch userActivities from the server
   const token = localStorage.getItem("token");
@@ -72,15 +71,39 @@ async function fetchAndGroupUserActivities() {
   });
   const userActivities = await response.json();
 
-  // Group activities by date and calculate total durationKcal
-  const groupedActivities = userActivities.getAllActivities.reduce((acc, activity) => {
-    const date = new Date(activity.activityTime).toISOString().split('T')[0]; // Extract date from activityTime
-    if (!acc[date]) {
-      acc[date] = 0; // Initialize if not already present
+  // Fetch water data from the server
+  const waterResponse = await fetch('http://localhost:3000/items/allWater', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
     }
-    acc[date] += activity.durationkcal; // Add durationKcal to the total
-    return acc;
-  }, {});
+  });
+  if (!waterResponse.ok) {
+    console.error('Error fetching water data:', waterResponse.status, waterResponse.statusText);
+    return;
+  }
+  const userWater = await waterResponse.json();
+// Group activities by date and calculate total durationKcal
+let groupedActivities = userActivities.getAllActivities.reduce((acc, activity) => {
+  const date = new Date(activity.activityTime).toISOString().substring(0, 10); // Extract date from activityTime
+  console.log('date:', date); // Log the date
+  if (!acc[date]) {
+    acc[date] = { durationKcal: 0, waterVolume: 0 }; // Initialize if not already present
+  }
+  acc[date].durationKcal += activity.durationkcal; // Add durationKcal to the total
+  return acc;
+}, {});
+
+// Add water volume to the total
+userWater.getAllWater.forEach(water => {
+  const waterDate = new Date(water.waterTime).toISOString().substring(0, 10);
+  console.log('waterDate:', waterDate); // Log the waterDate
+  console.log('waterVolume:', water.waterVolume); // Log the waterVolume
+  if (groupedActivities[waterDate]) {
+    groupedActivities[waterDate].waterVolume += water.waterVolume;
+  }
+});
 
   // Display the grouped activities in HTML
   const tbody = document.getElementById('overview');
@@ -89,9 +112,9 @@ async function fetchAndGroupUserActivities() {
     row.innerHTML = `
       <td>${date}</td>
       <td>Water, tap, drinking, average values</td>
+      <td>${groupedActivities[date].waterVolume} ml</td>
       <td></td>
-      <td></td>
-      <td>${groupedActivities[date]}</td>
+      <td>${groupedActivities[date].durationKcal}</td>
       <td></td>
     `;
     tbody.appendChild(row);
