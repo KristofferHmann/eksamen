@@ -341,8 +341,22 @@ export default class Database {
     return result.recordsets[0];
 
   };
+/* til at hente og vise ingredienser i et måltid
+  async getMealIngredients(mealId) {
+    try {
+        await this.connect();
+        const request = this.poolconnection.request();
 
+        request.input('meal_ID', sql.Int, mealId)
 
+        const result = await request.query('SELECT * FROM Nutri.MealIngredients WHERE meal_ID = @meal_ID');
+
+        return result.recordsets[0];
+    } catch (err) {
+        console.error(err);
+    }
+} */
+  
   async getUserWater(userID) {
     await this.connect();
     const request = this.poolconnection.request();
@@ -367,3 +381,4 @@ export default class Database {
   
 
 };
+

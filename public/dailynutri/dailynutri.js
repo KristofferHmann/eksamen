@@ -81,10 +81,27 @@ async function fetchAndGroupUserActivities() {
   });
   const userWater = await responseWater.json();
 
+  // Fetch userMeals from the server
+  const responseMeals = await fetch('http://localhost:3000/items/userMeals', {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": "Bearer " + token,
+    }
+  });
+  const userMeals = await responseMeals.json();
+  console.log('userMeals:', userMeals);
+
   // Filter activities and water from the last 24 hours
   const oneDayAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
   const recentActivities = userActivities.getAllActivities.filter(activity => new Date(activity.activityTime) >= oneDayAgo);
   const recentWater = userWater.getAllWater.filter(water => new Date(water.waterTime) >= oneDayAgo);
+
+  // Filter meals from the last 24 hours
+  const recentMeals = userMeals.userMeals.filter(meal => new Date(meal.mealTime) >= oneDayAgo);
+
+  // Calculate totalKcal for the recent meals
+  const totalKcal = recentMeals.reduce((total, meal) => total + meal.totalKcal, 0);
 
   // Group activities and water by hour and calculate total durationKcal and waterVolume
   const groupedActivities = [...recentActivities, ...recentWater].reduce((acc, item) => {
@@ -103,20 +120,34 @@ async function fetchAndGroupUserActivities() {
     return acc;
   }, {});
 
+  // Group meals by hour and calculate totalKcal
+  const groupedMeals = recentMeals.reduce((acc, meal) => {
+    const date = new Date(meal.mealTime);
+    const hour = date.toISOString().split('T')[1].split(':')[0]; // Extract hour from time
+    const dayHour = `${date.toISOString().split('T')[0]} ${hour}:00`; // Combine date and hour
+    if (!acc[dayHour]) {
+      acc[dayHour] = { totalKcal: 0 }; // Initialize if not already present
+    }
+    acc[dayHour].totalKcal += meal.totalKcal; // Add totalKcal to the total
+    return acc;
+  }, {});
+
   // Display the grouped activities and water in HTML
-  const tbody = document.getElementById('overview');
-  for (const dayHour in groupedActivities) {
-    const row = document.createElement('tr');
-    row.innerHTML = `
-      <td>${dayHour}</td>
-      <td>Water, tap, drinking, average values</td>
-      <td>${groupedActivities[dayHour].waterVolume} ml</td>
-      <td></td>
-      <td>${groupedActivities[dayHour].durationKcal}</td>
-      <td></td>
-    `;
-    tbody.appendChild(row);
-  }
+const tbody = document.getElementById('overview');
+for (const dayHour in groupedActivities) {
+  const row = document.createElement('tr');
+  row.innerHTML = `
+    <td>${dayHour}</td>
+    <td>Water, tap, drinking, average values</td>
+    <td>${groupedActivities[dayHour].waterVolume} ml</td>
+    <td>${groupedMeals[dayHour] ? groupedMeals[dayHour].totalKcal : 0}</td>
+    <td>${groupedActivities[dayHour].durationKcal}</td>
+    <td></td>
+  `;
+  tbody.appendChild(row);
+}
 }
 
 fetchAndGroupUserActivities();
+
+// færdiggør daily: fetch bmr og kcal consumed, udregn og vis surplus or deficit
