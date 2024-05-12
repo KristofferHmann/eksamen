@@ -453,11 +453,18 @@ function openMealModal(meal) {
     const submitBtn = document.getElementById('submitMealBtn');
     submitBtn.addEventListener('click', () => {
         displayMealInTable(meal);
+    
+        // Save the meal to local storage
+        const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
+        mealsData.push(meal);
+        localStorage.setItem('meals', JSON.stringify(mealsData));
+    
         const modal = document.getElementById('mealModal');
         const mealListDiv = document.getElementById('modal');
         modal.style.display = 'none';
         mealListDiv.style.display = 'none';
     });
+    
     const closeBtn = document.getElementById('closeMealModalBtn');
     closeBtn.addEventListener('click', () => {
         // Implement logic to close the modal
@@ -541,11 +548,11 @@ function updateMealInTable(updatedMeal) {
     // Call the function to update the meal in the database
     updateMeals(updatedMeal, mealID);
 }
+
 async function displayMealInTable(meal) {
     const table = document.querySelector('table tbody');
     const row = document.createElement('tr');
 
-    const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
     // Get location from browser
     let address = 'Address not available';
     try {
@@ -567,9 +574,6 @@ async function displayMealInTable(meal) {
         </td>`;
     table.appendChild(row);
 
-    mealsData.push(meal);
-    localStorage.setItem('meals', JSON.stringify(mealsData));
-
     const editButton = row.querySelector('.edit-btn');
     editButton.addEventListener('click', () => {
         openEditModal(meal);
@@ -580,6 +584,7 @@ async function displayMealInTable(meal) {
         removeMealFromLocalStorageAndTable(rowIndex);
     });
 }
+
 async function updateMeals(mealData, mealID) {
     try {
         const token = localStorage.getItem('token');
