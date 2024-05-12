@@ -1,48 +1,48 @@
 document.addEventListener("DOMContentLoaded", function () {
-    // Fetch food data based on search input
+    // Henter maddata baseret på søgeinput
     const searchInput = document.getElementById('searchFoodInput');
     searchInput.addEventListener('input', async () => {
         try {
-            await foodFetch();
+            await foodFetch(); // Kører foodFetch funktionen
         } catch (error) {
-            console.error('Error during fetch request:', error);
+            console.error('Fejl under fetch anmodning:', error);
         }
     });
 
-    // Open modal when "Add Ingredient" button is clicked
+    // Åbner modal når "Tilføj Ingrediens" knappen bliver klikket på
     const btn = document.getElementById("addIngredient");
     btn.onclick = function () {
         const modal = document.getElementById("myModal");
-        modal.style.display = "block";
+        modal.style.display = "block"; // Viser modalen
     }
 
-    // Close modal when the close button is clicked
+    // Lukker modal når luk-knappen bliver klikket på
     const span = document.getElementsByClassName("close")[1];
     span.onclick = function () {
         const modal = document.getElementById("myModal");
-        modal.style.display = "none";
+        modal.style.display = "none"; // Skjuler modalen
     }
 
-    // Close modal when clicked outside the modal
+    // Lukker modal når der bliver klikket udenfor modalen
     window.onclick = function (event) {
         const modal = document.getElementById("myModal");
         if (event.target == modal) {
-            modal.style.display = "none";
+            modal.style.display = "none"; // Skjuler modalen
         }
     }
 
-    // Get the close button
+    // Henter luk-knappen
     const closeBtn = document.getElementById('closeBtn');
 
-    // When the user clicks on the close button, close the modal
+    // Når brugeren klikker på luk-knappen, lukkes modalen
     closeBtn.onclick = function () {
-        document.getElementById('waterModal').style.display = "none";
+        document.getElementById('waterModal').style.display = "none"; // Skjuler modalen
     }
 
     async function fetchAllIngredients() {
         const response = await fetch('http://localhost:3000/items/ingredients');
         if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
+            throw new Error(`HTTP fejl! status: ${response.status}`);
         }
         const allIngredients = await response.json();
         return allIngredients;
@@ -53,24 +53,24 @@ document.addEventListener("DOMContentLoaded", function () {
     const addWaterBtn = document.getElementById('addWater');
 
     addWaterBtn.addEventListener('click', async function () {
-        // Get water amount
+        // Henter vandmængde
         const waterVolume = document.getElementById('waterAmount').value;
 
-        // Get water ingredient name and time
+        // Henter vandingrediensnavn og tid
         const waterName = waterIngredientList.textContent;
         const now = new Date();
         const year = now.getFullYear();
-        const month = now.getMonth() + 1; // getMonth is zero-based, so add 1
+        const month = now.getMonth() + 1; // getMonth er nulbaseret, så tilføj 1
         const day = now.getDate();
         const hours = now.getHours();
         const minutes = now.getMinutes();
         const seconds = now.getSeconds();
         const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
-        // Get user ID
-        const user_ID = localStorage.getItem('user_ID'); // Assuming you store user ID in localStorage
+        // Henter bruger ID
+        const user_ID = localStorage.getItem('user_ID'); // Antager at du gemmer bruger ID i localStorage
         const token = localStorage.getItem('token');
-        // Create new water data
+        // Opretter nye vanddata
         const newWaterData = {
             waterName: waterName,
             waterVolume: waterVolume,
@@ -78,37 +78,37 @@ document.addEventListener("DOMContentLoaded", function () {
             user_ID: user_ID
         };
 
-        // Send new water data to the server
+        // Sender nye vanddata til serveren
         const response = await fetch('http://localhost:3000/items/addWater', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token, // Assuming you store your JWT token in localStorage
+                'Authorization': 'Bearer ' + token, // Antager at du gemmer din JWT token i localStorage
             },
             body: JSON.stringify(newWaterData)
         });
 
         if (!response.ok) {
-            console.error('Failed to save water data', response);
+            console.error('Kunne ikke gemme vanddata', response);
         }
 
-        // Close the modal
+        // Lukker modalen
         waterModal.style.display = "none";
     });
 
-    const waterBtn = document.getElementById('addWaterBtn'); // The button that opens the modal
+    const waterBtn = document.getElementById('addWaterBtn'); // Knappen der åbner modalen
 
     waterBtn.addEventListener('click', async function () {
         waterModal.style.display = "block";
 
-        // Fetch all ingredients
+        // Henter alle ingredienser
         const allIngredients = await fetchAllIngredients();
 
-        // Find water ingredient
+        // Finder vandingrediens
         const allArrays = Object.values(allIngredients).flat();
         const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
 
-        // Display water ingredient in the modal
+        // Viser vandingrediens i modalen
         waterIngredientList.textContent = water.ingredientname;
 
         document.getElementById('waterTime').textContent = getDate();
@@ -116,44 +116,44 @@ document.addEventListener("DOMContentLoaded", function () {
 
 
     addWaterBtn.addEventListener('click', function () {
-        // Get water amount
+        // Henter vandmængde
         const waterAmount = document.getElementById('waterAmount').value;
 
-        // Get water ingredient name and time
+        // Henter vandingrediensnavn og tid
         const ingredientname = waterIngredientList.textContent;
         const waterTime = document.getElementById('waterTime').textContent;
 
-        // Create new water data
+        // Opretter nye vanddata
         const newWaterData = {
             ingredientname: ingredientname,
             waterAmount: waterAmount,
             waterTime: waterTime
         };
 
-        // Get existing water data from localStorage
+        // Henter eksisterende vanddata fra localStorage
         const existingWaterData = JSON.parse(localStorage.getItem('waterData')) || [];
 
-        // Add new water data to existing water data
+        // Tilføjer nye vanddata til eksisterende vanddata
         existingWaterData.push(newWaterData);
 
-        // Save existing water data back to localStorage
+        // Gemmer eksisterende vanddata tilbage til localStorage
         localStorage.setItem('waterData', JSON.stringify(existingWaterData));
 
-        // Close the modal
+        // Lukker modalen
         waterModal.style.display = "none";
     });
 
-    // Add ingredient when "Add" button inside the modal is clicked
+    // Tilføj ingrediens når "Tilføj" knappen inde i modalen bliver klikket på
     const addIngredientBtn = document.getElementById("addIngredientBtn");
     addIngredientBtn.addEventListener('click', async function () {
         try {
             const selectedIngredient = document.getElementById('searchResults').value;
             const weight = document.getElementById('Weight').value;
 
-            // Fetch nutrition information
+            // Henter ernæringsinformation
             const nutrition = await fetchNutrition(selectedIngredient);
 
-            // Calculate nutrition values based on weight
+            // Beregner ernæringsværdier baseret på vægt
             const weightInGrams = parseFloat(weight);
             const kcal = (nutrition.kcal * weightInGrams) / 100;
             const protein = (nutrition.protein * weightInGrams) / 100;
@@ -173,29 +173,29 @@ document.addEventListener("DOMContentLoaded", function () {
                 },
             };
 
-            // Add ingredient to the list and save to local storage
+            // Tilføjer ingrediens til listen og gemmer til local storage
             addIngredientToLocalStorage(ingredientData);
 
-            // Display ingredient in the table
+            // Viser ingrediens i tabellen
             displayIngredientInTable(ingredientData);
 
-            // Close the modal
+            // Lukker modalen
             const modal = document.getElementById("myModal");
             modal.style.display = "none";
         } catch (error) {
-            console.error('Error adding ingredient:', error);
+            console.error('Fejl ved tilføjelse af ingrediens:', error);
         }
     });
 
-    // Fetch and display user meals
+    // Henter og viser brugerens måltider
     fetchUserMeals();
 });
 
-// Fetch food data based on search input
+// Henter maddata baseret på søgeinput
 async function foodFetch() {
     const response = await fetch('http://localhost:3000/items/ingredients');
     if (!response.ok) {
-        throw new Error('Failed to fetch data');
+        throw new Error('Kunne ikke hente data');
     }
     const data = await response.json();
     const ressult = document.getElementById('searchResults');
@@ -210,18 +210,23 @@ async function foodFetch() {
             ressult.appendChild(option);
         });
 }
-
-// Fetch nutrition information for the selected ingredient
+// Henter ernæringsinformation for den valgte ingrediens
 async function fetchNutrition(ingredientName) {
+    // Anmoder om data fra serveren
     const response = await fetch('http://localhost:3000/items/ingredients');
+    // Tjekker om anmodningen var succesfuld
     if (!response.ok) {
-        throw new Error('Failed to fetch data');
+        throw new Error('Kunne ikke hente data');
     }
+    // Konverterer svaret til JSON
     const data = await response.json();
+    // Finder den specifikke ingrediens i dataen
     const ingredient = data.allIngredients.find(ingredient => ingredient.ingredientname === ingredientName);
+    // Tjekker om ingrediensen blev fundet
     if (!ingredient) {
-        throw new Error('Ingredient not found');
+        throw new Error('Ingrediens ikke fundet');
     }
+    // Returnerer ingrediensens information
     return {
         id: ingredient.ingredient_ID,
         kcal: ingredient.kcal,
@@ -231,41 +236,52 @@ async function fetchNutrition(ingredientName) {
     };
 }
 
-// Get current date and time
+// Henter aktuel dato og tid
 function getDate() {
     const date = new Date();
+    // Returnerer datoen og tiden i en streng
     return `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
 }
 
-// Get address based on geolocation
+// Henter adresse baseret på geolocation
 async function getAddress() {
     return new Promise((resolve, reject) => {
+        // Anmoder om brugerens position
         navigator.geolocation.getCurrentPosition(async position => {
             const { latitude, longitude } = position.coords;
+            // Anmoder om adresse baseret på position
             const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json`);
             const data = await response.json();
+            // Tjekker om en adresse blev fundet
             if (data.address) {
                 const { town, postcode, country } = data.address;
+                // Returnerer adressen
                 resolve(`${town}, ${postcode}, ${country}`);
             } else {
-                reject('Address not found');
+                reject('Adresse ikke fundet');
             }
         }, error => reject(error));
     });
 }
 
-// Add ingredient to local storage
+// Tilføjer ingrediens til local storage
 function addIngredientToLocalStorage(ingredientData) {
+    // Henter eksisterende data fra local storage
     let ingredientsDataJson = localStorage.getItem('ingredientsdata');
     let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
+    // Tilføjer den nye ingrediens til dataen
     ingredientsData.push(ingredientData);
+    // Gemmer den opdaterede data i local storage
     localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
 }
 
-// Display ingredient in the table
+// Viser ingrediens i tabellen
 function displayIngredientInTable(ingredientData) {
+    // Finder tabellen i dokumentet
     const table = document.querySelector('table tbody');
+    // Opretter en ny række
     const row = document.createElement('tr');
+    // Indsætter data i rækken
     row.innerHTML = `
         <td>${table.childElementCount + 1}</td>
         <td>${ingredientData.name}</td>
@@ -274,41 +290,50 @@ function displayIngredientInTable(ingredientData) {
         <td>${ingredientData.weight}</td>
         <td>${ingredientData.nutrition.kcal} kcal, 
         ${ingredientData.nutrition.protein} protein, 
-        ${ingredientData.nutrition.fat} fat, 
+        ${ingredientData.nutrition.fat} fedt, 
         ${ingredientData.nutrition.fiber} fiber</td>
         <td>
-            <button id="delete-btn">Delete</button>
+            <button id="delete-btn">Slet</button>
         </td>`;
+    // Tilføjer rækken til tabellen
     table.appendChild(row);
+    // Finder slet-knappen
     const deleteButton = row.querySelector('#delete-btn');
+    // Tilføjer en event listener til slet-knappen
     deleteButton.addEventListener('click', () => {
+        // Finder rækkens indeks
         const rowIndex = Array.from(table.querySelectorAll('tr')).indexOf(row);
+        // Fjerner ingrediensen fra local storage og tabellen
         removeFromLocalStorageAndTable(rowIndex);
     });
 }
 window.onload = function () {
-    // Display Ingredients
+    // Viser ingredienser fra local storage
     displayIngredientsFromLocalStorage();
 
-    // Display Meals
+    // Viser måltider fra local storage
     displayMealsFromLocalStorage();
 };
 
-// Function to display ingredients from local storage
+// Funktion til at vise ingredienser fra local storage
 function displayIngredientsFromLocalStorage() {
+    // Henter data fra local storage
     let ingredientsDataJson = localStorage.getItem('ingredientsdata');
     let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
 
+    // Viser hver ingrediens i tabellen
     ingredientsData.forEach(ingredientData => {
         displayIngredientInTable(ingredientData);
     });
 }
 
-// Function to display meals from local storage
+// Funktion til at vise måltider fra local storage
 function displayMealsFromLocalStorage() {
+    // Henter data fra local storage
     let mealsDataJson = localStorage.getItem('meals');
     let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
 
+    // Viser hvert måltid i tabellen
     mealsData.forEach(mealData => {
         displayMealInTable(mealData);
     });
@@ -316,63 +341,76 @@ function displayMealsFromLocalStorage() {
 
 
 function removeFromLocalStorageAndTable(index) {
-    // Remove ingredient from local storage
+    // Fjerner ingrediens fra local storage
     let ingredientsDataJson = localStorage.getItem('ingredientsdata');
     let ingredientsData = ingredientsDataJson ? JSON.parse(ingredientsDataJson) : [];
 
+    // Tjekker om indekset er gyldigt
     if (index >= 0 && index < ingredientsData.length) {
+        // Fjerner ingrediensen fra dataen
         ingredientsData.splice(index, 1);
+        // Gemmer den opdaterede data i local storage
         localStorage.setItem('ingredientsdata', JSON.stringify(ingredientsData));
     } else {
-        console.error('Index out of bounds.');
+        console.error('Indeks uden for grænser.');
         return;
     }
 
-    // Remove row from the table
+    // Fjerner række fra tabellen
     const rows = document.querySelectorAll('table tbody tr');
+    // Tjekker om indekset er gyldigt
     if (index >= 0 && index < rows.length) {
+        // Fjerner rækken
         rows[index].remove();
     } else {
-        console.error('Index out of bounds.');
+        console.error('Indeks uden for grænser.');
     }
 }
 
-// Remove meal from local storage and update display
+// Fjerner måltid fra local storage og opdaterer visning
 function removeMealFromLocalStorageAndTable(index) {
+    // Henter data fra local storage
     let mealsDataJson = localStorage.getItem('meals');
     let mealsData = mealsDataJson ? JSON.parse(mealsDataJson) : [];
 
+    // Tjekker om indekset er gyldigt
     if (index >= 0 && index < mealsData.length) {
+        // Fjerner måltidet fra dataen
         mealsData.splice(index, 1);
+        // Gemmer den opdaterede data i local storage
         localStorage.setItem('meals', JSON.stringify(mealsData));
     } else {
-        console.error('Index out of bounds.');
+        console.error('Indeks uden for grænser.');
         return;
     }
 
-    // Update display
+    // Opdaterer visning
     const rows = document.querySelectorAll('table tbody tr');
+    // Tjekker om indekset er gyldigt
     if (index >= 0 && index < rows.length) {
+        // Fjerner rækken
         rows[index].remove();
     } else {
-        console.error('Index out of bounds.');
+        console.error('Indeks uden for grænser.');
     }
 }
+// Tilføjer en event listener til 'addMeal' knappen. Når knappen klikkes, vises modalen og brugerens måltider hentes.
 document.getElementById('addMeal').addEventListener('click', () => {
     const modal = document.getElementById('modal');
     modal.style.display = 'block';
-    // Fetch user meals only when the modal is opened for adding a new meal
-    fetchUserMeals();
+    fetchUserMeals(); // Henter brugerens måltider når modalen åbnes
 });
 
+// Denne asynkrone funktion henter brugerens måltider fra serveren.
 async function fetchUserMeals() {
     try {
-        const token = localStorage.getItem('token');
+        const token = localStorage.getItem('token'); // Henter token fra local storage
         if (!token) {
-            console.error('Token missing');
+            console.error('Token mangler');
             return;
         }
 
+        // Laver en GET request til serveren for at hente brugerens måltider
         const response = await fetch('http://localhost:3000/items/userMeals', {
             method: 'GET',
             headers: {
@@ -382,58 +420,52 @@ async function fetchUserMeals() {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch data');
+            throw new Error('Fejlede i at hente data');
         }
 
+        const data = await response.json(); // Konverterer svaret til JSON
 
-        const data = await response.json();
-
-        console.log(data);
+        // Reducerer brugerens måltider til et objekt, hvor hvert måltid kun optræder én gang
         const latestMeals = data.userMeals.reduce((acc, meal) => {
-            // Tjek om der allerede er et måltid med samme navn i akkumulatoren
             if (!acc[meal.mealname] || meal.meal_ID > acc[meal.mealname].meal_ID) {
-
-                // Opdater kun akkumulatoren hvis det aktuelle måltids-ID er større end det gemte
                 acc[meal.mealname] = meal;
             }
             return acc;
         }, {});
 
-        const uniqueMeals = Object.values(latestMeals);
+        const uniqueMeals = Object.values(latestMeals); // Konverterer objektet til en array
 
-        // Kalder displayMeals med de filtrerede måltider
-        displayMeals(uniqueMeals);
+        displayMeals(uniqueMeals); // Viser de unikke måltider
     } catch (error) {
         console.error(error);
     }
 }
 
+// Denne funktion viser måltiderne i en liste
 function displayMeals(meals) {
     const mealListDiv = document.getElementById('mealList');
-    mealListDiv.innerHTML = ''; // Clear previous content
+    mealListDiv.innerHTML = ''; // Rydder tidligere indhold
 
     meals.forEach(meal => {
         const button = document.createElement('button');
         button.textContent = meal.mealname;
         button.classList.add('mealListButton');
         button.addEventListener('click', () => {
-            openMealModal(meal);
-
-            console.log('Clicked on meal:', meal);
+            openMealModal(meal); // Åbner modalen med måltidsdetaljer når knappen klikkes
         });
-        mealListDiv.appendChild(button);
+        mealListDiv.appendChild(button); // Tilføjer knappen til listen
     });
 }
 
+// Denne funktion åbner en modal med detaljer om det valgte måltid
 function openMealModal(meal) {
-    // Implement logic to open a modal with meal details
     const modal = document.getElementById('mealModal');
     const modalContent = document.getElementById('mealModalContent');
 
-    // Set modal content with meal details
+    // Sætter modalens indhold med detaljer om måltidet
     modalContent.innerHTML = `
         <h2>${meal.mealname}</h2>
-        <p class="modal-label">Kalories</p>
+        <p class="modal-label">Kalorier</p>
         <input type="number" class="modal-input" value="${meal.totalKcal}" placeholder="Total Kcal" readonly>
         <p class="modal-label">Protein</p>
         <input type="number" class="modal-input" value="${meal.totalProtein}" placeholder="Total Protein" readonly>
@@ -447,120 +479,40 @@ function openMealModal(meal) {
         <button id="closeMealModalBtn">Close</button>
     `;
 
-    // Display modal
-    modal.style.display = 'block';
+    modal.style.display = 'block'; // Viser modalen
 
-    const submitBtn = document.getElementById('submitMealBtn');
-    submitBtn.addEventListener('click', () => {
-        displayMealInTable(meal);
-    
-        // Save the meal to local storage
-        const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
-        mealsData.push(meal);
-        localStorage.setItem('meals', JSON.stringify(mealsData));
-    
-        const modal = document.getElementById('mealModal');
-        const mealListDiv = document.getElementById('modal');
-        modal.style.display = 'none';
-        mealListDiv.style.display = 'none';
+    // Tilføjer event listeners til knapperne i modalen
+    document.getElementById('submitMealBtn').addEventListener('click', () => {
+        displayMealInTable(meal); // Viser måltidet i tabellen
+        saveMealToLocal(meal); // Gemmer måltidet i local storage
+        modal.style.display = 'none'; // Lukker modalen
     });
-    
-    const closeBtn = document.getElementById('closeMealModalBtn');
-    closeBtn.addEventListener('click', () => {
-        // Implement logic to close the modal
-        modal.style.display = 'none';
+    document.getElementById('closeMealModalBtn').addEventListener('click', () => {
+        modal.style.display = 'none'; // Lukker modalen
     });
 }
 
-function openEditModal(meal) {
-    // Implement logic to open a modal with meal details
-    const modal = document.getElementById('mealModalEdit');
-    const modalContent = document.getElementById('mealModalContentEdit');
-    document.getElementById('mealIDHidden').value = meal.meal_ID;
-    // Set modal content with meal details
-    modalContent.innerHTML = `
-        <h2>Rediger dit måltid: <br> ${meal.mealname}</h2>
-        <p class="modal-label">Weight</p>
-        <input type="number" class="modal-input" id="weightEdit" value="${meal.weight}" placeholder="Weight">
-        <p class="modal-label">Kalories</p>
-        <input type="number" class="modal-input" id="totalKcalEdit" value="${meal.totalKcal}" placeholder="Total Kcal">
-        <p class="modal-label">Protein</p>
-        <input type="number" class="modal-input" id="totalProteinEdit" value="${meal.totalProtein}" placeholder="Total Protein">
-        <p class="modal-label">Fedt</p>
-        <input type="number" class="modal-input" id="totalFatEdit" value="${meal.totalFat}" placeholder="Total Fat">
-        <p class="modal-label">Fiber</p>
-        <input type="number" class="modal-input" id="totalFiberEdit" value="${meal.totalFiber}" placeholder="Total Fiber">
-        <p class="modal-label">Dato</p>
-        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
-        <button id="submitMealEditBtn">Submit</button>
-        <button id="closeMealModalEditBtn">Close</button>
-    `;
-
-    // Display modal
-    modal.style.display = 'block';
-
-    const submitBtn = document.getElementById('submitMealEditBtn');
-    submitBtn.addEventListener('click', async () => {
-        try {
-            // Get updated meal data from the modal inputs
-            const updatedMeal = {
-                mealname: meal.mealname,
-                weight: parseInt(document.getElementById('weightEdit').value),
-                totalKcal: parseFloat(document.getElementById('totalKcalEdit').value),
-                totalProtein: parseFloat(document.getElementById('totalProteinEdit').value),
-                totalFat: parseFloat(document.getElementById('totalFatEdit').value),
-                totalFiber: parseFloat(document.getElementById('totalFiberEdit').value),
-                // Add other properties if needed
-            };
-
-            // Update the meal in the table
-            updateMealInTable(updatedMeal);
-
-            await updateMeals(updatedMeal, meal.mealID);
-            // Close the edit modal
-            modal.style.display = 'none';
-        } catch (error) {
-            console.error('Error updating meal:', error);
-        }
-    });
-    const closeBtn = document.getElementById('closeMealModalEditBtn');
-    closeBtn.addEventListener('click', () => {
-        // Implement logic to close the modal
-        modal.style.display = 'none';
-    });
+// Denne funktion gemmer et måltid i local storage
+function saveMealToLocal(meal) {
+    const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
+    mealsData.push(meal);
+    localStorage.setItem('meals', JSON.stringify(mealsData));
 }
 
-function updateMealInTable(updatedMeal) {
-    // Find the row corresponding to the updated meal
-    const table = document.querySelector('table tbody');
-    const rows = table.querySelectorAll('tr');
-    const rowToUpdate = Array.from(rows).find(row => row.cells[1].textContent === updatedMeal.mealname);
-
-    if (rowToUpdate) {
-        // Update the meal details in the table row
-        rowToUpdate.cells[4].textContent = `${updatedMeal.weight}`
-        rowToUpdate.cells[5].textContent = `${updatedMeal.totalKcal} kcal, ${updatedMeal.totalProtein} g, ${updatedMeal.totalFat} g, ${updatedMeal.totalFiber} g`;
-    } else {
-        console.error('Row not found for meal:', updatedMeal.mealname);
-    }
-    const mealID = document.getElementById('mealIDHidden').value;
-    console.log(updatedMeal, "id", mealID);
-    // Call the function to update the meal in the database
-    updateMeals(updatedMeal, mealID);
-}
-
+// Denne funktion viser et måltid i tabellen
 async function displayMealInTable(meal) {
     const table = document.querySelector('table tbody');
     const row = document.createElement('tr');
 
-    // Get location from browser
-    let address = 'Address not available';
+    // Henter lokation fra browseren
+    let address = 'Adresse ikke tilgængelig';
     try {
         address = await getAddress();
     } catch (error) {
         console.error(error);
     }
 
+    // Sætter rækken med måltidsdetaljer
     row.innerHTML = `
         <td>${table.childElementCount + 1}</td>
         <td>${meal.mealname}</td>
@@ -572,27 +524,38 @@ async function displayMealInTable(meal) {
             <button class="edit-btn">Edit</button>
             <button class="delete-btn">Delete</button>
         </td>`;
-    table.appendChild(row);
+    table.appendChild(row); // Tilføjer rækken til tabellen
 
-    const editButton = row.querySelector('.edit-btn');
-    editButton.addEventListener('click', () => {
-        openEditModal(meal);
+    // Tilføjer event listeners til knapperne i rækken
+    row.querySelector('.edit-btn').addEventListener('click', () => {
+        openEditModal(meal); // Åbner redigeringsmodalen når edit-knappen klikkes
     });
-    const deleteButton = row.querySelector('.delete-btn');
-    deleteButton.addEventListener('click', () => {
+    row.querySelector('.delete-btn').addEventListener('click', () => {
         const rowIndex = Array.from(table.querySelectorAll('tr')).indexOf(row);
-        removeMealFromLocalStorageAndTable(rowIndex);
+        removeMealFromLocalStorageAndTable(rowIndex); // Fjerner måltidet fra local storage og tabellen når delete-knappen klikkes
     });
 }
 
+// Denne funktion fjerner et måltid fra local storage og tabellen
+function removeMealFromLocalStorageAndTable(index) {
+    const mealsData = JSON.parse(localStorage.getItem('meals'));
+    mealsData.splice(index, 1);
+    localStorage.setItem('meals', JSON.stringify(mealsData));
+
+    const table = document.querySelector('table tbody');
+    table.removeChild(table.children[index]);
+}
+
+// Denne asynkrone funktion opdaterer et måltid i databasen
 async function updateMeals(mealData, mealID) {
     try {
         const token = localStorage.getItem('token');
         if (!token) {
-            console.error('Token missing');
+            console.error('Token mangler');
             return;
         }
 
+        // Laver en PUT request til serveren for at opdatere måltidet
         const response = await fetch('http://localhost:3000/items/updateMeals', {
             method: 'PUT',
             headers: {
@@ -606,24 +569,18 @@ async function updateMeals(mealData, mealID) {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to update meal');
+            throw new Error('Fejlede i at opdatere måltid');
         }
 
         const data = await response.json();
-        console.log(data.message); // Log the response message
+        console.log(data.message); // Logger svarets besked
     } catch (error) {
-        console.error('Error updating meals:', error);
+        console.error('Fejl ved opdatering af måltider:', error);
     }
 }
 
-document.getElementById('addMeal').addEventListener('click', () => {
-    const modal = document.getElementById('modal');
-    modal.style.display = 'block';
-    fetchUserMeals(); // Load meals when modal is opened
-});
-
+// Tilføjer en event listener til 'close' knappen. Når knappen klikkes, lukkes modalen.
 document.getElementsByClassName('close')[0].addEventListener('click', () => {
     const modal = document.getElementById('modal');
     modal.style.display = 'none';
 });
-

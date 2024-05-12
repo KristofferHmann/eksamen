@@ -1,38 +1,45 @@
-//Logout funktion
+// Logout funktion
 async function logout() {
+    // Henter token fra localStorage
     const token = localStorage.getItem("token");
 
-    // Make an HTTP GET request to the logout endpoint
+    // Laver en HTTP GET request til logout endpoint
     const response = await fetch('http://localhost:3000/items/logout', {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token, // Assuming token is available
+            // Antager at token er tilgængelig
+            "Authorization": "Bearer " + token, 
         }
     });
-    // Debugging: Log the response from the server
+    // Debugging: Logger svaret fra serveren
     console.log(response);
 
     if (!response.ok) {
-        // Handle 401 Unauthorized response
+        // Håndterer 401 Unauthorized svar
         if (response.status === 401) {
             console.error('Unauthorized: Token expired or invalid.');
-            // Handle expired or invalid token
-            // Redirect to login page or display a message to the user
+            // Håndterer udløbet eller ugyldig token
+            // Omdirigerer til login side eller viser en besked til brugeren
         } else {
             throw new Error('Failed to fetch logout');
         }
     } else {
-        // Clear the token from the client-side localStorage if the logout was successful
+        // Fjerner token fra client-side localStorage, hvis logout var succesfuld
         localStorage.removeItem('token');
         console.log('Logout successful');
-        // Reload the page
+        // Genindlæser siden
         location.reload();
     }
 }
+
+// Tilføjer en event listener til dokumentet, der afventer at alt indhold er indlæst
 document.addEventListener('DOMContentLoaded', () => {
-const logoutButton = document.getElementsByClassName('outBtn')[0];
-logoutButton.addEventListener('click', () => {
-    logout().catch(error => console.error(error));
-});
+    // Finder logout knappen i dokumentet
+    const logoutButton = document.getElementsByClassName('outBtn')[0];
+    // Tilføjer en event listener til logout knappen, der afventer et klik
+    logoutButton.addEventListener('click', () => {
+        // Kalder logout funktionen og logger eventuelle fejl
+        logout().catch(error => console.error(error));
+    });
 });
