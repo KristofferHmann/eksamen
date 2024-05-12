@@ -34,21 +34,7 @@ router.post('/mealCreator', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-/* til at hente og vise ingredienser i et måltid
-router.get('/mealIngredients/:meal_ID', async (req, res) => {
-  try {
-    const meal_ID = req.params.meal_ID;
-    const token = req.headers.authorization.split(' ')[1]
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey)
-    const userID = tokenDecoded.user_ID
-    const mealIngredients = await database.getMealIngredients(meal_ID);
-    res.status(200).json(mealIngredients);
-  } catch (err) {
-    console.error('Error fetching meal ingredients', err);
-    res.status(500).send('Server error', 'hepo');
-  }
-}); */
+
 
 router.post('/mealIngredients', async (req, res) => {
   try {
