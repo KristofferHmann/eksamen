@@ -2,9 +2,9 @@
     width: 360px;
     padding: 8% 0 0;
     margin: auto;
-    margin-left: 20%;
-    /* Adjust the percentage to move it partway to the left */
+    margin-top: 200px;
 }
+
 
 .form {
     position: relative;
@@ -169,7 +169,7 @@ input[type="radio"]:focus+label:before {
 
 
 .actions-container {
-    margin-top: -25%;
+    margin-top: -30%;
     /* Adjust the negative margin to position it vertically */
     margin-right: 20px;
     /* Adjust the margin for spacing */
@@ -180,27 +180,45 @@ input[type="radio"]:focus+label:before {
     background-color: #f5f5f5;
     border-radius: 8px;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    margin-left: 20px;
+    margin-left: 200px;
     margin-top: 20px;
     padding: 20px;
     text-align: center;
     width: 200px;
     /* Adjust width as needed */
 }
+.delete-section input[type="button"],
+.logout-section input[type="button"] {
+    background-color: #f44336; /* Red color */
+    color: #fff; /* White text */
+    border: none; /* Remove border */
+    padding: 10px 20px; /* Adjust padding */
+    border-radius: 5px; /* Rounded corners */
+    cursor: pointer; /* Show pointer cursor */
+    transition: background-color 0.3s; /* Smooth transition */
+}
 
+.delete-section input[type="button"]:hover,
+.logout-section input[type="button"]:hover {
+    background-color: #d32f2f; /* Darker red on hover */
+}
 .userDataContainer {
     background-color: #f9f9f9;
     border-radius: 5px;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    margin-left: 50%;
+    margin: 0 auto; /* Center horizontally */
+    margin-top: 20px;
+    margin-bottom: 20px;
     padding: 15px;
     width: 30%;
-    height: 200px;   
-     display: flex; /* Use Flexbox */
-    justify-content: center; /* Center horizontally */
-    align-items: center; /* Center vertically */
+    height: 200px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
-
+.editUserForm {
+    margin: 0 auto; /* Center horizontally */
+}
 
 .userDataContainer h2 {
     margin-bottom: 10px;
@@ -209,6 +227,8 @@ input[type="radio"]:focus+label:before {
 .userDataContainer p {
     margin: 5px 0;
     font-size: 1em;
-    background-color: #c8c8c8;
-    border-radius: 5px;
+    background-color: #404640; /* Red color */
+    color: #fff; /* White text */
+    padding: 5px 5px; /* Adjust padding */
+    border-radius: 5px; /* Rounded corners */
 }
