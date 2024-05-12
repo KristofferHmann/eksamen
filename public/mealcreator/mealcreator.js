@@ -181,6 +181,7 @@ async function addMealToTable() {
 
     // Reset the current meal for the next meal
     currentMeal = [];
+
     closeMealCreator();
     window.location.reload();
 };

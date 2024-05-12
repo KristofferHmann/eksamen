@@ -136,8 +136,6 @@ async function fetchAndGroupUserActivities(userBMR) {
   // Filter meals from the last 24 hours
   const recentMeals = userMeals.userMeals.filter(meal => new Date(meal.mealTime) >= oneDayAgo);
 
-  // Calculate totalKcal for the recent meals
-  const totalKcal = recentMeals.reduce((total, meal) => total + meal.totalKcal, 0);
 
   // Group activities and water by hour and calculate total durationKcal and waterVolume
   const groupedActivities = [...recentActivities, ...recentWater].reduce((acc, item) => {
@@ -170,20 +168,26 @@ async function fetchAndGroupUserActivities(userBMR) {
 
   // Display the grouped activities and water in HTML
 const tbody = document.getElementById('overview');
-for (const dayHour in groupedActivities) {
+for (const dayHour in groupedActivities) {  
+  const day = new Date(dayHour).toLocaleDateString('en-US', { weekday: 'long' });
+  const totalDurationKcal = groupedActivities[dayHour].durationKcal + userBMR / 24;
+let totalKcal = 0;
+if (groupedMeals[dayHour]) {
+  totalKcal = groupedMeals[dayHour].totalKcal;
+}
+totalKcal -= totalDurationKcal;
   const row = document.createElement('tr');
   row.innerHTML = `
     <td>${dayHour}</td>
-    <td>Water, tap, drinking, average values</td>
+    <td>${day}</td>
     <td>${groupedActivities[dayHour].waterVolume} ml</td>
     <td>${groupedMeals[dayHour] ? groupedMeals[dayHour].totalKcal : 0}</td>
-    <td>${groupedActivities[dayHour].durationKcal}</td>
-    <td></td>
+    <td>${totalDurationKcal.toFixed(2)}</td>
+    <td>${totalKcal.toFixed(2)}</td>
   `;
   tbody.appendChild(row);
 }
 }
 
-fetchAndGroupUserActivities();
 
 // færdiggør daily: fetch bmr og kcal consumed for det i tracker i stedet for creator, udregn og vis surplus or deficit, lige nu opdate den kun hvis der er tilføjet vand også

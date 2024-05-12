@@ -1,65 +1,3 @@
-/*
-document.addEventListener('DOMContentLoaded', () => {
-    // Function to fetch waterData and update the table
-    function fetchAndUpdate() {
-      // Fetch waterData from localStorage
-      const waterData = JSON.parse(localStorage.getItem('waterData')) || [];
-  
-      // Group the data by date and calculate the total water amount for each day
-      const groupedData = waterData.reduce((acc, data) => {
-        // Extract the date from the string
-        const date = data.waterTime;
-  
-        // If the date is already in the accumulator, add the waterAmount
-        // Otherwise, initialize the date with the waterAmount
-        acc[date] = (acc[date] || 0) + Number(data.waterAmount);
-  
-        return acc;
-      }, {});
-  
-      // Update the table with groupedData
-      updateTable(groupedData);
-    }
-  
-    // Function to update the table
-    function updateTable(data) {
-      const tbody = document.getElementById('overview');
-      tbody.innerHTML = ''; // Clear existing rows
-  
-      for (const date in data) {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td>${date}</td>
-          <td>Water, tap, drinking, average values</td>
-          <td>${data[date]}</td>
-          <td></td>
-          <td></td>
-          <td></td>
-        `;
-        tbody.appendChild(row);
-      }
-    }
-  
-    // Initial table update
-    fetchAndUpdate();
-  });
-
-async function fetchAndGroupUserActivities() {
-  // Fetch userActivities from the server
-  const token = localStorage.getItem("token");
-  const response = await fetch('http://localhost:3000/items/userActivities', {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-      "Authorization": "Bearer " + token,
-    }
-  });
-  const userActivities = await response.json();
-  console.log(userActivities);
-}
-fetchAndGroupUserActivities();
-*/
-
 async function fetchUserInfo() {
   try {
     const token = localStorage.getItem('token');
@@ -125,7 +63,7 @@ function groupMealsByDate(meals) {
     const date = new Date(meal.mealTime).toISOString().substring(0, 10); // Extract date from mealTime
     const totalKcal = meal.totalKcal;
 
-    console.log("totalkcal",totalKcal);
+    console.log("totalkcal", totalKcal);
     if (!acc[date]) {
       acc[date] = 0; // Initialize total calories for the date if not present
     }
@@ -180,42 +118,44 @@ async function fetchAndGroupUserActivities(userBMR) {
     }
   });
 
-   // Fetch recent meals based on the current date
-   const userMeals = await fetchUserMeals();
-   const currentDate = new Date().toISOString().substring(0, 10);
-   const recentMeals = userMeals.userMeals.filter(meal => {
-     const mealDate = new Date(meal.mealTime).toISOString().substring(0, 10);
-     return mealDate === currentDate;
-   });
+  // Fetch recent meals based on the current date
+  const userMeals = await fetchUserMeals();
+  const currentDate = new Date().toISOString().substring(0, 10);
+  const recentMeals = userMeals.userMeals.filter(meal => {
+    const mealDate = new Date(meal.mealTime).toISOString().substring(0, 10);
+    return mealDate === currentDate;
+  });
 
-   // Group recent meals by date and calculate total calories consumed
-   const mealsByDate = groupMealsByDate(recentMeals);
+  // Group recent meals by date and calculate total calories consumed
+  const mealsByDate = groupMealsByDate(recentMeals);
 
-   // Merge the grouped activities and meals by date
-   for (const date in mealsByDate) {
-     if (!groupedActivities[date]) {
-       groupedActivities[date] = { durationKcal: 0, waterVolume: 0 };
-     }
-     groupedActivities[date].mealTotalKcal = mealsByDate[date];
-   }
+  // Merge the grouped activities and meals by date
+  for (const date in mealsByDate) {
+    if (!groupedActivities[date]) {
+      groupedActivities[date] = { durationKcal: 0, waterVolume: 0 };
+    }
+    groupedActivities[date].mealTotalKcal = mealsByDate[date];
+  }
 
 
   // Display the grouped activities in HTML
   const tbody = document.getElementById('overview');
   for (const date in groupedActivities) {
     const totalDurationKcal = groupedActivities[date].durationKcal + userBMR; //ikke divideret med 24 for nu det en dag
-    const totalKcal = groupedActivities[date].mealTotalKcal ? groupedActivities[date].mealTotalKcal + totalDurationKcal : totalDurationKcal;    const dateObj = new Date(date);
+    const totalKcal = groupedActivities[date].mealTotalKcal ? (groupedActivities[date].mealTotalKcal - totalDurationKcal) : 0;
+    
+    const dateObj = new Date(date);
     const month = dateObj.toLocaleString('default', { month: 'long' });
     const row = document.createElement('tr');
     row.innerHTML = `
       <td>${date}</td>
       <td>${month}</td>
       <td>${groupedActivities[date].waterVolume} ml</td>
-      <td>${groupedActivities[date].mealTotalKcal ? groupedActivities[date].mealTotalKcal.toFixed(2) : '0'} kcal</td>      <td>${totalDurationKcal.toFixed(2)}</td>
+      <td>${groupedActivities[date].mealTotalKcal ? groupedActivities[date].mealTotalKcal.toFixed(2) : '0'} kcal</td>     
+      <td>${totalDurationKcal.toFixed(2)}</td>
       <td>${totalKcal.toFixed(2)}</td>
     `;
     tbody.appendChild(row);
   }
 }
 
-fetchAndGroupUserActivities();
