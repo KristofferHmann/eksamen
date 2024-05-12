@@ -220,31 +220,6 @@ async function addMealToTable() {
     // Reset the current meal for the next meal
     currentMeal = [];
 
-    // gammen måde at lave en knap på til at åbne alert med ingredienser
-    // // Add a new cell for the button
-    // let buttonCell = row.insertCell();
-    // // Create a button element
-    // let button = document.createElement('button');
-    // // Set the button text
-    // button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-    // // Store the index of the meal in the button's dataset
-    // button.dataset.mealIndex = meals.length - 1;
-    // // Add an event listener to the button
-    // button.addEventListener('click', (event) => {
-    //     // Get the index of the meal from the button's dataset
-    //     let mealIndex = event.target.dataset.mealIndex;
-    //     // Get the ingredients of the meal
-    //     let ingredients = meals[mealIndex];
-    //     // Create a string with the ingredients
-    //     let ingredientsStr = ingredients.map(ingredient =>
-    //         `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
-    //     ).join('\n');
-    //     // Display the ingredients
-    //     alert('Ingredients:\n' + ingredientsStr);
-    // });
-    // // Add the button to the cell
-    // buttonCell.appendChild(button);
-
     closeMealCreator();
 };
 
@@ -316,71 +291,6 @@ async function updateMealID(meal_ID) {
         throw error; // Rethrow the error to handle it in the caller function
     }
 }
-
-
-/*
-function displayMealsFromLocalStorage() {
-    // Get all keys from local storage
-    const keys = Object.keys(localStorage);
-
-    // Find the table in the mealCreator div
-    let mealTable = document.querySelector(".mealCreator table tbody");
-    // For each key in local storage
-    keys.forEach(key => {
-        // Get the meal data from local storage uden at parse vores token
-
-        if (key === "token") {
-            return; // Skip to the next iteration
-        }
-        const storedData = localStorage.getItem(key);
-        //console.log("Key:", key, "Data:", storedData);
-
-        try {
-            const mealData = JSON.parse(storedData);
-            // Process mealData as JSON
-
-            // Create a new row and add it to the table
-            let row = mealTable.insertRow();
-            row.insertCell().textContent = mealTable.rows.length; // # column
-            row.insertCell().textContent = mealData.name; // Meal Name column
-            row.insertCell().textContent = mealData.numIngredients;
-            if (mealData.nutrition) { // Check if nutrition is defined
-                row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
-            } else {
-                row.insertCell().textContent = "Nutrition data not available";
-            }
-            //row.insertCell().textContent = `${mealData.nutrition.kcal.toFixed(2)} kcal, ${mealData.nutrition.protein.toFixed(2)} protein, ${mealData.nutrition.fat.toFixed(2)} fat, ${mealData.nutrition.fiber.toFixed(2)} fiber`;
-            row.insertCell().textContent = mealData.addedOn; // Date column
-
-
-            // Add a new cell for the button
-            let buttonCell = row.insertCell();
-            // Create a button element
-            let button = document.createElement('button');
-            // Set the button text
-            button.innerHTML = '<i class="fa-solid fa-magnifying-glass"></i>';
-            // Add an event listener to the button
-            button.addEventListener('click', () => {
-                // Create a string with the ingredients
-                let ingredientsStr = mealData.ingredients.map(ingredient =>
-                    `${ingredient.name}: ${ingredient.weight}g, ${ingredient.nutrition.kcal.toFixed(2)} kcal, ${ingredient.nutrition.protein.toFixed(2)} protein, ${ingredient.nutrition.fat.toFixed(2)} fat, ${ingredient.nutrition.fiber.toFixed(2)} fiber`
-                ).join('\n');
-                // Display the ingredients
-                alert('Ingredients:\n' + ingredientsStr);
-            });
-            // Add the button to the cell
-            buttonCell.appendChild(button);
-        } catch (error) {
-            console.error("Error parsing JSON:", error);
-            // Handle the case where the data is not valid JSON
-        }
-    });
-    ;
-}
-
-// Call the function when the document is loaded
-document.addEventListener('DOMContentLoaded', displayMealsFromLocalStorage);
-*/
 
 async function createMeal(mealData) {
 
