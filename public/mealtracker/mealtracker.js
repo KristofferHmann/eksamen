@@ -492,6 +492,82 @@ function openMealModal(meal) {
     });
 }
 
+function openEditModal(meal) {
+    // Implement logic to open a modal with meal details
+    const modal = document.getElementById('mealModalEdit');
+    const modalContent = document.getElementById('mealModalContentEdit');
+    document.getElementById('mealIDHidden').value = meal.meal_ID;
+    // Set modal content with meal details
+    modalContent.innerHTML = `
+        <h2>Rediger dit måltid: <br> ${meal.mealname}</h2>
+        <p class="modal-label">Weight</p>
+        <input type="number" class="modal-input" id="weightEdit" value="${meal.weight}" placeholder="Weight">
+        <p class="modal-label">Kalories</p>
+        <input type="number" class="modal-input" id="totalKcalEdit" value="${meal.totalKcal}" placeholder="Total Kcal">
+        <p class="modal-label">Protein</p>
+        <input type="number" class="modal-input" id="totalProteinEdit" value="${meal.totalProtein}" placeholder="Total Protein">
+        <p class="modal-label">Fedt</p>
+        <input type="number" class="modal-input" id="totalFatEdit" value="${meal.totalFat}" placeholder="Total Fat">
+        <p class="modal-label">Fiber</p>
+        <input type="number" class="modal-input" id="totalFiberEdit" value="${meal.totalFiber}" placeholder="Total Fiber">
+        <p class="modal-label">Dato</p>
+        <input type="text" class="modal-input" value="${getDate()}" placeholder="Date" readonly>
+        <button id="submitMealEditBtn">Submit</button>
+        <button id="closeMealModalEditBtn">Close</button>
+    `;
+
+    // Display modal
+    modal.style.display = 'block';
+
+    const submitBtn = document.getElementById('submitMealEditBtn');
+    submitBtn.addEventListener('click', async () => {
+        try {
+            // Get updated meal data from the modal inputs
+            const updatedMeal = {
+                mealname: meal.mealname,
+                weight: parseInt(document.getElementById('weightEdit').value),
+                totalKcal: parseFloat(document.getElementById('totalKcalEdit').value),
+                totalProtein: parseFloat(document.getElementById('totalProteinEdit').value),
+                totalFat: parseFloat(document.getElementById('totalFatEdit').value),
+                totalFiber: parseFloat(document.getElementById('totalFiberEdit').value),
+                // Add other properties if needed
+            };
+
+            // Update the meal in the table
+            updateMealInTable(updatedMeal);
+
+            await updateMeals(updatedMeal, meal.mealID);
+            // Close the edit modal
+            modal.style.display = 'none';
+        } catch (error) {
+            console.error('Error updating meal:', error);
+        }
+    });
+    const closeBtn = document.getElementById('closeMealModalEditBtn');
+    closeBtn.addEventListener('click', () => {
+        // Implement logic to close the modal
+        modal.style.display = 'none';
+    });
+}
+
+function updateMealInTable(updatedMeal) {
+    // Find the row corresponding to the updated meal
+    const table = document.querySelector('table tbody');
+    const rows = table.querySelectorAll('tr');
+    const rowToUpdate = Array.from(rows).find(row => row.cells[1].textContent === updatedMeal.mealname);
+
+    if (rowToUpdate) {
+        // Update the meal details in the table row
+        rowToUpdate.cells[4].textContent = `${updatedMeal.weight}`
+        rowToUpdate.cells[5].textContent = `${updatedMeal.totalKcal} kcal, ${updatedMeal.totalProtein} g, ${updatedMeal.totalFat} g, ${updatedMeal.totalFiber} g`;
+    } else {
+        console.error('Row not found for meal:', updatedMeal.mealname);
+    }
+    const mealID = document.getElementById('mealIDHidden').value;
+console.log(updatedMeal, "id", mealID);
+    // Call the function to update the meal in the database
+    updateMeals(updatedMeal, mealID);
+}
 // Denne funktion gemmer et måltid i local storage
 function saveMealToLocal(meal) {
     const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
