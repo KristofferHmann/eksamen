@@ -2,7 +2,6 @@ let totalKcal = 0;
 let totalProtein = 0;
 let totalFat = 0;
 let totalFiber = 0;
-let numIngredients = 0;
 let meals = []; // List of meals, each meal is a list of ingredients
 let currentMeal = []; // List of ingredients for the current meal
 
@@ -159,57 +158,20 @@ async function addIngredientToMeal() {
     row.insertCell().textContent = weight; // Weight column
     row.insertCell().textContent = `${kcal.toFixed(2)} kcal, ${protein.toFixed(2)} protein, ${fat.toFixed(2)} fat, ${fiber.toFixed(2)} fiber`; // Nutrition column
 
-
-
-    // Update numIngredients after a new row is added
-    numIngredients += 1;
 };
 
 document.getElementById("SubmitButtonID").addEventListener("click", addMealToTable);
 
 async function addMealToTable() {
-    // Find tabellen i mealCreator div
-    let mealTable = document.querySelector(".mealCreator table tbody");
-
-    // Hent måltidsnavnet fra input feltet
-    let mealName = document.getElementById("mealNameInput").value;
-
-    const date = new Date();
-    const dateString = `${date.getDate()}-${date.getMonth() + 1}-${date.getFullYear()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`;
-    // Opret en ny række og tilføj den til tabellen
-    let row = mealTable.insertRow();
-    row.insertCell().textContent = mealTable.rows.length; // # kolonne
-    row.insertCell().textContent = mealName; // Meal Name kolonne (opdater denne værdi som nødvendigt)
-    row.insertCell().textContent = numIngredients;
-    row.insertCell().textContent = `${totalKcal.toFixed(2)} kcal, ${totalProtein.toFixed(2)} protein, ${totalFat.toFixed(2)} fat, ${totalFiber.toFixed(2)} fiber`;
-    row.insertCell().textContent = dateString; // Opdaterer denne værdi med datoen
-
     // Add the current meal to the list of meals
     meals.push(currentMeal);
 
-    // Save the meal data in local storage
-    const mealData = {
-        name: mealName,
-        numIngredients: numIngredients,
-        ingredients: currentMeal,
-        nutrition: {
-            kcal: totalKcal,
-            protein: totalProtein,
-            fat: totalFat,
-            fiber: totalFiber,
-        },
-        addedOn: dateString,
-    };
     try {
         // Call the updateMealID function to update the meal ID
         const meal_ID = await updateMealID(document.getElementById('mealIDHidden').value);
     } catch (error) {
         console.error('Error submitting meal name:', error);
     }
-
-    localStorage.setItem(mealName, JSON.stringify(mealData));
-    // Reset numIngredients for the next meal
-    numIngredients = 0;
 
     // Nulstil de globale totaler for det næste måltid
     totalKcal = 0;
@@ -221,6 +183,7 @@ async function addMealToTable() {
     currentMeal = [];
 
     closeMealCreator();
+    window.location.reload();
 };
 
 // Submit Meal Name
@@ -378,6 +341,7 @@ async function fetchAllIngredients() {
         console.error(error);
     }
 }
+
 async function fetchUserMeals() {
     try {
         const token = localStorage.getItem('token');
@@ -435,6 +399,7 @@ async function fetchUserMeals() {
         console.error(error);
     }
 }
+
 async function updateMeals(mealData, mealID) {
     try {
         const token = localStorage.getItem('token');
@@ -477,13 +442,12 @@ async function callUpdateMeals() {
 function displayMeals(meals) {
     const mealTableBody = document.querySelector('.mealCreator table tbody');
     mealTableBody.innerHTML = ''; // Clear previous content
-
+console.log(meals, 'fck');
     meals.forEach((meal, index) => {
         const row = mealTableBody.insertRow();
         row.insertCell().textContent = index + 1; // # column
         row.insertCell().textContent = meal.mealname; // Meal Name column
-        row.insertCell().textContent = meal.ingredients ? meal.ingredients.length : 'N/A'; // # Ingredients column
-        row.insertCell().textContent = meal.nutrition; // Nutrition column
+        row.insertCell().textContent = `Kcal: ${meal.totalKcal.toFixed(2)}, Protein: ${meal.totalProtein.toFixed(2)}, Fat: ${meal.totalFat.toFixed(2)}, Fiber: ${meal.totalFiber.toFixed(2)}`;
         console.log(meal);
         row.insertCell().textContent = meal.mealTime ? new Date(meal.mealTime).toLocaleString() : 'N/A'; // Added on column
 
