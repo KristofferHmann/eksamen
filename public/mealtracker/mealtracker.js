@@ -39,12 +39,20 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById('waterModal').style.display = "none"; // Skjuler modalen
     }
 
+    // Denne funktion henter alle ingredienser fra serveren
     async function fetchAllIngredients() {
+        // Anmodning sendes til serveren for at hente ingredienser
         const response = await fetch('http://localhost:3000/items/ingredients');
+
+        // Hvis serverens svar ikke er OK (status 200), kastes en fejl
         if (!response.ok) {
             throw new Error(`HTTP fejl! status: ${response.status}`);
         }
+
+        // Hvis serverens svar er OK, konverteres svaret til JSON
         const allIngredients = await response.json();
+
+        // Funktionen returnerer de hentede ingredienser
         return allIngredients;
     }
 
@@ -60,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const waterName = waterIngredientList.textContent;
         const now = new Date();
         const year = now.getFullYear();
-        const month = now.getMonth() + 1; // getMonth er nulbaseret, så tilføj 1
+        const month = now.getMonth() + 1; // getMonth er nulbaseret, så tilføjer 1
         const day = now.getDate();
         const hours = now.getHours();
         const minutes = now.getMinutes();
@@ -68,7 +76,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
         // Henter bruger ID
-        const user_ID = localStorage.getItem('user_ID'); // Antager at du gemmer bruger ID i localStorage
+        const user_ID = localStorage.getItem('user_ID');
         const token = localStorage.getItem('token');
         // Opretter nye vanddata
         const newWaterData = {
@@ -80,19 +88,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Sender nye vanddata til serveren
         const response = await fetch('http://localhost:3000/items/addWater', {
+            // HTTP metoden er sat til 'POST' for at sende data til serveren
             method: 'POST',
+            // Headers er sat til at indikere, at indholdet er JSON, og en autorisationsheader er inkluderet
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + token, // Antager at du gemmer din JWT token i localStorage
+                'Authorization': 'Bearer ' + token,
             },
+            // Body af anmodningen er de nye vanddata, konverteret til en JSON-streng
             body: JSON.stringify(newWaterData)
         });
 
+        // Hvis serverens svar ikke er OK (status 200), logges en fejlmeddelelse
         if (!response.ok) {
             console.error('Kunne ikke gemme vanddata', response);
         }
 
-        // Lukker modalen
+        // Efter data er sendt, lukkes modalen ved at ændre dens display-stil til "none"
         waterModal.style.display = "none";
     });
 
@@ -106,12 +118,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         // Finder vandingrediens
         const allArrays = Object.values(allIngredients).flat();
-        const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53);
+        const water = allArrays.find(ingredient => ingredient.ingredient_ID === 53); // Vand har ID 53
 
         // Viser vandingrediens i modalen
         waterIngredientList.textContent = water.ingredientname;
 
-        document.getElementById('waterTime').textContent = getDate();
+        document.getElementById('waterTime').textContent = getDate(); // Sætter vandtiden til nu
     });
 
 
@@ -123,27 +135,21 @@ document.addEventListener("DOMContentLoaded", function () {
         const ingredientname = waterIngredientList.textContent;
         const waterTime = document.getElementById('waterTime').textContent;
 
-        // Opretter nye vanddata
+        // Opretter nye objekt til vanddata
         const newWaterData = {
             ingredientname: ingredientname,
             waterAmount: waterAmount,
             waterTime: waterTime
         };
 
-        // Henter eksisterende vanddata fra localStorage
-        const existingWaterData = JSON.parse(localStorage.getItem('waterData')) || [];
-
         // Tilføjer nye vanddata til eksisterende vanddata
         existingWaterData.push(newWaterData);
-
-        // Gemmer eksisterende vanddata tilbage til localStorage
-        localStorage.setItem('waterData', JSON.stringify(existingWaterData));
 
         // Lukker modalen
         waterModal.style.display = "none";
     });
 
-    // Tilføj ingrediens når "Tilføj" knappen inde i modalen bliver klikket på
+    // Tilføj ingrediens når "addIngredientBtn" bliver klikket 
     const addIngredientBtn = document.getElementById("addIngredientBtn");
     addIngredientBtn.addEventListener('click', async function () {
         try {
@@ -192,24 +198,42 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Henter maddata baseret på søgeinput
+// Denne asynkrone funktion henter ingredienser fra serveren
 async function foodFetch() {
+    // Anmodning sendes til serveren for at hente ingredienser
     const response = await fetch('http://localhost:3000/items/ingredients');
+    
+    // Hvis serverens svar ikke er OK (status 200), kastes en fejl
     if (!response.ok) {
         throw new Error('Kunne ikke hente data');
     }
+    
+    // Hvis serverens svar er OK, konverteres svaret til JSON
     const data = await response.json();
+    
+    // Henter elementet med id 'searchResults' og tømmer dets indhold
     const ressult = document.getElementById('searchResults');
     ressult.innerHTML = '';
+    
+    // Henter inputfeltet for mad søgning
     const searchFoodInput = document.getElementById('searchFoodInput');
+    
+    // Filtrerer ingredienserne baseret på søgeinputtet og for hver ingrediens, der passer til søgningen:
     data.allIngredients
         .filter(ingredient => ingredient.ingredientname.toLowerCase().includes(searchFoodInput.value.toLowerCase()))
         .forEach((ingredient) => {
+            // Opretter et nyt 'option' element
             const option = document.createElement('option');
+            
+            // Sætter værdien og teksten af 'option' elementet til ingrediensens navn
             option.value = ingredient.ingredientname;
             option.textContent = ingredient.ingredientname;
+            
+            // Tilføjer det nye 'option' element til 'searchResults' elementet
             ressult.appendChild(option);
         });
 }
+
 // Henter ernæringsinformation for den valgte ingrediens
 async function fetchNutrition(ingredientName) {
     // Anmoder om data fra serveren
@@ -564,7 +588,7 @@ function updateMealInTable(updatedMeal) {
         console.error('Row not found for meal:', updatedMeal.mealname);
     }
     const mealID = document.getElementById('mealIDHidden').value;
-console.log(updatedMeal, "id", mealID);
+    console.log(updatedMeal, "id", mealID);
     // Call the function to update the meal in the database
     updateMeals(updatedMeal, mealID);
 }

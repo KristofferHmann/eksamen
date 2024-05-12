@@ -407,7 +407,7 @@ async function fetchUserMeals() {
 
         // Logger ingrediens id'er
         uniqueMeals.forEach(meal => {
-            if (meal.ingredient_IDs) { // Antager at meal.ingredient_IDs er en liste af ingrediens ID'er
+            if (meal.ingredient_IDs) { 
                 meal.ingredient_IDs.forEach(ingredient_ID => {
                     const foundIngredient = ingredients.allIngredients.find(ingredient => ingredient.ingredient_ID === ingredient_ID);
         
@@ -494,7 +494,7 @@ function displayMeals(meals) {
 
         // Når knappen klikkes, åbnes en modal med ingredienser
         button.addEventListener('click', () => {
-            // Finder ingrediensen der matcher måltidets ingrediens_ID
+            // Finder ingrediensen der matcher måltidets ingredient_ID
             const foundIngredient = ingredients.allIngredients.find(ingredient => ingredient.ingredient_ID === meal.ingredient_ID);
             // Opretter en ny modal
             const modal = document.createElement('div');

@@ -71,7 +71,7 @@ async function deleteUser() {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token, // Antager at token er tilgængeligt
+            "Authorization": "Bearer " + token, 
         }
     });
 
@@ -86,7 +86,6 @@ async function deleteUser() {
     console.log(data); // Logger svaret fra serveren
 }
 
-// Antager at du har en slet-knap i din HTML med id="deleteButton"
 const deleteButton = document.getElementById('deleteButton');
 deleteButton.addEventListener('click', () => {
     deleteUser().catch(error => console.error(error));
@@ -104,7 +103,7 @@ async function logout() {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
-            "Authorization": "Bearer " + token, // Antager at token er tilgængeligt
+            "Authorization": "Bearer " + token, 
         }
     });
     console.log(response); // Debugging: Logger svaret fra serveren

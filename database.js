@@ -198,7 +198,7 @@ export default class Database {
     try {
       // Opretter forbindelse til databasen
       await this.connect();
-
+      // Opretter en ny forespørgsel ved hjælp af poolforbindelsen
       const request = this.poolconnection.request();
 
       // Uddrager opdaterede brugerdata
@@ -246,6 +246,7 @@ export default class Database {
       request.input('weight', sql.Int, weight);
       request.input('age', sql.Int, age);
       request.input('bmr', sql.Decimal(18, 2), (bmr * 239).toFixed(2));
+      // SQL-forespørgslen til at opdatere brugeren
       const query = `
         UPDATE Nutri.[USER]
         SET gender = @gender, weight = @weight, age = @age, bmr = @bmr

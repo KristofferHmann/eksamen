@@ -8,7 +8,6 @@ async function logout() {
         method: 'GET',
         headers: {
             "Content-Type": "application/json",
-            // Antager at token er tilgængelig
             "Authorization": "Bearer " + token, 
         }
     });

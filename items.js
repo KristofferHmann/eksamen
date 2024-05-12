@@ -69,10 +69,10 @@ router.get('/userMeals', async (req, res) => {
 router.put('/updateMeals', async (req, res) => {
   try {
     // Henter brugerID fra det dekodede token
-    const token = req.headers.authorization.split(' ')[1];
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey);
-    const userID = tokenDecoded.user_ID;
+    const token = req.headers.authorization.split(' ')[1]; // Henter token fra headers
+    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
+    const tokenDecoded = jwt.verify(token, secretKey); // Dekoder token
+    const userID = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
 
     // Henter måltidsdata fra request body
     const mealData = req.body.mealData;
@@ -199,7 +199,7 @@ router.get('/delete', async (req, res) => {
     const secretKey = process.env.JWT_SECRET;
     // Verificerer token og ekstraherer bruger ID
     const tokenDecoded = jwt.verify(token, secretKey);
-    const userID = tokenDecoded.user_ID;
+    const userID = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
     // Sletter bruger fra databasen
     const rowsAffected = await database.deleteUser(userID);
     if (rowsAffected > 0) {
@@ -215,10 +215,10 @@ router.get('/delete', async (req, res) => {
 router.put('/edit', async (req, res) => {
   try {
     // Ekstraherer bruger ID fra JWT token
-    const token = req.headers.authorization.split(' ')[1];
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey);
-    const userId = tokenDecoded.user_ID;
+    const token = req.headers.authorization.split(' ')[1]; // Henter token fra request headers og splitter det for at få det faktiske token
+    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
+    const tokenDecoded = jwt.verify(token, secretKey); // Verificerer token og ekstraherer bruger ID
+    const userId = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
 
     // Ekstraherer opdaterede brugerdata fra request body
     const updatedUserData = req.body;
@@ -241,10 +241,10 @@ router.put('/edit', async (req, res) => {
 router.get('/userInfo', async (req, res) => {
   try {
     // Ekstraherer og dekoder token
-    const token = req.headers.authorization.split(' ')[1];
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey);
-    const userId = tokenDecoded.user_ID;
+    const token = req.headers.authorization.split(' ')[1]; // Henter token fra request headers og splitter det for at få det faktiske token
+    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
+    const tokenDecoded = jwt.verify(token, secretKey); // Verificerer token og ekstraherer bruger ID
+    const userId = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
 
     // Henter brugerinformation fra databasen ved hjælp af getUser funktionen
     const userData = await database.getUser(userId); // Bruger userId i stedet for req.params.user_ID
@@ -262,13 +262,13 @@ router.get('/userInfo', async (req, res) => {
 // Endpoint til at hente al vandinformation for en bruger
 router.get('/allWater', async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1];
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey);
-    const userID = tokenDecoded.user_ID;
+    const token = req.headers.authorization.split(' ')[1]; // Henter token fra request headers og splitter det for at få det faktiske token
+    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
+    const tokenDecoded = jwt.verify(token, secretKey); // Verificerer token og ekstraherer bruger ID
+    const userID = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
 
-    // Henter al vandinformation for en bruger
-    const getAllWater = await database.getUserWater(userID);
+    // Henter alt vandinformation for en bruger
+    const getAllWater = await database.getUserWater(userID); // Henter brugerens vandindtag fra databasen med getUserWater funktionen
     res.status(200).json({ getAllWater });
   } catch (err) {
     res.status(500).send('Server error');
@@ -280,15 +280,15 @@ router.post('/addWater', async (req, res) => {
   try {
     // Henter vanddata fra request body
     const water = req.body;
-    const token = req.headers.authorization.split(' ')[1]
-    const secretKey = process.env.JWT_SECRET;
-    const tokenDecoded = jwt.verify(token, secretKey)
-    const userID = tokenDecoded.user_ID
+    const token = req.headers.authorization.split(' ')[1]; // Henter token fra request headers og splitter det for at få det faktiske token
+    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
+    const tokenDecoded = jwt.verify(token, secretKey); // Verificerer token og ekstraherer bruger ID
+    const userID = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
     // Tilføjer vandindtag til databasen
-    const rowsAffected = await database.addWater(water, userID);
+    const rowsAffected = await database.addWater(water, userID); // Tilføjer vandindtag til databasen med addWater funktionen
     res.status(201).json({ rowsAffected });
   } catch (err) {
-    console.error(err, 'hep a'); // Tilføj denne linje
+    console.error(err); 
     res.status(500).send('Server error');
   }
 });
