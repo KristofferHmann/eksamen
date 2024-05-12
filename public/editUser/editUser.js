@@ -41,9 +41,10 @@ function handleSubmit(event) {
         weight: parseInt(document.getElementById('weight').value),
         age: parseInt(document.getElementById('age').value)
     };
-
+    window.location.reload();
     // Call the updateUser function to update user information
     updateUser(updatedUserData).catch(error => console.error(error));
+    
 }
 
 // Add event listener to the update button

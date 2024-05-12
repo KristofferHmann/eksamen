@@ -59,13 +59,13 @@ document.addEventListener("DOMContentLoaded", function () {
         // Get water ingredient name and time
         const waterName = waterIngredientList.textContent;
         const now = new Date();
-const year = now.getFullYear();
-const month = now.getMonth() + 1; // getMonth is zero-based, so add 1
-const day = now.getDate();
-const hours = now.getHours();
-const minutes = now.getMinutes();
-const seconds = now.getSeconds();
-const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const year = now.getFullYear();
+        const month = now.getMonth() + 1; // getMonth is zero-based, so add 1
+        const day = now.getDate();
+        const hours = now.getHours();
+        const minutes = now.getMinutes();
+        const seconds = now.getSeconds();
+        const waterTime = `${year}-${month.toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}T${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
 
         // Get user ID
         const user_ID = localStorage.getItem('user_ID'); // Assuming you store user ID in localStorage
@@ -359,7 +359,7 @@ document.getElementById('addMeal').addEventListener('click', () => {
     const modal = document.getElementById('modal');
     modal.style.display = 'block';
     // Fetch user meals only when the modal is opened for adding a new meal
-    fetchUserMeals(); 
+    fetchUserMeals();
 });
 
 async function fetchUserMeals() {
@@ -420,7 +420,7 @@ function displayMeals(meals) {
         });
         mealListDiv.appendChild(button);
     });
-} 
+}
 
 function openMealModal(meal) {
     // Implement logic to open a modal with meal details
@@ -450,11 +450,18 @@ function openMealModal(meal) {
     const submitBtn = document.getElementById('submitMealBtn');
     submitBtn.addEventListener('click', () => {
         displayMealInTable(meal);
+    
+        // Save the meal to local storage
+        const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
+        mealsData.push(meal);
+        localStorage.setItem('meals', JSON.stringify(mealsData));
+    
         const modal = document.getElementById('mealModal');
         const mealListDiv = document.getElementById('modal');
         modal.style.display = 'none';
         mealListDiv.style.display = 'none';
     });
+    
     const closeBtn = document.getElementById('closeMealModalBtn');
     closeBtn.addEventListener('click', () => {
         // Implement logic to close the modal
@@ -534,15 +541,15 @@ function updateMealInTable(updatedMeal) {
         console.error('Row not found for meal:', updatedMeal.mealname);
     }
     const mealID = document.getElementById('mealIDHidden').value;
-console.log(updatedMeal, "id", mealID);
+    console.log(updatedMeal, "id", mealID);
     // Call the function to update the meal in the database
     updateMeals(updatedMeal, mealID);
 }
+
 async function displayMealInTable(meal) {
     const table = document.querySelector('table tbody');
     const row = document.createElement('tr');
 
-    const mealsData = JSON.parse(localStorage.getItem('meals')) || [];
     // Get location from browser
     let address = 'Address not available';
     try {
@@ -564,9 +571,6 @@ async function displayMealInTable(meal) {
         </td>`;
     table.appendChild(row);
 
-    mealsData.push(meal);
-    localStorage.setItem('meals', JSON.stringify(mealsData));
-
     const editButton = row.querySelector('.edit-btn');
     editButton.addEventListener('click', () => {
         openEditModal(meal);
@@ -577,6 +581,7 @@ async function displayMealInTable(meal) {
         removeMealFromLocalStorageAndTable(rowIndex);
     });
 }
+
 async function updateMeals(mealData, mealID) {
     try {
         const token = localStorage.getItem('token');
