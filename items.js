@@ -1,206 +1,210 @@
-// Importerer nødvendige moduler
 import express from 'express';
 import { config } from './config.js';
 import Database from './database.js';
 import jwt from 'jsonwebtoken'
 import * as dotenv from 'dotenv';
 dotenv.config({ path: `.env`, debug: true });
+//import cookieParser from 'cookie-parser';
 
-// Opretter en ny router
 const router = express.Router();
 router.use(express.json());
-
-// Udskriver konfigurationen (kun til udvikling - bør ikke gøres i produktion)
+//router.use(cookieParser());
+// Development only - don't do in production
 console.log(config);
 
-// Opretter et nyt databaseobjekt
+// Create database object
 const database = new Database(config);
 
-// Endpoint til at oprette et måltid
+
+
+
+//Registrer et måltid
 router.post('/mealCreator', async (req, res) => {
   try {
-    const meal = req.body; // Henter måltidet fra request body
-    const token = req.headers.authorization.split(' ')[1] // Henter token fra headers
-    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
-    const tokenDecoded = jwt.verify(token, secretKey) // Dekoder token
-    const userID = tokenDecoded.user_ID // Henter brugerID fra det dekodede token
+    const meal = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
     console.log(userID);
-    const meal_ID = await database.createMeal(meal, userID); // Opretter måltidet i databasen
-    res.status(201).json({ message: 'Meals created successfully', meal_ID }); // Sender succesbesked tilbage
+    const meal_ID = await database.createMeal(meal, userID);
+    res.status(201).json({ message: 'Meals created successfully', meal_ID });
   } catch (err) {
     console.error('Error cathing meal', err);
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at oprette ingredienser til et måltid
+
 router.post('/mealIngredients', async (req, res) => {
   try {
-    const ingredientData = req.body; // Henter ingrediensdata fra request body
-    const meal_ID = ingredientData.meal_ID; // Henter måltidets ID
-    const token = req.headers.authorization.split(' ')[1] // Henter token fra headers
-    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
-    const tokenDecoded = jwt.verify(token, secretKey) // Dekoder token
-    const userID = tokenDecoded.user_ID // Henter brugerID fra det dekodede token
-    const rowsAffected = await database.createMealIngredients(ingredientData, meal_ID); // Opretter ingredienserne i databasen
-    res.status(201).json({ message: 'Meal ingredients created successfully', rowsAffected }); // Sender succesbesked tilbage
+    const ingredientData = req.body;
+    const meal_ID = ingredientData.meal_ID;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    const rowsAffected = await database.createMealIngredients(ingredientData, meal_ID);
+    res.status(201).json({ message: 'Meal ingredients created successfully', rowsAffected });
   } catch (err) {
     console.error('Error catching meal ingredients', err);
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at hente en brugers måltider
 router.get('/userMeals', async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Henter token fra headers
-    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
-    const tokenDecoded = jwt.verify(token, secretKey); // Dekoder token
-    const userID = tokenDecoded.user_ID; // Henter brugerID fra det dekodede token
-
-    const userMeals = await database.getUserMeals(userID); // Henter brugerens måltider fra databasen
-    res.status(200).json({ userMeals }); // Sender måltiderne tilbage
-  } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
-  }
-});
-
-// Endpoint til at opdatere et måltid
-router.put('/updateMeals', async (req, res) => {
-  try {
-    // Henter brugerID fra det dekodede token
     const token = req.headers.authorization.split(' ')[1];
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey);
     const userID = tokenDecoded.user_ID;
 
-    // Henter måltidsdata fra request body
+
+    const userMeals = await database.getUserMeals(userID);
+    res.status(200).json({ userMeals });
+  } catch (err) {
+    res.status(500).send('Server error');
+  }
+});
+
+router.put('/updateMeals', async (req, res) => {
+  try {
+    // Extract userID from the decoded token
+    const token = req.headers.authorization.split(' ')[1];
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey);
+    const userID = tokenDecoded.user_ID;
+
+    // Extract meal data from the request body
     const mealData = req.body.mealData;
     const mealID = req.body.mealID;
 
-    // Opdaterer måltidet i databasen
+    // Call the editMeals function with all necessary data
     const rowsAffected = await database.editMeals(mealID, mealData);
 
-    // Tjekker om nogen rækker blev påvirket
+    // Check if any rows were affected
     if (rowsAffected > 0) {
-      res.status(200).json({ message: 'Meal updated successfully.' }); // Sender succesbesked tilbage
+      res.status(200).json({ message: 'Meal updated successfully.' });
     } else {
-      res.status(404).json({ message: 'Meal not found.' }); // Sender fejlbesked tilbage hvis måltidet ikke blev fundet
+      res.status(404).json({ message: 'Meal not found.' });
     }
   } catch (err) {
     console.error('Error updating meals:', err.message);
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at hente en brugers aktiviteter
+
+
 router.get('/userActivities', async (req, res) => {
   try {
-    const token = req.headers.authorization.split(' ')[1] // Henter token fra headers
-    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
-    const tokenDecoded = jwt.verify(token, secretKey) // Dekoder token
-    const userID = tokenDecoded.user_ID // Henter brugerID fra det dekodede token
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
 
-    const getAllActivities = await database.getUserActivities(userID); // Henter brugerens aktiviteter fra databasen
-    res.status(200).json({ getAllActivities }); // Sender aktiviteterne tilbage
+    const getAllActivities = await database.getUserActivities(userID);
+    res.status(200).json({ getAllActivities });
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at hente alle aktiviteter
+//Vælg aktiviteter
 router.get('/allActivities', async (req, res) => {
   try {
-    const activity = req.body; // Henter aktivitetsdata fra request body
-    const getAllActivities = await database.getAllActivities(activity); // Henter alle aktiviteter fra databasen
-    res.status(200).json({ getAllActivities }); // Sender aktiviteterne tilbage
+
+    const activity = req.body;
+    const getAllActivities = await database.getAllActivities(activity);
+    res.status(200).json({ getAllActivities });
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at tilføje en aktivitet
+//Registrer et måltid
 router.post('/addActivity', async (req, res) => {
   try {
-    const activity = req.body; // Henter aktivitetsdata fra request body
-    const token = req.headers.authorization.split(' ')[1] // Henter token fra headers
-    const secretKey = process.env.JWT_SECRET; // Henter hemmelig nøgle fra miljøvariabler
-    const tokenDecoded = jwt.verify(token, secretKey) // Dekoder token
-    const userID = tokenDecoded.user_ID // Henter brugerID fra det dekodede token
-    const rowsAffected = await database.addActivity(activity, userID); // Tilføjer aktiviteten til databasen
-    res.status(201).json({ rowsAffected }); // Sender antallet af påvirkede rækker tilbage
+    const activity = req.body;
+    const token = req.headers.authorization.split(' ')[1]
+    const secretKey = process.env.JWT_SECRET;
+    const tokenDecoded = jwt.verify(token, secretKey)
+    const userID = tokenDecoded.user_ID
+    const rowsAffected = await database.addActivity(activity, userID);
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at hente alle ingredienser
+//Vælg ingredienser
 router.get('/ingredients', async (req, res) => {
   try {
-    const ingredient = req.body; // Henter ingrediensdata fra request body
-    const allIngredients = await database.getIngredient(ingredient); // Henter alle ingredienser fra databasen
-    res.status(200).json({ allIngredients }); // Sender ingredienserne tilbage
+
+    const ingredient = req.body;
+    const allIngredients = await database.getIngredient(ingredient);
+    res.status(200).json({ allIngredients });
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at registrere en bruger
+
+//Registrer en bruger
 router.post('/register', async (req, res) => {
   try {
-    const user = req.body; // Henter brugerdata fra request body
-    const rowsAffected = await database.registerUser(user); // Registrerer brugeren i databasen
-    res.status(201).json({ rowsAffected }); // Sender antallet af påvirkede rækker tilbage
+    const user = req.body;
+    const rowsAffected = await database.registerUser(user); //kalder registerUser metode i database.js
+    res.status(201).json({ rowsAffected });
   } catch (err) {
-    res.status(500).send('Server error'); // Sender fejlbesked tilbage hvis noget går galt
+    res.status(500).send('Server error');
   }
 });
 
-// Endpoint til at logge ind
+
 router.post('/login', async (req, res) => {
-  const { username, password } = req.body; // Henter brugernavn og password fra request body
+  const { username, password } = req.body;
   if (typeof username === 'undefined' || typeof password === 'undefined') {
-    return res.status(403).send('Username or password is missing'); // Sender fejlbesked tilbage hvis brugernavn eller password mangler
+    return res.status(403).send('Username or password is missing');
   }
-  const jwtSecret = config.jwtSecret; // Henter hemmelig nøgle fra konfigurationen
+  const jwtSecret = config.jwtSecret;
 
   try {
-    const user = await database.getUserByUsernameAndPassword(username, password); // Henter brugeren fra databasen
+    const user = await database.getUserByUsernameAndPassword(username, password);
     if (user) {
-      const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID }, jwtSecret, { expiresIn: '2d' }); // Genererer et token
+      const apiToken = jwt.sign({ username: user.username, user_ID: user.user_ID }, jwtSecret, { expiresIn: '2d' });
       console.log("token", apiToken);
-      return res.status(200).json(apiToken); // Sender token tilbage
+      return res.status(200).json(apiToken);
     } else {
-      return res.status(401).json(false); // Sender fejlbesked tilbage hvis brugeren ikke blev fundet
+      return res.status(401).json(false);
     }
   } catch (err) {
-    return res.status(500).json(err.message); // Sender fejlbesked tilbage hvis noget går galt
+    return res.status(500).json(err.message);
   }
 });
 
-// Endpoint til at logge ud
+
+//log ud endpoint
 router.get('/logout', async (req, res) => {
   try {
-    // Sender en besked om succesfuld logout
+
     res.send('Logout successful');
   } catch (error) {
-    // Håndterer eventuelle fejl (selvom der ikke burde være nogen ved logout)
+    // Handle any errors (though there shouldn't be any for logout)
     console.error(error);
     res.status(500).send('Failed to log out');
   }
 });
 
-// Endpoint til at slette en bruger
+
+
 router.get('/delete', async (req, res) => {
   try {
-    // Henter token fra request headers og splitter det for at få det faktiske token
     const token = req.headers.authorization.split(' ')[1];
-    // Henter hemmelig nøgle fra miljøvariabler
     const secretKey = process.env.JWT_SECRET;
-    // Verificerer token og ekstraherer bruger ID
+    // Verify the token and extract user ID
     const tokenDecoded = jwt.verify(token, secretKey);
     const userID = tokenDecoded.user_ID;
-    // Sletter bruger fra databasen
     const rowsAffected = await database.deleteUser(userID);
     if (rowsAffected > 0) {
       console.log('User deleted successfully');
@@ -211,19 +215,21 @@ router.get('/delete', async (req, res) => {
   }
 });
 
-// Endpoint til at redigere en bruger
+
+// Edit user endpoint
+// Edit user endpoint
 router.put('/edit', async (req, res) => {
   try {
-    // Ekstraherer bruger ID fra JWT token
+    // Extract user ID from the JWT token
     const token = req.headers.authorization.split(' ')[1];
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey);
     const userId = tokenDecoded.user_ID;
 
-    // Ekstraherer opdaterede brugerdata fra request body
+    // Extract updated user data from the request body
     const updatedUserData = req.body;
 
-    // Opdaterer brugerinformation i databasen
+    // Update user information in the database
     const rowsAffected = await database.editUser(userId, updatedUserData);
 
     if (rowsAffected > 0) {
@@ -236,22 +242,20 @@ router.put('/edit', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
-
-// Endpoint til at hente brugerinformation
 router.get('/userInfo', async (req, res) => {
   try {
-    // Ekstraherer og dekoder token
+    // Extracting and decoding the token
     const token = req.headers.authorization.split(' ')[1];
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey);
     const userId = tokenDecoded.user_ID;
 
-    // Henter brugerinformation fra databasen ved hjælp af getUser funktionen
-    const userData = await database.getUser(userId); // Bruger userId i stedet for req.params.user_ID
+    // Retrieve user information from the database using the getUser function
+    const userData = await database.getUser(userId); // Use userId instead of req.params.user_ID
     if (!userData) {
       return res.status(404).send('User not found');
     }
-    // Hvis userData ikke er tom, sendes det som et svar
+    // If userData is not empty, send it as a response
     return res.status(200).json(userData);
   } catch (error) {
     console.error('Error fetching user by user ID:', error);
@@ -259,7 +263,6 @@ router.get('/userInfo', async (req, res) => {
   }
 });
 
-// Endpoint til at hente al vandinformation for en bruger
 router.get('/allWater', async (req, res) => {
   try {
     const token = req.headers.authorization.split(' ')[1];
@@ -267,7 +270,6 @@ router.get('/allWater', async (req, res) => {
     const tokenDecoded = jwt.verify(token, secretKey);
     const userID = tokenDecoded.user_ID;
 
-    // Henter al vandinformation for en bruger
     const getAllWater = await database.getUserWater(userID);
     res.status(200).json({ getAllWater });
   } catch (err) {
@@ -275,16 +277,14 @@ router.get('/allWater', async (req, res) => {
   }
 });
 
-// Endpoint til at registrere et vandindtag
+//Registrer et måltid
 router.post('/addWater', async (req, res) => {
   try {
-    // Henter vanddata fra request body
     const water = req.body;
     const token = req.headers.authorization.split(' ')[1]
     const secretKey = process.env.JWT_SECRET;
     const tokenDecoded = jwt.verify(token, secretKey)
     const userID = tokenDecoded.user_ID
-    // Tilføjer vandindtag til databasen
     const rowsAffected = await database.addWater(water, userID);
     res.status(201).json({ rowsAffected });
   } catch (err) {
@@ -293,5 +293,4 @@ router.post('/addWater', async (req, res) => {
   }
 });
 
-// Eksporterer routeren som standard
 export default router;
