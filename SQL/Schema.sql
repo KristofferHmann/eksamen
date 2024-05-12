@@ -65,6 +65,14 @@ GO
     );
 
 GO
+    CREATE TABLE Nutri.Water (
+        water_ID INT IDENTITY (1, 1) PRIMARY KEY,
+        waterName varchar(255),
+        waterTime DATETIME NOT NULL,
+        waterVolume INT NOT NULL,
+        user_ID INTEGER FOREIGN KEY REFERENCES Nutri.[USER] (user_ID)
+    )
+GO
 INSERT INTO
     Nutri.Activities (activities, kcalburned)
 VALUES
