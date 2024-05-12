@@ -82,7 +82,7 @@ async function fetchUserInfo() {
     const userData = await response.json();
     console.log(userData);
 
-    // Extract BMR from user data
+    // Extract   from user data
     const userBMR = userData.bmr;
 
     // Now you have userBMR available for use
